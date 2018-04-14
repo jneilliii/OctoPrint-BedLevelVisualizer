@@ -9,19 +9,16 @@ $(function () {
 		self.processing = ko.observable(false);
 		self.loadedData = ko.observableArray();
 		
-		self.onDataUpdaterPluginMessage = function(plugin, data) {
+		self.onDataUpdaterPluginMessage = function(plugin, mesh_data) {
 			if (plugin != "bedlevelvisualizer") {
 				return;
 			}
-			if (data.mesh) {
-				var raw_data = data.mesh;
-				var eye_x = ((raw_data[0].length/2));
-				var eye_y = ((raw_data.length/2));
-				console.log(eye_x+'|'+eye_y);
+			if (mesh_data.mesh) {
+				self.loadedData(mesh_data.mesh);
 				self.processing(false);
 				self.controlViewModel.sendCustomCommand({type:'command',command:'M155 S3'});
  				var data = [{
-					z: raw_data,
+					z: mesh_data.mesh,
 					type: 'surface'
 				}];
 				
@@ -45,7 +42,6 @@ $(function () {
 						}
 					};
 				Plotly.newPlot('bedlevelvisualizergraph', data, layout);
-				self.loadedData(data.mesh);
 			}
 		}
 		
