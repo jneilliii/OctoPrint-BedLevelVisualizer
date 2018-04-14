@@ -33,21 +33,16 @@ $(function () {
 						r: 0,
 						b: 0,
 						t: 0,
-						}/* ,
+						},
 					scene: {
 						camera: {
-							center: {
-								x:((raw_data[0].length/2)),
-								y:((raw_data.length/2));,
-								z:0
-							},
 							eye: {
-								x: 0,
-								y: 0,
+								x: -1.25,
+								y: -1.25,
 								z: 1.25
 								}
 							}
-						} */
+						}
 					};
 				Plotly.newPlot('bedlevelvisualizergraph', data, layout);
 				self.loadedData(data.mesh);
