@@ -15,8 +15,8 @@ $(function () {
 			}
 			if (data.mesh) {
 				var raw_data = data.mesh;
-				var eye_x = ((raw_data[0].length/4)*-1);
-				var eye_y = ((raw_data.length/4)*-1);
+				var eye_x = ((raw_data[0].length/2));
+				var eye_y = ((raw_data.length/2));
 				console.log(eye_x+'|'+eye_y);
 				self.processing(false);
 				self.controlViewModel.sendCustomCommand({type:'command',command:'M155 S3'});
@@ -37,8 +37,8 @@ $(function () {
 					scene: {
 						camera: {
 							eye: {
-								x: 0,
-								y: 0,
+								x: eye_x,
+								y: eye_y,
 								z: 1.25
 								}
 							}
