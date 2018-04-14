@@ -14,11 +14,13 @@ $(function () {
 				return;
 			}
 			if (data.mesh) {
-				console.log(data.mesh);
+				var raw_data = data.mesh;
+				var eye_x = ((raw_data[0].length/2)*-1);
+				var eye_y = ((raw_data.length/2)*-1);
 				self.processing(false);
 				self.controlViewModel.sendCustomCommand({type:'command',command:'M155 S3'});
  				var data = [{
-					z: data.mesh,
+					z: raw_data,
 					type: 'surface'
 				}];
 				
@@ -30,16 +32,16 @@ $(function () {
 						r: 0,
 						b: 0,
 						t: 0,
-						}/* ,
+						},
 					scene: {
 						camera: {
 							eye: {
-								x: ((data.mesh[0].length/2)*-1),
-								y: ((data.mesh.length/2)*-1),
+								x: eye_x,
+								y: eye_x,
 								z: 1.25
+								}
 							}
 						}
-					} */
 					};
 				Plotly.newPlot('bedlevelvisualizergraph', data, layout);
 				self.loadedData(data.mesh);
