@@ -34,9 +34,17 @@ or manually using this URL:
 
 ## Changelog
 
-- **[0.0.1]** (04/14/2018): Initial Release
+**[0.0.2]** (04/14/2018)
+
+**Fixed**
+  - Reversed point order to fix graphing misorientation.
+	
+**[0.0.1]** (04/14/2018)
+
+**Initial Release**
 
 [0.0.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.1
+[0.0.2]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.2
 
 ## To-Do
 - [ ] Pause standard OctoPrint temperature polling or squash the responses until processing is completed.
