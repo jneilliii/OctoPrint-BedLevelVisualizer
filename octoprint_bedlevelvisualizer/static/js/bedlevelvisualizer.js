@@ -14,6 +14,7 @@ $(function () {
 				return;
 			}
 			if (data.mesh) {
+				console.log(data.mesh);
 				self.processing(false);
 				self.controlViewModel.sendCustomCommand({type:'command',command:'M155 S3'});
  				var data = [{
@@ -29,7 +30,7 @@ $(function () {
 						r: 0,
 						b: 0,
 						t: 0,
-						},
+						}/* ,
 					scene: {
 						camera: {
 							eye: {
@@ -38,7 +39,7 @@ $(function () {
 								z: 1.25
 							}
 						}
-					}
+					} */
 					};
 				Plotly.newPlot('bedlevelvisualizergraph', data, layout);
 				self.loadedData(data.mesh);
