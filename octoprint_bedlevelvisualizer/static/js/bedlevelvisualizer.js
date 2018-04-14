@@ -17,6 +17,7 @@ $(function () {
 				var raw_data = data.mesh;
 				var eye_x = ((raw_data[0].length/2)*-1);
 				var eye_y = ((raw_data.length/2)*-1);
+				console.log(eye_x+'|"+eye_y);
 				self.processing(false);
 				self.controlViewModel.sendCustomCommand({type:'command',command:'M155 S3'});
  				var data = [{
