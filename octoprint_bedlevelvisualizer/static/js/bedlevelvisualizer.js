@@ -8,11 +8,11 @@ $(function () {
 
 		self.processing = ko.observable(false);
 		self.mesh_status = ko.computed(function(){
+			var return_value = 'Mesh data just loaded.';
 			if (self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0) {
-				return 'Using stored mesh_data';
-			} else {
-				return 'Mesh data just loaded.';
+				return_value= 'Using stored mesh_data';
 			}
+			return return_value;
 		});
 
 		self.onDataUpdaterPluginMessage = function (plugin, mesh_data) {
