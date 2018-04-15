@@ -39,7 +39,7 @@ $(function () {
 
 		self.drawMesh = function (mesh_data) {
 			self.processing(false);
-			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh() && !self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0){
+			if(self.save_mesh() && !self.mesh_data().length > 0){
 				self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
 				self.settingsViewModel.saveData();
 			}
