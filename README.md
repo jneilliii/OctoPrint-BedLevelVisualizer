@@ -36,6 +36,9 @@ or manually using this URL:
 
 **[0.0.2]** (04/14/2018)
 
+** Added **
+  - Settings dialog to update the GCODE command used to report bed topology.
+
 **Fixed**
   - Reversed point order to fix graphing misorientation.
 	

@@ -56,7 +56,7 @@ $(function () {
 		self.updateMesh = function(){
 			self.processing(true);
 			self.controlViewModel.sendCustomCommand({type:'command',command:'M155 S0'});
-			self.controlViewModel.sendCustomCommand({type:'command',command:'G29 T1'});
+			self.controlViewModel.sendCustomCommand({type:'command',command:self.settingsViewModel.settings.plugins.bedlevelvisualizer.command()});
 		}
 	}
 	
