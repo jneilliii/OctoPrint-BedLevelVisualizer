@@ -10,9 +10,9 @@ $(function () {
 		self.mesh_data = ko.observableArray();
 		self.save_mesh = ko.observable();
 		self.mesh_status = ko.computed(function(){
-			var return_value = '';
+			var return_value = 'Polling for mesh data.';
 			if (self.save_mesh()) {
-				return_value = '';
+				return_value = 'Using saved mesh data.';
 			}
 			return return_value;
 		});
