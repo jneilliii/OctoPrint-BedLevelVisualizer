@@ -6,8 +6,17 @@ $(function () {
 		self.controlViewModel = parameters[1];
 		self.loginStateViewModel = parameters[2];
 		
+		self.command = ko.observable();
 		self.processing = ko.observable(false);
 		self.loadedData = ko.observableArray();
+		
+		self.onBeforeBinding = function() {
+			self.command(self.settingsViewModel.settings.plugins.bedlevelvisualizer.command());
+		}
+		
+		self.onEventSettingsUpdated = function (payload) {
+			self.command(self.settingsViewModel.settings.plugins.bedlevelvisualizer.command());
+		}
 		
 		self.onDataUpdaterPluginMessage = function(plugin, mesh_data) {
 			if (plugin != "bedlevelvisualizer") {

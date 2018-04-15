@@ -26,10 +26,6 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		return dict(
 			js=["js/bedlevelvisualizer.js","js/plotly-latest.min.js"]
 		)
-		
-	##-- Template hooks
-	def get_template_configs(self):
-		return [dict(type="settings",custom_bindings=True)]
 
 	##~~ GCODE hook
 	def processGCODE(self, comm, line, *args, **kwargs):
