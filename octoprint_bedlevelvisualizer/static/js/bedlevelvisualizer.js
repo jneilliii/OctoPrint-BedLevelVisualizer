@@ -32,19 +32,19 @@ $(function () {
 				return;
 			}
 			if (mesh_data.mesh) {
-				self.drawMesh(mesh_data.mesh);
+				self.drawMesh(mesh_data.mesh,true);
 			}
 			return;
 		};
 
-		self.drawMesh = function (mesh_data) {
+		self.drawMesh = function (mesh_data,store_data) {
 			self.processing(false);
-/* 			if(self.save_mesh()){
-				if(!self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh() || self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0){
+			if(self.save_mesh()){
+				if(store_data){
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
 					self.settingsViewModel.saveData();
 				};
-			} */
+			}
 			OctoPrint.control.sendGcode('M155 S3');
 			var data = [{
 					z: mesh_data,
