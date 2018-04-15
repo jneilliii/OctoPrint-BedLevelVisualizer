@@ -68,7 +68,7 @@ $(function () {
 		self.updateMesh = function(){
 			self.processing(true);
 			self.controlViewModel.sendGcode('M155 S0');
-			self.controlViewModel.sendGcode(command:self.settingsViewModel.settings.plugins.bedlevelvisualizer.command().split("\n"));
+			self.controlViewModel.sendGcode(self.settingsViewModel.settings.plugins.bedlevelvisualizer.command().split("\n"));
 		}
 	}
 	
