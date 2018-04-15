@@ -21,6 +21,9 @@ $(function () {
 
 		self.drawMesh = function (mesh_data) {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
+			if(settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh()) {
+				self.settingsViewModel.saveData();
+			}
 			self.processing(false);
 			OctoPrint.control.sendGcode('M155 S3');
 			var data = [{
