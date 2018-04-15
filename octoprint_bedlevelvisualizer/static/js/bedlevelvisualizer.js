@@ -55,7 +55,7 @@ $(function () {
 				if (!self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0) {
 					self.updateMesh();
 				} else {
-					$('#bedlevelvisualizerbutton').prepend('<div class="pull-left">Using stored mesh_data</div>');
+					$('#bedlevelvisualizerbutton').after('<div class="row-fluid" style="text-align: center; padding-top: 10px;"><i class="icon-information"></i> Using stored mesh_data</div>');
 					self.drawMesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 				}
 				return;
