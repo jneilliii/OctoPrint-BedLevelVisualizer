@@ -39,9 +39,11 @@ $(function () {
 
 		self.drawMesh = function (mesh_data) {
 			self.processing(false);
-			if(self.save_mesh() && !self.mesh_data().length > 0){
-				self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
-				self.settingsViewModel.saveData();
+			if(self.save_mesh()){
+				if(!self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh() || self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0){
+					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
+					self.settingsViewModel.saveData();
+				};
 			}
 			OctoPrint.control.sendGcode('M155 S3');
 			var data = [{
