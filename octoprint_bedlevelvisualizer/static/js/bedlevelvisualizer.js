@@ -7,7 +7,7 @@ $(function () {
 		self.loginStateViewModel = parameters[2];
 
 		self.processing = ko.observable(false);
-		self.mesh_data = ko.observableArray();
+		self.mesh_data = ko.observableArray([]);
 		self.save_mesh = ko.observable();
 		self.mesh_status = ko.computed(function(){
 			var return_value = 'Polling for mesh data.';
