@@ -8,9 +8,22 @@ $(function () {
 
 		self.processing = ko.observable(false);
 		self.mesh_data = ko.observableArray();
+		self.save_mesh = ko.observable();
+		self.mesh_status = ko.computed(function(){
+			var return_value = '';
+			if (self.save_mesh()) {
+				return_value = '';
+			}
+			return return_value;
+		});
 		
 		self.onBeforeBinding = function() {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
+			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
+		}
+		
+		self.onEventSettingsUpdated = function (payload) {
+			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
 		}
 
 		self.onDataUpdaterPluginMessage = function (plugin, mesh_data) {
@@ -24,7 +37,7 @@ $(function () {
 		};
 
 		self.drawMesh = function (mesh_data) {
-			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh()) {
+			if(self.save_mesh()) {
 				self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
 				self.settingsViewModel.saveData();
 			}
@@ -60,10 +73,10 @@ $(function () {
 
 		self.onAfterTabChange = function (current, previous) {
 			if (current === "#tab_plugin_bedlevelvisualizer" && self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting() && self.loginStateViewModel.isUser() && !self.processing()) {
-				if (!self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0) {
+				if (!self.save_mesh()) {
 					self.updateMesh();
 				} else {
-					self.drawMesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
+					self.drawMesh(self.mesh_data());
 				}
 				return;
 			}
