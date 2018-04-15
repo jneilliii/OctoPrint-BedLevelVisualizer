@@ -36,7 +36,7 @@ or manually using this URL:
 
 **[0.0.2]** (04/15/2018)
 
-** Added ***
+**Added**
   - Settings dialog to update the GCODE command used to report bed topology.
   - Improved performance with option for storing the mesh in config.yaml (default).
 
