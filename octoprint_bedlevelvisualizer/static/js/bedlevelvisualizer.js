@@ -66,6 +66,6 @@ $(function () {
 	OCTOPRINT_VIEWMODELS.push({
 			construct: bedlevelvisualizerViewModel,
 			dependencies: [ "settingsViewModel","controlViewModel","loginStateViewModel" ],
-			elements:[ "#tab_plugin_bedlevelvisualizer" ]
+			elements:[ "#settings_plugin_bedlevelvisualizer","#tab_plugin_bedlevelvisualizer" ]
 	});
 });
