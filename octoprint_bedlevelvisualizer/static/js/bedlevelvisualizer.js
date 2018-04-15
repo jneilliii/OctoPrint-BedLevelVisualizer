@@ -71,7 +71,7 @@ $(function () {
 					}
 				}
 			};
-			Plotly.newPlot('bedlevelvisualizergraph', data, layout);
+			Plotly.react('bedlevelvisualizergraph', data, layout);
 		};
 
 		self.onAfterTabChange = function (current, previous) {
@@ -88,7 +88,7 @@ $(function () {
 				return;
 			}
 			if (previous === "#tab_plugin_bedlevelvisualizer") {
-				Plotly.purge('bedlevelvisualizergraph');
+				//Plotly.purge('bedlevelvisualizergraph');
 			}
 		};
 
