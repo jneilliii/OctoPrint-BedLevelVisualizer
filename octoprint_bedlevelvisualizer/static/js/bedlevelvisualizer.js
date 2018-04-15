@@ -1,71 +1,80 @@
 $(function () {
 	function bedlevelvisualizerViewModel(parameters) {
 		var self = this;
-		
+
 		self.settingsViewModel = parameters[0];
 		self.controlViewModel = parameters[1];
 		self.loginStateViewModel = parameters[2];
-		
+
 		self.processing = ko.observable(false);
 		self.loadedData = ko.observableArray();
-		
-		self.onDataUpdaterPluginMessage = function(plugin, mesh_data) {
-			if (plugin != "bedlevelvisualizer") {
+
+		self.onDataUpdaterPluginMessage = function (plugin, mesh_data) {
+			if (plugin !== "bedlevelvisualizer") {
 				return;
 			}
 			if (mesh_data.mesh) {
-				self.loadedData(mesh_data.mesh);
-				self.processing(false);
-				OctoPrint.control.sendGcode('M155 S3');
- 				var data = [{
-					z: mesh_data.mesh,
+				self.drawMesh(mesh_data.mesh);
+			}
+			return;
+		};
+
+		self.drawMesh = function (mesh_data) {
+			self.loadedData(mesh_data);
+			self.processing(false);
+			OctoPrint.control.sendGcode('M155 S3');
+			var data = [{
+					z: mesh_data,
 					type: 'surface'
-				}];
-				
-				var layout = {
-					//title: 'Bed Leveling Mesh',
-					autosize: true,
-					margin: {
-						l: 0,
-						r: 0,
-						b: 0,
-						t: 0,
-						},
-					scene: {
-						camera: {
-							eye: {
-								x: -1.25,
-								y: -1.25,
-								z: 1.25
-								}
-							}
-						}
-					};
-				Plotly.newPlot('bedlevelvisualizergraph', data, layout);
-			}
-		}
-		
-		self.onAfterTabChange = function (current, previous) {
-			if (current == "#tab_plugin_bedlevelvisualizer" && self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting() && self.loginStateViewModel.isUser() && !self.processing()) {
-				if(!self.loadedData().length > 0) {
-					self.updateMesh();
 				}
+			];
+
+			var layout = {
+				//title: 'Bed Leveling Mesh',
+				autosize: true,
+				margin: {
+					l: 0,
+					r: 0,
+					b: 0,
+					t: 0
+				},
+				scene: {
+					camera: {
+						eye: {
+							x: -1.25,
+							y: -1.25,
+							z: 1.25
+						}
+					}
+				}
+			};
+			Plotly.newPlot('bedlevelvisualizergraph', data, layout);
+		};
+
+		self.onAfterTabChange = function (current, previous) {
+			if (current === "#tab_plugin_bedlevelvisualizer" && self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting() && self.loginStateViewModel.isUser() && !self.processing()) {
+				if (!self.loadedData().length > 0) {
+					self.updateMesh();
+				} else {
+					self.drawMesh(self.loadedData());
+				}
+				return;
 			}
-			if (previous == "#tab_plugin_bedlevelvisualizer") {
+			if (previous === "#tab_plugin_bedlevelvisualizer") {
 				Plotly.purge('bedlevelvisualizergraph');
 			}
 		};
-		
-		self.updateMesh = function(){
+
+		self.updateMesh = function () {
 			self.processing(true);
 			OctoPrint.control.sendGcode('M155 S0');
 			OctoPrint.control.sendGcode(self.settingsViewModel.settings.plugins.bedlevelvisualizer.command().split("\n"));
-		}
+		};
 	}
-	
+
 	OCTOPRINT_VIEWMODELS.push({
-			construct: bedlevelvisualizerViewModel,
-			dependencies: [ "settingsViewModel","controlViewModel","loginStateViewModel" ],
-			elements:[ "#settings_plugin_bedlevelvisualizer","#tab_plugin_bedlevelvisualizer" ]
+		construct: bedlevelvisualizerViewModel,
+		dependencies: ["settingsViewModel", "controlViewModel", "loginStateViewModel"],
+		elements: ["#settings_plugin_bedlevelvisualizer", "#tab_plugin_bedlevelvisualizer"]
 	});
 });
