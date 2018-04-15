@@ -7,13 +7,18 @@ $(function () {
 		self.loginStateViewModel = parameters[2];
 
 		self.processing = ko.observable(false);
+		self.mesh_data = ko.observableArray();
 		self.mesh_status = ko.computed(function(){
 			var return_value = 'Mesh data just loaded.';
-			if (self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0) {
+			if (self.mesh_data.length > 0) {
 				return_value= 'Using stored mesh_data';
 			}
 			return return_value;
 		});
+		
+		self.onBeforeBinding = function() {
+			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
+		}
 
 		self.onDataUpdaterPluginMessage = function (plugin, mesh_data) {
 			if (plugin !== "bedlevelvisualizer") {
@@ -27,7 +32,7 @@ $(function () {
 
 		self.drawMesh = function (mesh_data) {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
-			if(settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh()) {
+			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh()) {
 				self.settingsViewModel.saveData();
 			}
 			self.processing(false);
