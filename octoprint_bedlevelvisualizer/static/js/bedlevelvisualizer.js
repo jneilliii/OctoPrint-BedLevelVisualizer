@@ -7,6 +7,7 @@ $(function () {
 		self.loginStateViewModel = parameters[2];
 
 		self.processing = ko.observable(false);
+		self.mesh_status = ko.computed(function(){(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0)  ? return 'Using stored mesh_data' : 'Mesh data just loaded.'});
 
 		self.onDataUpdaterPluginMessage = function (plugin, mesh_data) {
 			if (plugin !== "bedlevelvisualizer") {
@@ -55,7 +56,6 @@ $(function () {
 				if (!self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0) {
 					self.updateMesh();
 				} else {
-					$('#bedlevelvisualizerbutton').after('<div class="row-fluid" style="text-align: center; padding-top: 10px;"><i class="icon-information"></i> Using stored mesh_data</div>');
 					self.drawMesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 				}
 				return;
