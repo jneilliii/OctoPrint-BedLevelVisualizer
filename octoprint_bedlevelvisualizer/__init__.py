@@ -8,6 +8,10 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.TemplatePlugin,
 				octoprint.plugin.AssetPlugin,
                 octoprint.plugin.SettingsPlugin):
+				
+	def __init__(self):
+		self.processing = False
+		self.mesh = []
 	
 	##~~ SettingsPlugin
 	def get_settings_defaults(self):
@@ -22,6 +26,10 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		return dict(
 			js=["js/bedlevelvisualizer.js","js/plotly-latest.min.js"]
 		)
+		
+	##-- Template hooks
+	def get_template_configs(self):
+		return [dict(type="settings",custom_bindings=True)]
 
 	##~~ GCODE hook
 	def processGCODE(self, comm, line, *args, **kwargs):
