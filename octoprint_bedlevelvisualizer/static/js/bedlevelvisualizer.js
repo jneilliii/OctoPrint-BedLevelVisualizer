@@ -60,6 +60,9 @@ $(function () {
 					self.updateMesh();
 				}
 			}
+			if (previous == "#tab_plugin_bedlevelvisualizer") {
+				Plotly.purge('bedlevelvisualizergraph');
+			}
 		};
 		
 		self.updateMesh = function(){
