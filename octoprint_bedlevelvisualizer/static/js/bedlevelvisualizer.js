@@ -8,13 +8,6 @@ $(function () {
 
 		self.processing = ko.observable(false);
 		self.mesh_data = ko.observableArray();
-		self.mesh_status = ko.computed(function(){
-			var return_value = 'Mesh data just loaded.';
-			if (self.mesh_data.length > 0) {
-				return_value= 'Using stored mesh_data';
-			}
-			return return_value;
-		});
 		
 		self.onBeforeBinding = function() {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
@@ -31,8 +24,8 @@ $(function () {
 		};
 
 		self.drawMesh = function (mesh_data) {
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
 			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh()) {
+				self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
 				self.settingsViewModel.saveData();
 			}
 			self.processing(false);
