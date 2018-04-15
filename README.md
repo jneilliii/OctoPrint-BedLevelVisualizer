@@ -38,6 +38,7 @@ or manually using this URL:
 
 ** Added **
   - Settings dialog to update the GCODE command used to report bed topology.
+  - Improved performance with option for storing the mesh in config.yaml (default).
 
 **Fixed**
   - Reversed point order to fix graphing misorientation.
