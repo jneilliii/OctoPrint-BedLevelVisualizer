@@ -6,12 +6,17 @@ import re
 
 class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.TemplatePlugin,
-				octoprint.plugin.AssetPlugin):
-	
+				octoprint.plugin.AssetPlugin,
+                octoprint.plugin.SettingsPlugin):
+				
 	def __init__(self):
 		self.processing = False
 		self.mesh = []
 	
+	##~~ SettingsPlugin
+	def get_settings_defaults(self):
+		return dict(command="G29 T1",stored_mesh=[],save_mesh=True)
+
 	##~~ StartupPlugin
 	def on_after_startup(self):
 		self._logger.info("OctoPrint-BedLevelVisualizer loaded!")
@@ -35,6 +40,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		
 		if self.processing and "ok" in line:
 			self.processing = False
+			self.mesh.reverse()
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh))
 		
 		return line
