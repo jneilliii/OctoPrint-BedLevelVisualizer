@@ -79,7 +79,11 @@ $(function () {
 				if (!self.save_mesh()) {
 					self.updateMesh();
 				} else {
-					self.drawMesh(self.mesh_data());
+					if(!self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0){
+						self.updateMesh();
+					} else {
+						self.drawMesh(self.mesh_data());
+					}
 				}
 				return;
 			}
