@@ -1,7 +1,15 @@
 <h4>Bed Visualizer Settings</h4>
+<form class="form-horizontal">
 <div class="control-group">
 	<label class="control-label-text" for="bedlevelvisualizer_gcode">{{ _('GCODE Command:') }}</label>
 	<div class="controls">
-		<input type="text" class="input-block-level" id="bedlevelvisualizer_gcode" data-bind="value: command">
+		<input type="text" class="input-block-level" id="bedlevelvisualizer_gcode" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.command">
 	</div>
 </div>
+<div class="control-group">
+	<label class="control-label-text" for="bedlevelvisualizer_gcode">{{ _('GCODE Command:') }}</label>
+	<div class="controls">
+		<textarea rows="4" class="block" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.command"></textarea>
+	</div>
+</div>
+<form>

@@ -25,7 +25,7 @@ $(function () {
 			if (mesh_data.mesh) {
 				self.loadedData(mesh_data.mesh);
 				self.processing(false);
-				self.controlViewModel.sendCustomCommand({type:'command',command:'M155 S3'});
+				self.controlViewModel.sendGcode('M155 S3');
  				var data = [{
 					z: mesh_data.mesh,
 					type: 'surface'
@@ -67,8 +67,8 @@ $(function () {
 		
 		self.updateMesh = function(){
 			self.processing(true);
-			self.controlViewModel.sendCustomCommand({type:'command',command:'M155 S0'});
-			self.controlViewModel.sendCustomCommand({type:'command',command:self.settingsViewModel.settings.plugins.bedlevelvisualizer.command()});
+			self.controlViewModel.sendGcode('M155 S0');
+			self.controlViewModel.sendGcode(command:self.settingsViewModel.settings.plugins.bedlevelvisualizer.command().split("\n"));
 		}
 	}
 	
