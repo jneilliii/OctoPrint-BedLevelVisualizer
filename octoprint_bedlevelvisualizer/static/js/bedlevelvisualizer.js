@@ -7,7 +7,6 @@ $(function () {
 		self.loginStateViewModel = parameters[2];
 
 		self.processing = ko.observable(false);
-		self.loadedData = ko.observableArray();
 
 		self.onDataUpdaterPluginMessage = function (plugin, mesh_data) {
 			if (plugin !== "bedlevelvisualizer") {
@@ -20,7 +19,7 @@ $(function () {
 		};
 
 		self.drawMesh = function (mesh_data) {
-			self.loadedData(mesh_data);
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
 			self.processing(false);
 			OctoPrint.control.sendGcode('M155 S3');
 			var data = [{
@@ -53,10 +52,11 @@ $(function () {
 
 		self.onAfterTabChange = function (current, previous) {
 			if (current === "#tab_plugin_bedlevelvisualizer" && self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting() && self.loginStateViewModel.isUser() && !self.processing()) {
-				if (!self.loadedData().length > 0) {
+				if (!self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0) {
 					self.updateMesh();
 				} else {
-					self.drawMesh(self.loadedData());
+					$('#bedlevelvisualizerbutton').prepend('<div class="pull-left">Using stored mesh_data</div>');
+					self.drawMesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 				}
 				return;
 			}

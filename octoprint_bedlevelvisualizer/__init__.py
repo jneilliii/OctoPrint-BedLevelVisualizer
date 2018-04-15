@@ -15,7 +15,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 	
 	##~~ SettingsPlugin
 	def get_settings_defaults(self):
-		return dict(command="G29 T1")
+		return dict(command="G29 T1",stored_mesh=[])
 
 	##~~ StartupPlugin
 	def on_after_startup(self):
