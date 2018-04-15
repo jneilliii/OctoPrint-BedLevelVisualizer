@@ -34,7 +34,7 @@ or manually using this URL:
 
 ## Changelog
 
-**[0.0.2]** (04/14/2018)
+**[0.0.2]** (04/15/2018)
 
 ** Added **
   - Settings dialog to update the GCODE command used to report bed topology.
