@@ -1,13 +1,15 @@
 <h4>Bed Visualizer Settings</h4>
 <form class="form-horizontal">
 <div class="control-group">
+	<label class="control-label" for="bedlevelvisualizer_command">{{ _('GCODE Command:') }}</label>
 	<div class="controls">
-		<label class="control-label-textarea" for="bedlevelvisualizer_command">{{ _('GCODE Command:') }}</label>
 		<textarea class="input-block-level" id="bedlevelvisualizer_command" rows="4" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.command"></textarea>
 	</div>
+</div>
+<div class="control-group">
+	<label class="control-label" for="bedlevelvisualizer_save_mesh"><i class="icon icon-information-sign"></i> Save Mesh to config.yaml:</label>
 	<div class="controls">
-		<label class="control-label-checkbox" for="bedlevelvisualizer_save_mesh"><i class="icon icon-information-sign"></i> Save Mesh to config.yaml:</label>
-		<input type="checkbox" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh" id="bedlevelvisualizer_save_mesh"></input>
+		<input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_save_mesh" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh"></input>
 	</div>
 </div>
 <form>
