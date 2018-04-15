@@ -7,7 +7,13 @@ $(function () {
 		self.loginStateViewModel = parameters[2];
 
 		self.processing = ko.observable(false);
-		self.mesh_status = ko.computed(function(){return (self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0) ? 'Using stored mesh_data' : 'Mesh data just loaded.';});
+		self.mesh_status = ko.computed(function(){
+			if (self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0) {
+				return 'Using stored mesh_data';
+			} else {
+				return 'Mesh data just loaded.';
+			}
+		});
 
 		self.onDataUpdaterPluginMessage = function (plugin, mesh_data) {
 			if (plugin !== "bedlevelvisualizer") {
