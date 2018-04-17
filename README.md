@@ -38,6 +38,11 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.0.4]** (04/17/2018)
+
+**Changed**
+  - "Data Collector Flag" is now a text field in lieu of select list to allow full customization of the text that flags for mesh data collection to handle the numerous available options that apparently seem to be out there.
+
 **[0.0.3]** (04/17/2018)
 
 **Added**
@@ -58,6 +63,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.0.4]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.4
 [0.0.3]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.3
 [0.0.2]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.2
 [0.0.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.1
