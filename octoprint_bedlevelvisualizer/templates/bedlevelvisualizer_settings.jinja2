@@ -1,8 +1,8 @@
 <h4>Bed Visualizer Settings</h4>
 <form class="form-horizontal">
 <div class="control-group">
-	<label for="bedlevelvisualizer_type"><i class="icon icon-info-sign" title="Message received just prior to mesh data"></i> Data Collector Flag</label>
-	<select class="row-fluid" id="bedlevelvisualizer_type" data-bind="options: settingsViewModel.settings.plugins.bedlevelvisualizer.report_types,value: settingsViewModel.settings.plugins.bedlevelvisualizer.report_flag"></select>
+	<label for="bedlevelvisualizer_report_flag"><i class="icon icon-info-sign" title="Message received just prior to mesh data"></i> Data Collector Flag</label>
+	<input class="input-block-level" type="text" id="bedlevelvisualizer_report_flag" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.report_flag" placeholder="Bed Topography Report:,Bilinear Leveling Grid:,Subdivided with CATMULL ROM Leveling Grid:"></input>
 </div>
 <div class="control-group">
 	<label for="bedlevelvisualizer_command"><i class="icon icon-info-sign" title="GCODE commands to send to printer to retrieve grid data"></i> GCODE Commands</label>
