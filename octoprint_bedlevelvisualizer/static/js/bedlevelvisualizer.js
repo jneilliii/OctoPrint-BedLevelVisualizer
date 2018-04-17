@@ -32,6 +32,7 @@ $(function () {
 				return;
 			}
 			if (mesh_data.mesh) {
+				console.log(mesh_data.mesh);
 				self.drawMesh(mesh_data.mesh,true);
 			}
 			return;
@@ -45,7 +46,6 @@ $(function () {
 					self.settingsViewModel.saveData();
 				};
 			}
-			OctoPrint.control.sendGcode('M155 S3');
 			var data = [{
 					z: mesh_data,
 					type: 'surface'
@@ -94,7 +94,6 @@ $(function () {
 
 		self.updateMesh = function () {
 			self.processing(true);
-			OctoPrint.control.sendGcode('M155 S0');
 			OctoPrint.control.sendGcode(self.settingsViewModel.settings.plugins.bedlevelvisualizer.command().split("\n"));
 		};
 	}

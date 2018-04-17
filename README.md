@@ -25,6 +25,10 @@ Recv: 0.438,0.265,0.188,-0.154,0.141,0.005,-0.041,-0.117,-0.135,-0.135
 Recv: ok P15 B3
 ```
 
+## Settings
+
+![screenshot](settings.png)
+
 ## Setup
 
 Install via the bundled [Plugin Manager](https://github.com/foosel/OctoPrint/wiki/Plugin:-Plugin-Manager)
@@ -33,6 +37,13 @@ or manually using this URL:
     https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/master.zip
 
 ## Changelog
+
+**[0.0.3]** (04/17/2018)
+
+**Added**
+  - Capture data option for identifying correct response to start storing mesh data
+  - Stored data displayed in settings
+  - Non-UBL support
 
 **[0.0.2]** (04/15/2018)
 
@@ -47,8 +58,10 @@ or manually using this URL:
 
 **Initial Release**
 
-[0.0.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.1
+[0.0.3]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.3
 [0.0.2]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.2
+[0.0.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.1
 
 ## To-Do
 - [ ] Pause standard OctoPrint temperature polling or squash the responses until processing is completed.
+- [ ] Orientation testing to verify axes are in correct direction.

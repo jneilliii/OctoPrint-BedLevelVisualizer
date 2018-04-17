@@ -1,11 +1,18 @@
 <h4>Bed Visualizer Settings</h4>
 <form class="form-horizontal">
 <div class="control-group">
-	<label for="bedlevelvisualizer_command">GCODE Command:</label>
+	<label for="bedlevelvisualizer_type"><i class="icon icon-info-sign" title="Message received just prior to mesh data"></i> Data Collector Flag</label>
+	<select class="row-fluid" id="bedlevelvisualizer_type" data-bind="options: settingsViewModel.settings.plugins.bedlevelvisualizer.report_types,value: settingsViewModel.settings.plugins.bedlevelvisualizer.report_flag"></select>
+</div>
+<div class="control-group">
+	<label for="bedlevelvisualizer_command"><i class="icon icon-info-sign" title="GCODE commands to send to printer to retrieve grid data"></i> GCODE Commands</label>
 	<textarea class="input-block-level" id="bedlevelvisualizer_command" rows="4" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.command"></textarea>
 </div>
 <div class="control-group">
-	<input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_save_mesh" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh" style="display: inline-block;margin-bottom: 5px;"></input>
-	<div style="display: inline;"><i class="icon icon-info-sign"></i> Save/Load mesh data to/from config.yaml:</div>
+	<i class="icon icon-info-sign" title="Save/Load mesh data to/from config.yaml"></i> Save Mesh<input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_save_mesh" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh" style="display: inline-block;margin-bottom: 5px;"></input>
+</div>
+<div class="control-group">
+	<label for="bedlevelvisualizer_command">Stored Mesh Data:</label>
+	<pre id="bedlevelvisualizer_data" data-bind="text: settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().join('\n').replace(/,/g,'\t')"></pre>
 </div>
 <form>
