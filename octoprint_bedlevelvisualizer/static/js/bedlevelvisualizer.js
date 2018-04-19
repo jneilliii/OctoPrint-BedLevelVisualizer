@@ -75,15 +75,11 @@ $(function () {
 		};
 
 		self.onAfterTabChange = function (current, previous) {
-			if (current === "#tab_plugin_bedlevelvisualizer" && self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting() && self.loginStateViewModel.isUser() && !self.processing()) {
-				if (!self.save_mesh()) {
+			if (current === "#tab_plugin_bedlevelvisualizer" && self.loginStateViewModel.isUser() && !self.processing()) {
+				if (!self.save_mesh() && self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting()) {
 					self.updateMesh();
 				} else {
-					if(!self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0){
-						self.updateMesh();
-					} else {
-						self.drawMesh(self.mesh_data());
-					}
+					self.drawMesh(self.mesh_data());
 				}
 				return;
 			}

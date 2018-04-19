@@ -15,7 +15,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 	
 	##~~ SettingsPlugin
 	def get_settings_defaults(self):
-		return dict(command="G28\nG29 T1",stored_mesh=[],save_mesh=True,report_flag="Bilinear Leveling Grid:",report_types=["Bed Topography Report:","Bilinear Leveling Grid:","Subdivided with CATMULL ROM Leveling Grid:","Measured points:"])
+		return dict(command="G28\nG29 T1",stored_mesh=[],save_mesh=True,prusa_mode=False,report_flag="Bilinear Leveling Grid:",report_types=["Bed Topography Report:","Bilinear Leveling Grid:","Subdivided with CATMULL ROM Leveling Grid:","Measured points:"])
 
 	##~~ StartupPlugin
 	def on_after_startup(self):
@@ -35,11 +35,16 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			return line
 			
 		if self.processing and "ok" not in line and re.match(r"\s?\d?\s?(\+?-?\[?\s?\d+.\d+[\]?,?\s?]+)+", line.strip()):
+			self._logger.info(line.strip());
 			new_line = re.sub(r"< \d+:\d+:\d+(\s+(AM|PM))?:","",line.strip())
 			new_line = re.sub(r"[\[\]]\s?","",new_line)
-			new_line = re.sub(r"\s+","\t",new_line)	
-			new_line = new_line.split("\t")
-			if self._settings.get(["report_flag"]) in ["Bilinear Leveling Grid:","Subdivided with CATMULL ROM Leveling Grid:","Measured points:"]:
+			new_line = re.sub(r"\s+"," ",new_line)
+			new_line = re.sub(r"\s+","\t",new_line)
+			new_line = new_line.split("\t")			
+			self._logger.info("converted to:")
+			self._logger.info(new_line)
+			
+			if self._settings.get(["report_flag"]) in ["Bilinear Leveling Grid:","Subdivided with CATMULL ROM Leveling Grid:","Measured points:"] and not self._settings.get(["prusa_mode"]):
 				new_line.pop(0)
 			if len(new_line) > 0:
 				self.mesh.append(new_line)
