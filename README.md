@@ -38,6 +38,14 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.0.5]** (04/18/2018)
+
+**Changed**
+  - Graph is now always visible in OctoPrint as long as you have saving enabled, there is a mesh stored, and the user is logged in.
+
+**Fixed**
+  - Remove duplicated tabs from Prusa firmware's M81 response.
+
 **[0.0.4]** (04/17/2018)
 
 **Changed**
@@ -63,6 +71,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.0.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.5
 [0.0.4]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.4
 [0.0.3]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.3
 [0.0.2]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.2
