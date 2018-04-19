@@ -40,11 +40,14 @@ or manually using this URL:
 
 **[0.0.5]** (04/18/2018)
 
+**Added**
+  - Prusa Firmware Mode setting, to handle G81 responses correctly
+
 **Changed**
   - Graph is now always visible in OctoPrint as long as you have saving enabled, there is a mesh stored, and the user is logged in.
 
 **Fixed**
-  - Remove duplicated tabs from Prusa firmware's M81 response.
+  - Remove duplicated tabs from Prusa firmware's G81 response.
 
 **[0.0.4]** (04/17/2018)
 
