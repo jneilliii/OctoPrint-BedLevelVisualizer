@@ -10,9 +10,12 @@ $(function () {
 		self.mesh_data = ko.observableArray([]);
 		self.save_mesh = ko.observable();
 		self.mesh_status = ko.computed(function(){
-			var return_value = 'Polling for mesh data.';
+			var return_value = 'Update Mesh Data';
+			if (self.processing()) {
+				return 'Collecting mesh data.';
+			}
 			if (self.save_mesh()) {
-				return_value = 'Using saved mesh data.';
+				return_value = 'Using saved mesh data from ' + self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp() + '.';
 			}
 			return return_value;
 		});
@@ -43,6 +46,7 @@ $(function () {
 			if(self.save_mesh()){
 				if(store_data){
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
+					self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp(new Date().toLocaleString());
 					self.settingsViewModel.saveData();
 				};
 			}
