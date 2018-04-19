@@ -10,11 +10,14 @@ $(function () {
 		self.mesh_data = ko.observableArray([]);
 		self.save_mesh = ko.observable();
 		self.mesh_status = ko.computed(function(){
-			var return_value = 'Polling for mesh data.';
-			if (self.save_mesh()) {
-				return_value = 'Using saved mesh data.';
+			if(self.processing()){
+				return 'Collecting mesh data.';
 			}
-			return return_value;
+			if (self.save_mesh() && self.mesh_data().length > 0) {
+				return 'Using saved mesh data from ' + self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp() + '.';
+			} else {
+				return 'Update mesh.'
+			}
 		});
 		
 		self.onBeforeBinding = function() {
@@ -43,46 +46,68 @@ $(function () {
 			if(self.save_mesh()){
 				if(store_data){
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data);
+					self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp(new Date().toLocaleString());
 					self.settingsViewModel.saveData();
 				};
 			}
-			var data = [{
-					z: mesh_data,
-					type: 'surface'
-				}
-			];
+			
+			try {
+				var data = [{
+						z: mesh_data,
+						type: 'surface'
+					}
+				];
 
-			var layout = {
-				//title: 'Bed Leveling Mesh',
-				autosize: true,
-				margin: {
-					l: 0,
-					r: 0,
-					b: 0,
-					t: 0
-				},
-				scene: {
-					camera: {
-						eye: {
-							x: -1.25,
-							y: -1.25,
-							z: 1.25
+				var layout = {
+					//title: 'Bed Leveling Mesh',
+					autosize: true,
+					margin: {
+						l: 0,
+						r: 0,
+						b: 0,
+						t: 0
+					},
+					scene: {
+						camera: {
+							eye: {
+								x: -1.25,
+								y: -1.25,
+								z: 1.25
+							}
 						}
 					}
-				}
-			};
-			Plotly.react('bedlevelvisualizergraph', data, layout);
+				};
+				Plotly.react('bedlevelvisualizergraph', data, layout);
+			} catch(err) {
+				console.log('No data to graph, verify "Data Collector Flag" in settings then press Update button.');
+			}
 		};
 
 		self.onAfterTabChange = function (current, previous) {
 			if (current === "#tab_plugin_bedlevelvisualizer" && self.loginStateViewModel.isUser() && !self.processing()) {
-				if (!self.save_mesh() && self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting()) {
-					self.updateMesh();
+				if (!self.save_mesh()) {
+					if (self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting()) {
+						self.updateMesh();
+					}
 				} else {
 					self.drawMesh(self.mesh_data());
 				}
 				return;
 			}
+			
+			if (current === "#tab_plugin_bedlevelvisualizer" && self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting() && self.loginStateViewModel.isUser() && !self.processing()) {
+				if (!self.save_mesh()) {
+					self.updateMesh();
+				} else {
+					if(!self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0){
+						self.updateMesh();
+					} else {
+						self.drawMesh(self.mesh_data());
+					}
+				}
+				return;
+			}
+			
 			if (previous === "#tab_plugin_bedlevelvisualizer") {
 				//Plotly.purge('bedlevelvisualizergraph');
 			}

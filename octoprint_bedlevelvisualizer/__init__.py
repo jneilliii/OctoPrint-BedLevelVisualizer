@@ -15,7 +15,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 	
 	##~~ SettingsPlugin
 	def get_settings_defaults(self):
-		return dict(command="G28\nG29 T1",stored_mesh=[],save_mesh=True,prusa_mode=False,report_flag="Bilinear Leveling Grid:",report_types=["Bed Topography Report:","Bilinear Leveling Grid:","Subdivided with CATMULL ROM Leveling Grid:","Measured points:"])
+		return dict(command="G28\nG29 T",stored_mesh=[],save_mesh=True,prusa_mode=False,mesh_timestamp="",report_flag="",report_types=["Bed Topography Report:","Bilinear Leveling Grid:","Subdivided with CATMULL ROM Leveling Grid:","Measured points:"])
 
 	##~~ StartupPlugin
 	def on_after_startup(self):
