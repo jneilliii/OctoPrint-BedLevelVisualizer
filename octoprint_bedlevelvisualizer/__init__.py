@@ -41,7 +41,9 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			new_line = re.sub(r"\s+"," ",new_line)
 			new_line = re.sub(r"\s+","\t",new_line)
 			new_line = new_line.split("\t")			
-			self._logger.info("converted to:" + new_line);
+			self._logger.info("converted to:")
+			self._logger.info(new_line)
+			
 			if self._settings.get(["report_flag"]) in ["Bilinear Leveling Grid:","Subdivided with CATMULL ROM Leveling Grid:","Measured points:"] and not self._settings.get(["prusa_mode"]):
 				new_line.pop(0)
 			if len(new_line) > 0:
