@@ -4,24 +4,37 @@
 
 This plugin utilizes [Plotly](https://plot.ly/plotly-js-scientific-d3-charting-library/) js library to render a 3D surface of the bed's reported mesh on a tab within OctoPrint.
 
-**Note:** Currently only tested with a UBL report, but should work with others as long as `G29 T1` command responds like below. Also currently reuires Marlin temperature auto-reporting enabled until I can figure out how to pause OctoPrint's temperature polling.
+**Note:** If you have Marlin's Auto Temperature Reporting Feature enabled you will want to have M155 S30 and M155 S3 surrounding your G29 command, see settings screenshot, otherwise the collected data will be tainted.
 
 ```
-Send: G29 T1
+Send: G29 T
 Recv: echo:Home XYZ first
 Recv: 
-Recv: Bed Topography Report for CSV:
+Recv: Bed Topography Report:
 Recv: 
-Recv: 0.256,0.170,0.140,0.535,0.183,0.159,0.054,0.197,0.105,0.105
-Recv: 0.488,0.277,0.174,-0.049,0.125,0.020,0.027,0.070,-0.006,-0.006
-Recv: 0.479,0.197,0.220,0.062,0.116,0.062,-0.053,0.169,0.038,0.038
-Recv: 0.315,0.306,0.126,0.079,-0.096,-0.008,0.014,-0.105,0.011,0.127
-Recv: 0.444,0.362,0.162,0.084,-0.160,-0.100,-0.074,-0.079,0.038,0.154
-Recv: 0.506,0.293,0.195,0.274,0.093,-0.040,0.040,-0.083,-0.131,-0.131
-Recv: 0.583,0.265,0.174,0.517,0.042,-0.021,-0.083,-0.094,-0.130,-0.130
-Recv: 0.425,0.267,0.270,0.370,0.073,-0.125,-0.075,-0.057,-0.056,-0.056
-Recv: 0.499,0.356,0.280,0.266,0.056,0.053,-0.021,0.120,-0.171,-0.171
-Recv: 0.438,0.265,0.188,-0.154,0.141,0.005,-0.041,-0.117,-0.135,-0.135
+Recv: (0,9)                                                                   (9,9)
+Recv: (30,270)                                                                (270,270)
+Recv:  -0.452   -0.319   -0.237    0.287    0.140    0.139    0.136    0.317    0.247    0.247
+Recv: 
+Recv:  -0.195   -0.273   -0.180   -0.178    0.014    0.018    0.111    0.214    0.210    0.210
+Recv: 
+Recv:  -0.270   -0.252   -0.151   -0.119    0.009    0.016    0.072    0.249    0.224    0.224
+Recv: 
+Recv:  -0.307   -0.205   -0.163   -0.124   -0.094   -0.002    0.036    0.151    0.174    0.196
+Recv: 
+Recv:  -0.186   -0.130   -0.152   -0.105   -0.144   -0.007    0.044    0.093    0.181    0.270
+Recv: 
+Recv:  -0.010   -0.077   -0.073    0.155   -0.006   -0.133    0.110    0.046    0.109    0.173
+Recv: 
+Recv:   0.059   -0.094   -0.072   -0.002   -0.006    0.037    0.050    0.065    0.124    0.184
+Recv: 
+Recv:  -0.057   -0.028    0.039    0.028    0.024    0.005    0.102    0.165    0.176    0.187
+Recv: 
+Recv:   0.067    0.015    0.096    0.117    0.001    0.079    0.138    0.346    0.185    0.185
+Recv: 
+Recv: [ 0.071]   0.014    0.061   -0.127    0.167    0.040    0.098    0.195    0.194    0.194
+Recv: (30,30)                                                                    (270,30)
+Recv: (0,0)                                                                     (9,0)
 Recv: ok P15 B3
 ```
 
@@ -42,6 +55,10 @@ or manually using this URL:
 
 **Added**
   - Timestamp stored with saved mesh data.  Displays on mouse hover of info graphic on update button.
+  
+**Changed**
+  - Screenshots updated to make settings a little clearer.
+  - Visibility bindings fixed for issues related to new installs and no stored data.
 
 **[0.0.5]** (04/18/2018)
 
