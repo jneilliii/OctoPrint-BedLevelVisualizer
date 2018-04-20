@@ -38,6 +38,11 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.0.6]** (04/19/2018)
+
+**Added**
+  - Timestamp stored with saved mesh data.  Displays on mouse hover of info graphic on update button.
+
 **[0.0.5]** (04/18/2018)
 
 **Added**
@@ -74,6 +79,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.0.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.6
 [0.0.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.5
 [0.0.4]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.4
 [0.0.3]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.3
