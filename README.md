@@ -51,6 +51,11 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.0.7]** (04/20/218)
+
+**Changed**
+  - Description in Plugin Manager.
+
 **[0.0.6]** (04/19/2018)
 
 **Added**
@@ -96,6 +101,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.0.7]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.7
 [0.0.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.6
 [0.0.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.5
 [0.0.4]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.4
