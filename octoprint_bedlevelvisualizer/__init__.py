@@ -15,7 +15,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 	
 	##~~ SettingsPlugin
 	def get_settings_defaults(self):
-		return dict(command="G28\nG29 T",stored_mesh=[],save_mesh=True,prusa_mode=False,mesh_timestamp="",report_flag="",report_types=["Bed Topography Report:","Bilinear Leveling Grid:","Subdivided with CATMULL ROM Leveling Grid:","Measured points:"])
+		return dict(command="G28\nG29 T",stored_mesh=[],save_mesh=True,prusa_mode=False,mesh_timestamp="",report_flag="",report_types=["Bed Topography Report:","Bed Topography Report for CSV:","Bilinear Leveling Grid:","Subdivided with CATMULL ROM Leveling Grid:","Measured points:"])
 
 	##~~ StartupPlugin
 	def on_after_startup(self):
@@ -34,13 +34,20 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self.mesh = []
 			return line
 			
-		if self.processing and "ok" not in line and re.match(r"\s?\d?\s?(\+?-?\[?\s?\d+.\d+[\]?,?\s?]+)+", line.strip()):
+		if self.processing and "ok" not in line and re.match(r"^((\d\s)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
 			self._logger.info(line.strip());
-			new_line = re.sub(r"< \d+:\d+:\d+(\s+(AM|PM))?:","",line.strip())
-			new_line = re.sub(r"[\[\]]\s?","",new_line)
-			new_line = re.sub(r"\s+"," ",new_line)
-			new_line = re.sub(r"\s+","\t",new_line)
-			new_line = new_line.split("\t")			
+			# new_line = re.sub(r"< \d+:\d+:\d+(\s+(AM|PM))?:","",line.strip())
+			# new_line = re.sub(r"[\[\]]\s?","",new_line)
+			# new_line = re.sub(r"\s+"," ",new_line)
+			# new_line = re.sub(r"\s+","\t",new_line)
+			
+			new_line = re.sub(r"\[ +","",line.strip())
+			new_line = re.sub(r"[\]NA]","",new_line)
+			new_line = re.sub(r"( +)|\,","\t",new_line)
+			new_line = re.sub(r"(\.\t)","\t",new_line)
+			new_line = re.sub(r"\.$","",new_line)
+			new_line = new_line.split("\t")
+			
 			self._logger.info("converted to:")
 			self._logger.info(new_line)
 			

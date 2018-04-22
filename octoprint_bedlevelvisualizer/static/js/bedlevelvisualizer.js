@@ -79,7 +79,12 @@ $(function () {
 				};
 				Plotly.react('bedlevelvisualizergraph', data, layout);
 			} catch(err) {
-				console.log('No data to graph, verify "Data Collector Flag" in settings then press Update button.');
+				new PNotify({
+						title: 'Bed Visualizer Error',
+						text: '<div class="row-fluid">Looks like your settings are not correct or there was an error.  Please see the <a href="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/blob/master/README.md">Readme</a> for configuration hints.</div><pre>'+err+'</pre>',
+						type: 'error',
+						hide: false
+						});
 			}
 		};
 
