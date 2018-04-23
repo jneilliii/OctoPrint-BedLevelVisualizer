@@ -2,7 +2,10 @@
 <form class="form-horizontal">
 <div class="control-group">
 	<label for="bedlevelvisualizer_report_flag"><i class="icon icon-info-sign" title="Message received just prior to mesh data"></i> Data Collector Flag</label>
-	<input class="input-block-level" type="text" id="bedlevelvisualizer_report_flag" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.report_flag" placeholder="Bed Topography Report:,Bilinear Leveling Grid:,Subdivided with CATMULL ROM Leveling Grid:"></input>
+	<input class="input-block-level" type="text" id="bedlevelvisualizer_report_flag" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.report_flag"></input>
+	<div class="row-fluid"><b>Common Examples:</b></br>
+			<ul data-bind="foreach: settingsViewModel.settings.plugins.bedlevelvisualizer.report_types"><li data-bind="text: $data"></li></ul>
+	</div>
 </div>
 <div class="control-group">
 	<label for="bedlevelvisualizer_command"><i class="icon icon-info-sign" title="GCODE commands to send to printer to retrieve grid data"></i> GCODE Commands</label>

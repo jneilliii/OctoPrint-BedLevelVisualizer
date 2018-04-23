@@ -51,6 +51,17 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.0.8]** (04/22/2018)
+
+**Added**
+  - Pop-up notification on error.
+
+**Changed**
+  - Removed placeholder attribute on  Data Collector Flag to make it more obvious there's nothing typed in it.
+
+**Fixed**
+  - Delta printers not collecting mesh data points.
+
 **[0.0.7]** (04/20/218)
 
 **Changed**
@@ -101,6 +112,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.0.8]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.8
 [0.0.7]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.7
 [0.0.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.6
 [0.0.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.5
@@ -112,3 +124,4 @@ or manually using this URL:
 ## To-Do
 - [ ] Pause standard OctoPrint temperature polling or squash the responses until processing is completed.
 - [ ] Orientation testing to verify axes are in correct direction.
+- [ ] Calculate bed dimensions and apply to probe points for display on graph, #28.
