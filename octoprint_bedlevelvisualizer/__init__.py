@@ -41,7 +41,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			# new_line = re.sub(r"\s+"," ",new_line)
 			# new_line = re.sub(r"\s+","\t",new_line)
 			
-			new_line = re.sub(r"\[ +","",line.strip())
+			new_line = re.sub(r"(\[ ?)+","",line.strip())
 			new_line = re.sub(r"[\]NA]","",new_line)
 			new_line = re.sub(r"( +)|\,","\t",new_line)
 			new_line = re.sub(r"(\.\t)","\t",new_line)

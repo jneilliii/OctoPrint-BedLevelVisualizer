@@ -34,7 +34,7 @@ $(function () {
 			if (plugin !== "bedlevelvisualizer") {
 				return;
 			}
-			if (mesh_data.mesh) {
+			if (mesh_data.mesh.length > 0) {
 				console.log(mesh_data.mesh);
 				self.drawMesh(mesh_data.mesh,true);
 			}
@@ -94,13 +94,13 @@ $(function () {
 					if (self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting()) {
 						self.updateMesh();
 					}
-				} else {
+				} else if (self.mesh_data().length > 0) {
 					self.drawMesh(self.mesh_data());
 				}
 				return;
 			}
 			
-			if (current === "#tab_plugin_bedlevelvisualizer" && self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting() && self.loginStateViewModel.isUser() && !self.processing()) {
+/* 			if (current === "#tab_plugin_bedlevelvisualizer" && self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting() && self.loginStateViewModel.isUser() && !self.processing()) {
 				if (!self.save_mesh()) {
 					self.updateMesh();
 				} else {
@@ -111,7 +111,7 @@ $(function () {
 					}
 				}
 				return;
-			}
+			} */
 			
 			if (previous === "#tab_plugin_bedlevelvisualizer") {
 				//Plotly.purge('bedlevelvisualizergraph');
