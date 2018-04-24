@@ -1,10 +1,6 @@
 # OctoPrint-BedLevelVisualizer
 
-![screenshot](screenshot.png)
-
-This plugin utilizes [Plotly](https://plot.ly/plotly-js-scientific-d3-charting-library/) js library to render a 3D surface of the bed's reported mesh on a tab within OctoPrint.
-
-**Note:** If you have Marlin's Auto Temperature Reporting Feature enabled you will want to have M155 S30 and M155 S3 surrounding your G29 command, see settings screenshot, otherwise the collected data will be tainted.
+This plugin utilizes [Plotly](https://plot.ly/plotly-js-scientific-d3-charting-library/) js library to render a 3D surface of the bed's reported mesh on a tab within OctoPrint. It converts this
 
 ```
 Send: G29 T
@@ -37,6 +33,13 @@ Recv: (30,30)                                                                   
 Recv: (0,0)                                                                     (9,0)
 Recv: ok P15 B3
 ```
+into this
+
+![screenshot](screenshot.png)
+
+## Known Issues
+  - If you have Marlin's Auto Temperature Reporting Feature enabled you will want to have M155 S30 and M155 S3 surrounding your G29 command, see settings screenshot, otherwise the collected data will be tainted.
+  - Currently there is a conflict with the TempsGraph plugin.  If you have this plugin installed you will receive an error that Plotyle.react is not a function.  There is a version update pending on that plugin to resolve this issue, just waiting on the author to release.
 
 ## Settings
 
