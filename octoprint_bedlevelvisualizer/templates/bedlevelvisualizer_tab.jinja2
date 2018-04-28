@@ -6,8 +6,24 @@
 </style>
 <div class="row-fluid" id="bedlevelvisualizerwait" style="text-align: center;font-size: 25px;vertical-align: middle;" data-bind="visible: processing()"><i class="icon-spinner icon-spin icon-3"></i> <b>Please wait, retrieving current mesh.</b></div>
 <div class="row-fluid" id="bedlevelvisualizerwarning" style="text-align: center;font-size: 25px;vertical-align: middle;" data-bind="visible: !loginStateViewModel.isUser()"><i class="icon-warning-sign icon-3" style="color:red"></i> <b>You must be logged in.</b></div>
-<div class="row-fluid" id="bedlevelvisualizernocollector" style="text-align: center;font-size: 25px;vertical-align: middle;" data-bind="visible: settingsViewModel.settings.plugins.bedlevelvisualizer.report_flag() == '' && loginStateViewModel.isUser()"><i class="icon-warning-sign icon-3" style="color:red"></i> Missing "Data Collector Flag" setting.  Please see the <a href="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/blob/master/README.md">Readme</a> for configuration hints.</div>
-<div class="row-fluid" data-bind="visible: (loginStateViewModel.isUser() && !processing() && settingsViewModel.settings.plugins.bedlevelvisualizer.report_flag() !== '')">
+<div class="row_fluid" id="bedlevelvisualizercommandmissing" data-bind="visible: settingsViewModel.settings.plugins.bedlevelvisualizer.command() == ''">
+	<div class="row_fluid">
+		<p>In order for this plugin to work properly, you must configure the GCODE commands necessary to send back a Bed Topography Report. Common examples are listed below.</p>
+		<ul>
+			<li>G29 T</li>
+			<li>G81</li>
+			<li>M420 V</li>
+		</ul>
+		<p>If you run into any problems please check the <a href="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues?utf8=%E2%9C%93&q=is%3Aissue" target="_blank">Issues</a> for possible fixes or report a bug.</p>
+	</div>
+	<div class="row_fluid">
+		<div class="control-group">
+			<label for="bedlevelvisualizer_command"><i class="icon icon-info-sign" title="GCODE commands to send to printer to retrieve grid data" data-toggle="tooltip"></i> GCODE Commands</label>
+			<textarea class="input-block-level" id="bedlevelvisualizer_command" rows="4" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.command"></textarea>
+		</div>
+	</div>
+</div>
+<div class="row-fluid" data-bind="visible: loginStateViewModel.isUser() && !processing() && settingsViewModel.settings.plugins.bedlevelvisualizer.command() !== ''">
 	<div class="row-fluid" id="bedlevelvisualizergraph"></div>
-	<div class="row-fluid" id="bedlevelvisualizerbutton" style="text-align: center;padding-top: 20px;"><button class="btn" data-bind="click: updateMesh,enable: controlViewModel.isOperational() && !controlViewModel.isPrinting() && loginStateViewModel.isUser() && !processing() && settingsViewModel.settings.plugins.bedlevelvisualizer.report_flag() !== ''"><i class="icon-2 icon-info-sign" data-bind="attr: {'title': mesh_status}"></i> Update</button></div>
+	<div class="row-fluid" id="bedlevelvisualizerbutton" style="text-align: center;padding-top: 20px;"><button class="btn" data-bind="click: updateMesh,enable: controlViewModel.isOperational() && !controlViewModel.isPrinting() && loginStateViewModel.isUser() && !processing() && settingsViewModel.settings.plugins.bedlevelvisualizer.command() !== ''"><i class="icon-2 icon-info-sign" data-bind="attr: {'title': mesh_status}" data-toggle="tooltip"></i> Update</button></div>
 </div>
