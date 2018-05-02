@@ -1,24 +1,43 @@
-<h4>Bed Visualizer Settings</h4>
-<form class="form-horizontal">
-<div class="control-group">
-	<label for="bedlevelvisualizer_report_flag"><i class="icon icon-info-sign" title="Message received just prior to mesh data"></i> Data Collector Flag</label>
-	<input class="input-block-level" type="text" id="bedlevelvisualizer_report_flag" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.report_flag"></input>
-	<div class="row-fluid"><b>Common Examples:</b></br>
-			<ul data-bind="foreach: settingsViewModel.settings.plugins.bedlevelvisualizer.report_types"><li data-bind="text: $data"></li></ul>
+<div class="container span12">
+	<div class="tabbable">
+		<h4>Bed Visualizer Settings</h4>
+		<ul class="nav nav-tabs" id="bedlevelvisualizer_tabs">
+			<li class="active"><a data-toggle="tab" href="#bedlevelvisualizer_general">General</a></li>
+			<li><a data-toggle="tab" href="#bedlevelvisualizer_stored_data">Stored Data</a></li>
+		</ul>
+		<div class="tab-content">
+			<div id="bedlevelvisualizer_general" class="tab-pane active">
+				<div class="control-group">
+					<label for="bedlevelvisualizer_command"><i class="icon icon-info-sign" title="GCODE commands to send to printer to retrieve grid data" data-toggle="tooltip"></i> GCODE Commands</label>
+					<textarea class="input-block-level" id="bedlevelvisualizer_command" rows="4" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.command"></textarea>
+					<p style="padding-top: 5px;">If you experience issues with data collection try entering <span class="label">@BEDLEVELVISUALIZER</span> just prior to the command that sends back the mesh data.</p>
+				</div>
+				<div class="row-fluid">
+					<div class="control-group span4">
+						<i class="icon icon-info-sign" title="Save/Load mesh data to/from config.yaml" data-toggle="tooltip"></i> Save Mesh <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_save_mesh" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh" style="display: inline-block;margin-bottom: 5px;"></input>
+					</div>
+					<div class="control-group span4">
+						<i class="icon icon-info-sign" title="Flip the mesh data in the X direction." data-toggle="tooltip"></i> Flip X Axis <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_flipX" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.flipX" style="display: inline-block;margin-bottom: 5px;"></input>
+					</div>
+				</div>
+				<div class="row-fluid">
+					<div class="control-group span4">
+						<i class="icon icon-info-sign" title="Remove row labeling from mesh data." data-toggle="tooltip"></i> Remove Row Labels <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_stripFirst" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.stripFirst" style="display: inline-block;margin-bottom: 5px;"></input>
+					</div>
+					<div class="control-group span4">
+						<i class="icon icon-info-sign" title="Flip the mesh data in the Y direction." data-toggle="tooltip"></i> Flip Y Axis <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_flipY" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.flipY" style="display: inline-block;margin-bottom: 5px;"></input>
+					</div>
+				</div>
+			</div>
+			<div id="bedlevelvisualizer_stored_data" class="tab-pane">
+				<div class="row-fluid">
+					<pre class="span1" id="bedlevelvisualizer_data_y" title="Stored Y Values" data-toggle="tooltip" data-bind="text: settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y().join('\n')"></pre>
+					<pre class="span11" id="bedlevelvisualizer_data_z" title="Stored Z Values" data-toggle="tooltip" data-bind="text: settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().join('\n').replace(/,/g,'\t')"></pre>
+				</div>
+				<div class="row-fluid">
+					<pre class="span11 offset1" id="bedlevelvisualizer_data_x" title="Stored X Values" data-toggle="tooltip" data-bind="text: settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x().join('\t')"></pre>          
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
-<div class="control-group">
-	<label for="bedlevelvisualizer_command"><i class="icon icon-info-sign" title="GCODE commands to send to printer to retrieve grid data"></i> GCODE Commands</label>
-	<textarea class="input-block-level" id="bedlevelvisualizer_command" rows="4" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.command"></textarea>
-</div>
-<div class="control-group">
-	<i class="icon icon-info-sign" title="Save/Load mesh data to/from config.yaml"></i> Save Mesh <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_save_mesh" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh" style="display: inline-block;margin-bottom: 5px;"></input>
-</div>
-<div class="control-group">
-	<i class="icon icon-info-sign" title="Enable to support Prusa Firmware"></i> Prusa Firmware Mode <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_prusa_mode" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.prusa_mode" style="display: inline-block;margin-bottom: 5px;"></input>
-</div>
-<div class="control-group">
-	<label for="bedlevelvisualizer_command">Stored Mesh Data:</label>
-	<pre id="bedlevelvisualizer_data" data-bind="text: settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().join('\n').replace(/,/g,'\t')"></pre>
-</div>
-<form>

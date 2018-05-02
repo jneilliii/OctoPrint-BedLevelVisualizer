@@ -43,7 +43,22 @@ into this
 
 ## Settings
 
-![screenshot](settings.png)
+![screenshot](settings_general.png)
+
+![screenshot](settings_stored_mesh.png)
+
+## Tips
+  - If your leveling method requires homing first make sure to enter that as well in the GCODE Commands setting.
+  - If you have Marlin's Auto Temperature Reporting feature enabled you will want to have M155 S30 and M155 S3 surrounding your reporting GCODE command, otherwise the collected data will be tainted with temperature information.
+  - If you end up requiring multiple commands it is recommended to enter `@BELEVELVISUALIZER` just prior to the reporting command.
+
+    ~~~
+	G28	
+    M155 S30	
+    @BEDLEVELVISUALIZER	
+    G29 T	
+    M155 S3
+	~~~
 
 ## Setup
 
@@ -53,6 +68,26 @@ or manually using this URL:
     https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/master.zip
 
 ## Changelog
+
+**[0.1.0]** (05/02/2018)
+
+**Added**
+  - Flip X/Y settings added to allow changing the orientation of the surface displayed.
+  - Added Remove Row Labels in order to shift the mesh data to account for some reports that return an index at the beginning of the line.
+  - Added bootstrap tooltips to info icons.
+  - Wizard added on install to explain/enter the GCODE commands and demonstrate how to use the `@BEDLEVELVISUALIZER` command.
+
+**Changed**
+  - Improved graph display by reading build volume from printer profile settings.
+  - Fixed Z range on graph between -2mm and 2mm.
+  - Updated settings dialog for new options and moved stored data to it's own tab.
+  - Simiplified data extraction regular expression.
+  - Data collection now triggered based on sending the GCODE command `@BEDLEVELVISUALIZER`.
+  
+**Removed**
+  - Prusa Firmware mode no longer necessary due to added options listed above.
+
+**0.0.9** (skipped)
 
 **[0.0.8]** (04/22/2018)
 
@@ -115,6 +150,8 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.1.0]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.0
+[0.0.9]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.9
 [0.0.8]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.8
 [0.0.7]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.7
 [0.0.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.6
@@ -126,5 +163,10 @@ or manually using this URL:
 
 ## To-Do
 - [ ] Pause standard OctoPrint temperature polling or squash the responses until processing is completed.
-- [ ] Orientation testing to verify axes are in correct direction.
-- [ ] Calculate bed dimensions and apply to probe points for display on graph, #28.
+- [X] ~~Orientation testing to verify axes are in correct direction.~~ added settings to allow controlling the orientation.
+- [X] Calculate bed dimensions and apply to probe points for display on graph, #28.
+
+## Support My Efforts
+I programmed this plugin for fun and do my best effort to support those that have issues with it, please return the favor and support me.
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/jneilliii)
