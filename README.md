@@ -69,6 +69,10 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.1.1]** (06/01/2018)
+**Changed**
+  - Mobile detection in plotly js library to also detect iPad as webgl device.
+
 **[0.1.0]** (05/02/2018)
 
 **Added**
@@ -150,6 +154,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.1.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.1
 [0.1.0]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.0
 [0.0.9]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.9
 [0.0.8]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.8
