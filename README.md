@@ -69,6 +69,11 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.1.2]** (06/09/2018)
+
+**Added**
+  - Display of last mesh timestamp above Update button.
+
 **[0.1.1]** (06/01/2018)
 
 **Changed**
@@ -155,6 +160,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.1.2]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.2
 [0.1.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.1
 [0.1.0]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.0
 [0.0.9]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.9
@@ -173,6 +179,8 @@ or manually using this URL:
 - [X] Calculate bed dimensions and apply to probe points for display on graph, #28.
 
 ## Support My Efforts
-I programmed this plugin for fun and do my best effort to support those that have issues with it, please return the favor and support me.
+I, jneilliii, programmed this plugin for fun and do my best effort to support those that have issues with it, please return the favor and leave me a tip if you find this plugin helpful.
 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://paypal.me/jneilliii)
+[![paypal](https://jneilliii.github.io/images/paypal-with-text.png)](https://paypal.me/jneilliii)
+
+<small>No paypal.me? Send funds via PayPal to jneilliii&#64;gmail&#46;com</small>
