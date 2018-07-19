@@ -50,7 +50,7 @@ into this
 ## Tips
   - If your leveling method requires homing first make sure to enter that as well in the GCODE Commands setting.
   - If you have Marlin's Auto Temperature Reporting feature enabled you will want to have M155 S30 and M155 S3 surrounding your reporting GCODE command, otherwise the collected data will be tainted with temperature information.
-  - If you end up requiring multiple commands it is recommended to enter `@BELEVELVISUALIZER` just prior to the reporting command.
+  - If you end up requiring multiple commands it is recommended to enter `@BEDLEVELVISUALIZER` just prior to the reporting command.
 
     ~~~
 	G28	
