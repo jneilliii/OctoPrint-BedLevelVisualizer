@@ -73,7 +73,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			
 			new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
 			
-			if re.match(r"^Bed.+$", line.strip()):
+			if re.match(r"^Bed x:.+$", line.strip()):
 				self.old_marlin = True
 						
 			if self._settings.get(["stripFirst"]):

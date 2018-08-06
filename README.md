@@ -69,6 +69,9 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.1.4]** (08/06/2018)
+  - Fixed issue introduced with previous updates.
+
 **[0.1.3]** (08/05/2018)
 
 **Added**
