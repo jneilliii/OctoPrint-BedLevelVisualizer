@@ -69,6 +69,11 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.1.3]** (08/05/2018)
+
+**Added**
+  - Recognition of older bed reports to work for some users.  Should now work with reports that return lines like `Bed x: 40.00 y: 20.00 z: 7.31`.
+
 **[0.1.2]** (06/09/2018)
 
 **Added**
@@ -160,6 +165,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.1.3]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.3
 [0.1.2]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.2
 [0.1.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.1
 [0.1.0]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.0

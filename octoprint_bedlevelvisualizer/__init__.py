@@ -3,6 +3,7 @@ from __future__ import absolute_import
 
 import octoprint.plugin
 import re
+import numpy as np
 
 class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.TemplatePlugin,
@@ -12,6 +13,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				
 	def __init__(self):
 		self.processing = False
+		self.old_marlin = False
+		self.old_marlin_offset = 0
 		self.mesh = []
 	
 	##~~ SettingsPlugin
@@ -60,7 +63,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		return
 	
 	def processGCODE(self, comm, line, *args, **kwargs):
-		if self.processing and "ok" not in line and re.match(r"^((\d+\s)|(\|\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
+		if self.processing and "ok" not in line and re.match(r"^((Bed.+)|(\d+\s)|(\|\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
 			# new_line = re.sub(r"(\[ ?)+","",line.strip())
 			# new_line = re.sub(r"[\]NA\)\(]","",new_line)
 			# new_line = re.sub(r"( +)|\,","\t",new_line)
@@ -69,6 +72,9 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			# new_line = new_line.split("\t")
 			
 			new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
+			
+			if re.match(r"^Bed.+$", line.strip()):
+				self.old_marlin = True
 						
 			if self._settings.get(["stripFirst"]):
 				new_line.pop(0)
@@ -78,14 +84,18 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self.mesh.append(new_line)
 			return line
 			
+		if self.processing and self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
+			self.old_marlin_offset = re.sub("^(Eqn coefficients:.+)(\d+.\d+)$",r"\2", line.strip())
+			
 		if self.processing and "Home XYZ first" in line:
 			self._plugin_manager.send_plugin_message(self._identifier, dict(error=line.strip()))
 			self.processing = False
 			return line
 		
-		if self.processing and "ok" in line and len(self.mesh) > 0:		
+		if self.processing and "ok" in line and len(self.mesh) > 0:
 			octoprint_printer_profile = self._printer_profile_manager.get_current()
 			volume = octoprint_printer_profile["volume"]
+			bed_type = volume["formFactor"]			
 			custom_box = volume["custom_box"]
 			# see if we have a custom bounding box
 			if custom_box:
@@ -102,9 +112,21 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				max_y = volume["depth"]
 				min_z = 0
 				max_z = volume["height"]
-			bed_type = octoprint_printer_profile["volume"]["formFactor"]
 			
 			bed = dict(type=bed_type,x_min=min_x,x_max=max_x,y_min=min_y,y_max=max_y,z_min=min_z,z_max=max_z)
+			
+			if self.old_marlin:
+				a = np.swapaxes(self.mesh,1,0)
+				x = np.unique(a[0]).astype(np.float)
+				y = np.unique(a[1]).astype(np.float)
+				z = a[2].reshape((len(x),len(y)))
+				self._logger.debug(a)
+				self._logger.debug(x)
+				self._logger.debug(y)
+				self._logger.debug(z)
+				self._logger.debug(self.old_marlin_offset)
+				self.mesh = np.subtract(z, [self.old_marlin_offset], dtype=np.float, casting='unsafe').tolist()
+				self._logger.debug(self.mesh)
 		
 			self.processing = False
 			if self._settings.get(["flipY"]):
