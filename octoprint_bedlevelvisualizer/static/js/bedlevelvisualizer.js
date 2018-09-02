@@ -48,20 +48,22 @@ $(function () {
 				if (mesh_data.mesh.length > 0) {
 					var x_data = [];
 					var y_data = [];
-					for(i = mesh_data.bed.x_min;i <= mesh_data.bed.x_max;i += mesh_data.bed.x_max/(mesh_data.mesh[0].length - 1)){
-						if(mesh_data.bed.type == "circular"){
-							x_data.push(Math.round((i - mesh_data.bed.x_max/2)));
+					
+					for(var i = 0;i <= (mesh_data.mesh[0].length - 1);i++){
+						if((mesh_data.bed.type == "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()){
+							x_data.push(Math.round(mesh_data.bed.x_min - (mesh_data.bed.x_max/2)+i/(mesh_data.mesh[0].length - 1)*(mesh_data.bed.x_max - mesh_data.bed.x_min)));
 						} else {
-							x_data.push(Math.round(i));
+							x_data.push(Math.round(mesh_data.bed.x_min+i/(mesh_data.mesh[0].length - 1)*(mesh_data.bed.x_max - mesh_data.bed.x_min)));
 						}
-					}
-					for(i = mesh_data.bed.y_min;i <= mesh_data.bed.y_max;i += mesh_data.bed.y_max/(mesh_data.mesh.length -1)){
-						if(mesh_data.bed.type == "circular"){
-							y_data.push(Math.round((i - mesh_data.bed.y_max/2)));
+					};
+					
+					for(var i = 0;i <= (mesh_data.mesh.length - 1);i++){
+						if((mesh_data.bed.type == "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()){
+							y_data.push(Math.round(mesh_data.bed.y_min - (mesh_data.bed.y_max/2)+i/(mesh_data.mesh.length - 1)*(mesh_data.bed.y_max - mesh_data.bed.y_min)));
 						} else {
-							y_data.push(Math.round(i));
+							y_data.push(Math.round(mesh_data.bed.y_min+i/(mesh_data.mesh.length - 1)*(mesh_data.bed.y_max - mesh_data.bed.y_min)));
 						}
-					}
+					};
 					
 					self.drawMesh(mesh_data.mesh,true,x_data,y_data,mesh_data.bed.z_max);
 				}

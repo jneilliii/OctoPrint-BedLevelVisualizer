@@ -28,7 +28,9 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			mesh_timestamp="",
 			flipX=False,
 			flipY=False,
-			stripFirst=False)
+			stripFirst=False,
+			use_center_origin=False,
+			use_relative_offsets=False)
 
 	##~~ StartupPlugin
 	def on_after_startup(self):
@@ -131,6 +133,14 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self.processing = False
 			if self._settings.get(["flipY"]):
 				self.mesh.reverse()
+				
+			if self._settings.get(["use_relative_offsets"]):
+				self.mesh = np.array(self.mesh)
+				if self._settings.get(["use_center_origin"]):
+					self.mesh = np.subtract(self.mesh, self.mesh[len(self.mesh[0])/2,len(self.mesh)/2], dtype=np.float, casting='unsafe').tolist()
+				else:
+					self.mesh = np.subtract(self.mesh, self.mesh[0,0], dtype=np.float, casting='unsafe').tolist()
+			
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh,bed=bed))
 		
 		return line

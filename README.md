@@ -38,6 +38,7 @@ into this
 ![screenshot](screenshot.png)
 
 ## Known Issues
+  - Since version 0.1.3 there is a python dependency on numpy.  As a result; if you don't already have numpy the install can take in excess of 30 minutes to complete on a pi. Just be patient and let it run and eventually the plugin install will finish.
   - If you have Marlin's Auto Temperature Reporting Feature enabled you will want to have M155 S30 and M155 S3 surrounding your G29 command, see settings screenshot, otherwise the collected data will be tainted.
   - ~~Currently there is a conflict with the TempsGraph plugin.  If you have this plugin installed you will receive an error that Plotyle.react is not a function.  There is a version update pending on that plugin to resolve this issue, just waiting on the author to release.~~ Resolved with TempsGraph release [0.3.3](https://github.com/1r0b1n0/OctoPrint-Tempsgraph/releases/tag/0.3.3).
 
@@ -69,8 +70,19 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.1.5]** (09/03/2018)
+
+**Added**
+  - Option to make center of bed the origin point per request.  Helpful when using a fixed center leveling system as described [here](https://github.com/PrusaOwners/prusaowners/wiki/Bed_Leveling_without_Wave_Springs).
+  - Option to make measured offsets relative to origin position, related to above addition but could be useful elsewhere.
+  
+**Changed**
+  - X/Y axis calculations to resolve bug discovered during above changes where if your leveling grid was based on an odd number of probe points the maximum perimeters were getting dropped due to rounding errors.
+  
 **[0.1.4]** (08/06/2018)
-  - Fixed issue introduced with previous updates.
+
+**Fixed**
+  - Issue introduced with previous update that was causing some leveling reports to not be identified correctly.
 
 **[0.1.3]** (08/05/2018)
 
@@ -168,6 +180,8 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.1.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.5
+[0.1.4]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.4
 [0.1.3]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.3
 [0.1.2]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.2
 [0.1.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.1
