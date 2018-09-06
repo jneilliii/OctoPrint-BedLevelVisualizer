@@ -70,6 +70,11 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.1.6]** (09/06/2018)
+
+**Added**
+  - Repetier firmware support thanks to @gztproject.
+
 **[0.1.5]** (09/03/2018)
 
 **Added**
@@ -180,6 +185,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.1.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.6
 [0.1.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.5
 [0.1.4]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.4
 [0.1.3]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.3

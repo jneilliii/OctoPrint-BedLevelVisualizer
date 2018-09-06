@@ -15,6 +15,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self.processing = False
 		self.old_marlin = False
 		self.old_marlin_offset = 0
+		self.repetier_firmware = False		
 		self.mesh = []
 	
 	##~~ SettingsPlugin
@@ -65,7 +66,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		return
 	
 	def processGCODE(self, comm, line, *args, **kwargs):
-		if self.processing and "ok" not in line and re.match(r"^((Bed.+)|(\d+\s)|(\|\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
+		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
 			# new_line = re.sub(r"(\[ ?)+","",line.strip())
 			# new_line = re.sub(r"[\]NA\)\(]","",new_line)
 			# new_line = re.sub(r"( +)|\,","\t",new_line)
@@ -77,6 +78,9 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			
 			if re.match(r"^Bed x:.+$", line.strip()):
 				self.old_marlin = True
+				
+			if re.match(r"^G33 X.+$", line.strip()):
+				self.repetier_firmware = True
 						
 			if self._settings.get(["stripFirst"]):
 				new_line.pop(0)
@@ -88,13 +92,13 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			
 		if self.processing and self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
 			self.old_marlin_offset = re.sub("^(Eqn coefficients:.+)(\d+.\d+)$",r"\2", line.strip())
-			
+						
 		if self.processing and "Home XYZ first" in line:
 			self._plugin_manager.send_plugin_message(self._identifier, dict(error=line.strip()))
 			self.processing = False
 			return line
 		
-		if self.processing and "ok" in line and len(self.mesh) > 0:
+		if self.processing and ("ok" in line or (self.repetier_firmware and "T:" in line)) and len(self.mesh) > 0:
 			octoprint_printer_profile = self._printer_profile_manager.get_current()
 			volume = octoprint_printer_profile["volume"]
 			bed_type = volume["formFactor"]			
@@ -117,7 +121,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			
 			bed = dict(type=bed_type,x_min=min_x,x_max=max_x,y_min=min_y,y_max=max_y,z_min=min_z,z_max=max_z)
 			
-			if self.old_marlin:
+			if self.old_marlin or self.repetier_firmware:
 				a = np.swapaxes(self.mesh,1,0)
 				x = np.unique(a[0]).astype(np.float)
 				y = np.unique(a[1]).astype(np.float)
@@ -126,8 +130,11 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self._logger.debug(x)
 				self._logger.debug(y)
 				self._logger.debug(z)
-				self._logger.debug(self.old_marlin_offset)
-				self.mesh = np.subtract(z, [self.old_marlin_offset], dtype=np.float, casting='unsafe').tolist()
+				offset = 0
+				if self.old_marlin:
+					offset = self.old_marlin_offset
+				self._logger.debug(offset)
+				self.mesh = np.subtract(z, [offset], dtype=np.float, casting='unsafe').tolist()
 				self._logger.debug(self.mesh)
 		
 			self.processing = False
