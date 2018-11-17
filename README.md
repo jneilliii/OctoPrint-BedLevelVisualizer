@@ -70,6 +70,12 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.1.7]** (11/24/2018)
+
+**Added**
+  - New timeout setting that will unlock `processing` UI after given seconds.  If processing takes longer to complete due to full probing requirements or some other reason set this to a higher value.
+  - Toggle button in toolbar to enable click events on surface to move the hot end to that position.
+
 **[0.1.6]** (09/06/2018)
 
 **Added**
@@ -185,6 +191,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.1.7]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.7
 [0.1.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.6
 [0.1.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.5
 [0.1.4]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.4

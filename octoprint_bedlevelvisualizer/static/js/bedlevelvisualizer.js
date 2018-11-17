@@ -82,6 +82,7 @@ $(function () {
 
 		self.drawMesh = function (mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height) {
 			// console.log(mesh_data_z+'\n'+store_data+'\n'+mesh_data_x+'\n'+mesh_data_y+'\n'+mesh_data_z_height);
+			clearTimeout(self.timeout);
 			self.processing(false);
 			if(self.save_mesh()){
 				if(store_data){
@@ -125,7 +126,31 @@ $(function () {
 						}
 					}
 				};
-				Plotly.react('bedlevelvisualizergraph', data, layout);
+				
+				var config_options = {
+					modeBarButtonsToRemove: ['resetCameraLastSave3d'],
+					modeBarButtonsToAdd: [{
+					name: 'Move Nozzle',
+					icon: Plotly.Icons.autoscale,
+					toggle: true,
+					click: function(gd, ev) {
+						var button = ev.currentTarget;
+						var button_enabled = button._previousVal || false;
+						if(!button_enabled){
+							gd.on('plotly_click', function(data){
+									var gcode_command = 'G1 X' + data.points[0].x + ' Y' + data.points[0].y
+									OctoPrint.control.sendGcode([gcode_command]);
+								});
+							button._previousVal = true;
+						} else {
+							gd.removeAllListeners('plotly_click');
+							button._previousVal = null;
+						}
+					}
+					}]
+				}
+				
+				Plotly.react('bedlevelvisualizergraph', data, layout, config_options);
 			} catch(err) {
 				new PNotify({
 						title: 'Bed Visualizer Error',
@@ -155,6 +180,7 @@ $(function () {
 
 		self.updateMesh = function () {
 			self.processing(true);
+			self.timeout = setTimeout(function(){self.processing(false);new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before prcessing completed. Processing may still be running or there may be a configuration error. Consider increasing the timeout value in settings.</div>',type: 'info',hide: true});}, (parseInt(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout())*1000));
 			var gcode_cmds = self.settingsViewModel.settings.plugins.bedlevelvisualizer.command().split("\n");
 			if (gcode_cmds.indexOf("@BEDLEVELVISUALIZER") == -1){
 				gcode_cmds = ["@BEDLEVELVISUALIZER"].concat(gcode_cmds);

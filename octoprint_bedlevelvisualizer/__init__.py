@@ -31,7 +31,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			flipY=False,
 			stripFirst=False,
 			use_center_origin=False,
-			use_relative_offsets=False)
+			use_relative_offsets=False,
+			timeout=60)
 
 	##~~ StartupPlugin
 	def on_after_startup(self):
@@ -55,6 +56,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			return True
 		else:
 			return False
+
 	# def get_wizard_version(self):
 		# return 1
 
@@ -66,14 +68,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		return
 	
 	def processGCODE(self, comm, line, *args, **kwargs):
-		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
-			# new_line = re.sub(r"(\[ ?)+","",line.strip())
-			# new_line = re.sub(r"[\]NA\)\(]","",new_line)
-			# new_line = re.sub(r"( +)|\,","\t",new_line)
-			# new_line = re.sub(r"(\.\t)","\t",new_line)
-			# new_line = re.sub(r"\.$","",new_line)
-			# new_line = new_line.split("\t")
-			
+		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):			
 			new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
 			
 			if re.match(r"^Bed x:.+$", line.strip()):
@@ -101,7 +96,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		if self.processing and ("ok" in line or (self.repetier_firmware and "T:" in line)) and len(self.mesh) > 0:
 			octoprint_printer_profile = self._printer_profile_manager.get_current()
 			volume = octoprint_printer_profile["volume"]
-			bed_type = volume["formFactor"]			
+			bed_type = volume["formFactor"]
 			custom_box = volume["custom_box"]
 			# see if we have a custom bounding box
 			if custom_box:
