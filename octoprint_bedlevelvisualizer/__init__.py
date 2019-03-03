@@ -15,8 +15,10 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self.processing = False
 		self.old_marlin = False
 		self.old_marlin_offset = 0
-		self.repetier_firmware = False		
+		self.repetier_firmware = False
 		self.mesh = []
+		self.new_marlin = False
+		self.stop_parsing = False
 	
 	##~~ SettingsPlugin
 	def get_settings_defaults(self):
@@ -32,7 +34,9 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			stripFirst=False,
 			use_center_origin=False,
 			use_relative_offsets=False,
-			timeout=60)
+			timeout=60,
+			leveling_bilinear=False,
+			leveling_catmull=False)
 
 	##~~ StartupPlugin
 	def on_after_startup(self):
@@ -66,19 +70,20 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self.mesh = []
 			self.processing = True
 		return
-	
+
 	def processGCODE(self, comm, line, *args, **kwargs):
-		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):			
+		if not self.stop_parsing and self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
 			new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
 			
 			if re.match(r"^Bed x:.+$", line.strip()):
 				self.old_marlin = True
-				
+			
 			if re.match(r"^G33 X.+$", line.strip()):
 				self.repetier_firmware = True
-						
+			
 			if self._settings.get(["stripFirst"]):
 				new_line.pop(0)
+
 			if len(new_line) > 0:
 				if self._settings.get(["flipX"]):
 					new_line.reverse()
@@ -87,7 +92,30 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			
 		if self.processing and self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
 			self.old_marlin_offset = re.sub("^(Eqn coefficients:.+)(\d+.\d+)$",r"\2", line.strip())
-						
+
+                if "Leveling Grid" in line:
+			self.new_marlin = True
+			self._logger.info("Marlin leveling output detected *new marlin*")
+
+			if "Bilinear Leveling Grid" in line:
+				if not self._settings.get(["leveling_bilinear"]):
+					self.stop_parsing = True
+					self._logger.info("Bilinear (simple mesh) detected but disabled.")
+				else:
+					self._logger.info("Bilinear (simple mesh) detected and enabled.")
+					self.stop_parsing = False
+					self.mesh = []
+
+			if "CATMULL ROM Leveling Grid" in line:
+				if not self._settings.get(["leveling_catmull"]):
+                                        self._logger.info("CATMULL (expanded mesh) detected but disabled.")
+					self.stop_parsing = True
+				else:
+                                        self._logger.info("CATMULL (expanded mesh) detected and enabled.")
+					self.stop_parsing = False
+					self.mesh = []
+			return line
+
 		if self.processing and "Home XYZ first" in line:
 			self._plugin_manager.send_plugin_message(self._identifier, dict(error=line.strip()))
 			self.processing = False
@@ -135,7 +163,6 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self.processing = False
 			if self._settings.get(["flipY"]):
 				self.mesh.reverse()
-				
 			if self._settings.get(["use_relative_offsets"]):
 				self.mesh = np.array(self.mesh)
 				if self._settings.get(["use_center_origin"]):
@@ -144,9 +171,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 					self.mesh = np.subtract(self.mesh, self.mesh[0,0], dtype=np.float, casting='unsafe').tolist()
 			
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh,bed=bed))
-		
 		return line
-		
 	##~~ Softwareupdate hook
 	def get_update_information(self):
 		return dict(
