@@ -60,6 +60,12 @@ into this
     G29 T	
     M155 S3
 	~~~
+	
+	Use the following command for Klipper (per https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/92):
+	~~~
+	@BEDLEVELVISUALIZER
+	BED_MESH_OUTPUT
+	~~
 
 ## Setup
 
