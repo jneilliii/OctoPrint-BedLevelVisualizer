@@ -65,7 +65,7 @@ into this
 	~~~
 	@BEDLEVELVISUALIZER
 	BED_MESH_OUTPUT
-	~~
+	~~~
 
 ## Setup
 
