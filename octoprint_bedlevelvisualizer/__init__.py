@@ -17,6 +17,9 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self.old_marlin_offset = 0
 		self.repetier_firmware = False		
 		self.mesh = []
+		self.box = []
+		self.flip_x = False
+		self.flip_y = False
 	
 	##~~ SettingsPlugin
 	def get_settings_defaults(self):
@@ -64,6 +67,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 	def flagMeshCollection(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
 		if cmd.startswith("@BEDLEVELVISUALIZER"):
 			self.mesh = []
+			self.box = []
 			self.processing = True
 		return
 	
@@ -80,11 +84,23 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			if self._settings.get(["stripFirst"]):
 				new_line.pop(0)
 			if len(new_line) > 0:
-				if self._settings.get(["flipX"]):
+				if bool(self.flip_x) != bool(self._settings.get(["flipX"])):
 					new_line.reverse()
 				self.mesh.append(new_line)
 			return line
 			
+		if self.processing and "ok" not in line and re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip()):
+			box = re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip())
+			if len(box) == 2:
+				self.box += [[float(x), float(y)] for x, y in box]
+			if len(self.box) == 2:
+				if self.box[0][0] > self.box[1][0]:
+					self.flip_x = True
+			if len(self.box) == 4:
+				if self.box[0][1] > self.box[3][1]:
+					self.flip_y = True
+			return line
+
 		if self.processing and self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
 			self.old_marlin_offset = re.sub("^(Eqn coefficients:.+)(\d+.\d+)$",r"\2", line.strip())
 						
@@ -113,7 +129,12 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				max_y = volume["depth"]
 				min_z = 0
 				max_z = volume["height"]
-			
+			if len(self.box) == 4:
+				min_x = min([x for x, y in self.box])
+				max_x = max([x for x, y in self.box])
+				min_y = min([y for x, y in self.box])
+				max_y = max([y for x, y in self.box])
+
 			bed = dict(type=bed_type,x_min=min_x,x_max=max_x,y_min=min_y,y_max=max_y,z_min=min_z,z_max=max_z)
 			
 			if self.old_marlin or self.repetier_firmware:
@@ -133,7 +154,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self._logger.debug(self.mesh)
 		
 			self.processing = False
-			if self._settings.get(["flipY"]):
+			if bool(self.flip_y) != bool(self._settings.get(["flipY"])):
 				self.mesh.reverse()
 				
 			if self._settings.get(["use_relative_offsets"]):
