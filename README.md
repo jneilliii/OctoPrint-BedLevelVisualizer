@@ -76,6 +76,17 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.1.8]** (05/26/2019)
+
+**Added**
+- Add grid boundary detection and auto flipping for UBL reports, possibly others, for more accurately defined probing points and bed orientation.
+
+**Fixed**
+- Fix minor bug where lines w/ `1 |[+0.019] -0.137` are not matched.
+
+**Thanks**
+- Thanks to [@gandy92](https://github.com/gandy92) for the above changes.
+
 **[0.1.7]** (11/24/2018)
 
 **Added**
@@ -197,6 +208,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.1.8]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.8
 [0.1.7]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.7
 [0.1.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.6
 [0.1.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.5
