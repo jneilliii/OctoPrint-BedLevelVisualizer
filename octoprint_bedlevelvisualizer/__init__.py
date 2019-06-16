@@ -10,17 +10,17 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.AssetPlugin,
                 octoprint.plugin.SettingsPlugin,
 				octoprint.plugin.WizardPlugin):
-				
+
 	def __init__(self):
 		self.processing = False
 		self.old_marlin = False
 		self.old_marlin_offset = 0
-		self.repetier_firmware = False		
+		self.repetier_firmware = False
 		self.mesh = []
 		self.box = []
 		self.flip_x = False
 		self.flip_y = False
-	
+
 	##~~ SettingsPlugin
 	def get_settings_defaults(self):
 		return dict(command="",
@@ -40,20 +40,20 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 	##~~ StartupPlugin
 	def on_after_startup(self):
 		self._logger.info("OctoPrint-BedLevelVisualizer loaded!")
-		
+
 	##~~ AssetPlugin
 	def get_assets(self):
 		return dict(
 			js=["js/bedlevelvisualizer.js","js/plotly-latest.min.js"],
 		)
-		
+
 	##~~ WizardPlugin
 	def is_wizard_required(self):
 		if not self._settings.get(["command"]) == "":
 			return False
 		else:
 			return True
-			
+
 	def is_wizard_ignored(self, seen_wizards, implementation):
 		if not self._settings.get(["command"]) == "":
 			return True
@@ -70,17 +70,17 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self.box = []
 			self.processing = True
 		return
-	
+
 	def processGCODE(self, comm, line, *args, **kwargs):
 		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
 			new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
-			
+
 			if re.match(r"^Bed x:.+$", line.strip()):
 				self.old_marlin = True
-				
+
 			if re.match(r"^G33 X.+$", line.strip()):
 				self.repetier_firmware = True
-						
+
 			if self._settings.get(["stripFirst"]):
 				new_line.pop(0)
 			if len(new_line) > 0:
@@ -88,7 +88,11 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 					new_line.reverse()
 				self.mesh.append(new_line)
 			return line
-			
+
+		if self.processing and "ok" not in line and re.match(r"^Subdivided with CATMULL ROM Leveling Grid:.*$", line.strip()):
+			self.mesh = []
+			return line
+
 		if self.processing and "ok" not in line and re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip()):
 			box = re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip())
 			if len(box) == 2:
@@ -103,12 +107,12 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 
 		if self.processing and self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
 			self.old_marlin_offset = re.sub("^(Eqn coefficients:.+)(\d+.\d+)$",r"\2", line.strip())
-						
+
 		if self.processing and "Home XYZ first" in line:
 			self._plugin_manager.send_plugin_message(self._identifier, dict(error=line.strip()))
 			self.processing = False
 			return line
-		
+
 		if self.processing and ("ok" in line or (self.repetier_firmware and "T:" in line)) and len(self.mesh) > 0:
 			octoprint_printer_profile = self._printer_profile_manager.get_current()
 			volume = octoprint_printer_profile["volume"]
@@ -136,7 +140,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				max_y = max([y for x, y in self.box])
 
 			bed = dict(type=bed_type,x_min=min_x,x_max=max_x,y_min=min_y,y_max=max_y,z_min=min_z,z_max=max_z)
-			
+
 			if self.old_marlin or self.repetier_firmware:
 				a = np.swapaxes(self.mesh,1,0)
 				x = np.unique(a[0]).astype(np.float)
@@ -152,22 +156,22 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self._logger.debug(offset)
 				self.mesh = np.subtract(z, [offset], dtype=np.float, casting='unsafe').tolist()
 				self._logger.debug(self.mesh)
-		
+
 			self.processing = False
 			if bool(self.flip_y) != bool(self._settings.get(["flipY"])):
 				self.mesh.reverse()
-				
+
 			if self._settings.get(["use_relative_offsets"]):
 				self.mesh = np.array(self.mesh)
 				if self._settings.get(["use_center_origin"]):
 					self.mesh = np.subtract(self.mesh, self.mesh[len(self.mesh[0])/2,len(self.mesh)/2], dtype=np.float, casting='unsafe').tolist()
 				else:
 					self.mesh = np.subtract(self.mesh, self.mesh[0,0], dtype=np.float, casting='unsafe').tolist()
-			
+
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh,bed=bed))
-		
+
 		return line
-		
+
 	##~~ Softwareupdate hook
 	def get_update_information(self):
 		return dict(

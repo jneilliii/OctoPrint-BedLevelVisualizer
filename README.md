@@ -76,6 +76,12 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.1.9]** (06/15/2019)
+
+**Fixed**
+- Issue where ABL_BILINEAR_SUBDIVISION in Marlin was not graphing correctly.  Now the mesh will be reset to an empty set if the phrase `Subdivided with CATMULL ROM Leveling Grid:` is received and continue mesh collection of points.
+
+
 **[0.1.8]** (05/26/2019)
 
 **Added**
@@ -208,6 +214,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.1.9]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.9
 [0.1.8]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.8
 [0.1.7]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.7
 [0.1.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.6
