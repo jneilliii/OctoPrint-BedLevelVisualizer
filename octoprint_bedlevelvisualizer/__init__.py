@@ -35,7 +35,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			stripFirst=False,
 			use_center_origin=False,
 			use_relative_offsets=False,
-			timeout=60)
+			timeout=60,
+			ignore_correction_matrix=False)
 
 	##~~ StartupPlugin
 	def on_after_startup(self):
@@ -72,6 +73,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		return
 
 	def processGCODE(self, comm, line, *args, **kwargs):
+		if self._settings.get_boolean(["ignore_correction_matrix"]) and re.match(r"^Bed Level Correction Matrix:.*$", line.strip()):
+			line = "ok"
 		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
 			new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
 

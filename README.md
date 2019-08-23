@@ -76,6 +76,11 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.1.10]** (08/22/209)
+
+**Added**
+- Option for ignoring Bed Level Correction Matrix.
+
 **[0.1.9]** (06/15/2019)
 
 **Fixed**
@@ -214,6 +219,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.1.10]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.10
 [0.1.9]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.9
 [0.1.8]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.8
 [0.1.7]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.7
@@ -237,7 +243,7 @@ or manually using this URL:
 ## To-Do
 - [ ] Pause standard OctoPrint temperature polling or squash the responses until processing is completed.
 - [X] ~~Orientation testing to verify axes are in correct direction.~~ added settings to allow controlling the orientation.
-- [X] Calculate bed dimensions and apply to probe points for display on graph, #28.
+- [X] ~~Calculate bed dimensions and apply to probe points for display on graph, #28.~~
 
 ## Support My Efforts
 I, jneilliii, programmed this plugin for fun and do my best effort to support those that have issues with it, please return the favor and leave me a tip if you find this plugin helpful.
