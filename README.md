@@ -76,7 +76,12 @@ or manually using this URL:
 
 ## Changelog
 
-**[0.1.10]** (08/22/209)
+**[0.1.11]** (10/06/2019)
+
+**Added**
+- Python 3 compatibility.
+
+**[0.1.10]** (08/22/2019)
 
 **Added**
 - Option for ignoring Bed Level Correction Matrix.
@@ -219,6 +224,7 @@ or manually using this URL:
 
 **Initial Release**
 
+[0.1.11]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.11
 [0.1.10]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.10
 [0.1.9]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.9
 [0.1.8]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.8
