@@ -36,6 +36,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			use_center_origin=False,
 			use_relative_offsets=False,
 			timeout=60,
+			rotation=0,
 			ignore_correction_matrix=False)
 
 	##~~ StartupPlugin
@@ -170,6 +171,10 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 					self.mesh = np.subtract(self.mesh, self.mesh[len(self.mesh[0])/2,len(self.mesh)/2], dtype=np.float, casting='unsafe').tolist()
 				else:
 					self.mesh = np.subtract(self.mesh, self.mesh[0,0], dtype=np.float, casting='unsafe').tolist()
+
+			if int(self._settings.get(["rotation"])) > 0:
+				self.mesh = np.array(self.mesh)
+				self.mesh = np.rot90(self.mesh, int(self._settings.get(["rotation"]))/90).tolist()
 
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh,bed=bed))
 
