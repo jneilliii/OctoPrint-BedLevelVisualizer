@@ -79,7 +79,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self._logger.debug(line.strip())
 		if self._settings.get_boolean(["ignore_correction_matrix"]) and re.match(r"^Bed Level Correction Matrix:.*$", line.strip()):
 			line = "ok"
-		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\[?\s?\+?\-?\d+?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
+		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\[?\s?\+?\-?\d+?\.?\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
 			new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
 			self._logger.debug(new_line)
 
