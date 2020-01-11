@@ -71,6 +71,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self.mesh = []
 			self.box = []
 			self.processing = True
+			self._logger.debug("mesh collection started")
 		return
 
 	def processGCODE(self, comm, line, *args, **kwargs):
@@ -78,12 +79,15 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			line = "ok"
 		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
 			new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
+			self._logger.debug(new_line)
 
 			if re.match(r"^Bed x:.+$", line.strip()):
 				self.old_marlin = True
+				self._logger.debug("using old marlin flag")
 
 			if re.match(r"^G33 X.+$", line.strip()):
 				self.repetier_firmware = True
+				self._logger.debug("using repetier flag")
 
 			if self._settings.get(["stripFirst"]):
 				new_line.pop(0)
@@ -94,6 +98,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			return line
 
 		if self.processing and "ok" not in line and re.match(r"^Subdivided with CATMULL ROM Leveling Grid:.*$", line.strip()):
+			self._logger.debug("resetting mesh to blank because of CATMULL subdivision")
 			self.mesh = []
 			return line
 
@@ -111,6 +116,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 
 		if self.processing and self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
 			self.old_marlin_offset = re.sub("^(Eqn coefficients:.+)(\d+.\d+)$",r"\2", line.strip())
+			self._logger.debug("using old marlin offset")
 
 		if self.processing and "Home XYZ first" in line:
 			self._plugin_manager.send_plugin_message(self._identifier, dict(error=line.strip()))
@@ -144,6 +150,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				max_y = max([y for x, y in self.box])
 
 			bed = dict(type=bed_type,x_min=min_x,x_max=max_x,y_min=min_y,y_max=max_y,z_min=min_z,z_max=max_z)
+			self._logger.debug(bed)
 
 			if self.old_marlin or self.repetier_firmware:
 				a = np.swapaxes(self.mesh,1,0)
@@ -162,19 +169,26 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self._logger.debug(self.mesh)
 
 			self.processing = False
+			self._logger.debug("stopping mesh collection")
 			if bool(self.flip_y) != bool(self._settings.get(["flipY"])):
+				self._logger.debug("flipping y axis")
 				self.mesh.reverse()
 
 			if self._settings.get(["use_relative_offsets"]):
+				self._logger.debug("using relative offsets")
 				self.mesh = np.array(self.mesh)
 				if self._settings.get(["use_center_origin"]):
+					self._logger.debug("using center origin")
 					self.mesh = np.subtract(self.mesh, self.mesh[len(self.mesh[0])/2,len(self.mesh)/2], dtype=np.float, casting='unsafe').tolist()
 				else:
 					self.mesh = np.subtract(self.mesh, self.mesh[0,0], dtype=np.float, casting='unsafe').tolist()
 
 			if int(self._settings.get(["rotation"])) > 0:
+				self._logger.debug("rotating mesh by %s" % self._settings.get(["rotation"]))
 				self.mesh = np.array(self.mesh)
 				self.mesh = np.rot90(self.mesh, int(self._settings.get(["rotation"]))/90).tolist()
+
+			self._logger.debug(self.mesh)
 
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh,bed=bed))
 
