@@ -9,7 +9,7 @@ import logging
 class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.TemplatePlugin,
 				octoprint.plugin.AssetPlugin,
-                octoprint.plugin.SettingsPlugin,
+				octoprint.plugin.SettingsPlugin,
 				octoprint.plugin.WizardPlugin):
 
 	def __init__(self):
@@ -41,7 +41,9 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			timeout=60,
 			rotation=0,
 			ignore_correction_matrix=False,
-			debug_logging = False)
+			debug_logging = False,
+			commands=[],
+			show_labels=True)
 
 	def on_settings_save(self, data):
 		old_debug_logging = self._settings.get_boolean(["debug_logging"])
@@ -74,7 +76,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 	##~~ AssetPlugin
 	def get_assets(self):
 		return dict(
-			js=["js/bedlevelvisualizer.js","js/plotly-latest.min.js"],
+			js=["js/jquery-ui.min.js","js/knockout-sortable.js","js/fontawesome-iconpicker.js","js/ko.iconpicker.js","js/plotly-latest.min.js","js/bedlevelvisualizer.js"],
+			css=["css/font-awesome.min.css","css/font-awesome-v4-shims.min.css","css/fontawesome-iconpicker.css"]
 		)
 
 	##~~ WizardPlugin

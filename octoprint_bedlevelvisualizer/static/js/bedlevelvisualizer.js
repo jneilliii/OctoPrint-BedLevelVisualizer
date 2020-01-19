@@ -195,6 +195,45 @@ $(function () {
 				
 			OctoPrint.control.sendGcode(gcode_cmds);
 		};
+
+		// Custom command list 
+		self.moveCommandUp = function(data) {
+			let currentIndex = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.indexOf(data);
+			if (currentIndex > 0) {
+				let queueArray = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands();
+				self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.splice(currentIndex-1, 2, queueArray[currentIndex], queueArray[currentIndex - 1]);
+			}
+		}
+
+		self.moveCommandDown = function(data) {
+			let currentIndex = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.indexOf(data);
+			if (currentIndex < self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands().length - 1) {
+				let queueArray = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands();
+				self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.splice(currentIndex, 2, queueArray[currentIndex + 1], queueArray[currentIndex]);
+			}
+		}
+
+		self.addCommand = function() {
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.push({icon: ko.observable(), label: ko.observable(), command: ko.observable(), enabled_while_printing: ko.observable(false), enabled_while_graphing: ko.observable(false)});
+		}
+
+		self.removeCommand = function(data) {
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.remove(data);
+		}
+
+		self.runCustomCommand = function(data) {
+			var gcode_cmds = data.command().split("\n");
+			if (gcode_cmds.indexOf("@BEDLEVELVISUALIZER") > -1){
+				self.processing(true);
+				self.timeout = setTimeout(function(){self.processing(false);new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before prcessing completed. Processing may still be running or there may be a configuration error. Consider increasing the timeout value in settings.</div>',type: 'info',hide: true});}, (parseInt(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout())*1000));
+			}
+			// clean extraneous code
+			gcode_cmds = gcode_cmds.filter(function(array_val) {
+					var x = Boolean(array_val);
+					return x == true;
+				});
+			OctoPrint.control.sendGcode(gcode_cmds);
+		}
 	}
 
 	OCTOPRINT_VIEWMODELS.push({
