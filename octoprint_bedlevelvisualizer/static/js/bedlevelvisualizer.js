@@ -100,15 +100,25 @@ $(function () {
 						z: mesh_data_z,
 						x: mesh_data_x,
 						y: mesh_data_y,
-						type: 'surface'
+						type: 'surface',
+						colorbar: {
+							tickfont: {
+								color: $('#tabs_content').css('color')
+							}
+						}
 					}
 				];
 
 				var layout = {
 					//title: 'Bed Leveling Mesh',
 					autosize: true,
-					plot_bgcolor: 'rgba(0, 0, 0, 0)',
-					paper_bgcolor: 'rgba(0, 0, 0, 0)',
+					plot_bgcolor: $('#tabs_content').css('background-color'),
+					paper_bgcolor: $('#tabs_content').css('background-color'),
+					legend: {
+						font: {
+							color: $('#tabs_content').css('color')
+						}
+					}
 					margin: {
 						l: 0,
 						r: 0,
@@ -123,13 +133,21 @@ $(function () {
 								z: .25
 							}
 						},
+						xaxis: {
+							color: $('#tabs_content').css('color')
+						},
+						yaxis: {
+							color: $('#tabs_content').css('color')
+						},
 						zaxis: {
+							color: $('#tabs_content').css('color'),
 							range: [-2,2]
 						}
 					}
 				};
 				
 				var config_options = {
+					displaylogo: false,
 					modeBarButtonsToRemove: ['resetCameraLastSave3d'],
 					modeBarButtonsToAdd: [{
 					name: 'Move Nozzle',
