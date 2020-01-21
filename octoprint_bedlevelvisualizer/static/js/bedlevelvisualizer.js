@@ -107,6 +107,8 @@ $(function () {
 				var layout = {
 					//title: 'Bed Leveling Mesh',
 					autosize: true,
+					plot_bgcolor: 'rgba(0, 0, 0, 0)',
+					paper_bgcolor: 'rgba(0, 0, 0, 0)',
 					margin: {
 						l: 0,
 						r: 0,
