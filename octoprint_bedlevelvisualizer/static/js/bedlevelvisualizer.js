@@ -118,7 +118,7 @@ $(function () {
 						font: {
 							color: $('#tabs_content').css('color')
 						}
-					}
+					},
 					margin: {
 						l: 0,
 						r: 0,
