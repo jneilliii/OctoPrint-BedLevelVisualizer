@@ -114,11 +114,6 @@ $(function () {
 					autosize: true,
 					plot_bgcolor: $('#tabs_content').css('background-color'),
 					paper_bgcolor: $('#tabs_content').css('background-color'),
-					legend: {
-						font: {
-							color: $('#tabs_content').css('color')
-						}
-					},
 					margin: {
 						l: 0,
 						r: 0,
