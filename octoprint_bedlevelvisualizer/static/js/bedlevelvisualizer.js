@@ -229,7 +229,7 @@ $(function () {
 		}
 
 		self.addCommand = function() {
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.push({icon: ko.observable(), label: ko.observable(), command: ko.observable(), enabled_while_printing: ko.observable(false), enabled_while_graphing: ko.observable(false)});
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.push({icon: ko.observable(), label: ko.observable(), tooltip: ko.observable(), command: ko.observable(), enabled_while_printing: ko.observable(false), enabled_while_graphing: ko.observable(false)});
 		}
 
 		self.removeCommand = function(data) {
