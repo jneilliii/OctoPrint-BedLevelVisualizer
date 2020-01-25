@@ -5,12 +5,14 @@ import octoprint.plugin
 import re
 import numpy as np
 import logging
+import flask
 
 class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.TemplatePlugin,
 				octoprint.plugin.AssetPlugin,
 				octoprint.plugin.SettingsPlugin,
-				octoprint.plugin.WizardPlugin):
+				octoprint.plugin.WizardPlugin,
+				octoprint.plugin.SimpleApiPlugin):
 
 	def __init__(self):
 		self.processing = False
@@ -227,6 +229,16 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh,bed=bed))
 
 		return line
+
+	##~~ SimpleApiPlugin mixin
+	def get_api_commands(self):
+		return dict(stopProcessing=[])
+
+	def on_api_get(self, request):
+		if request.args.get("stopProcessing"):
+			self.processing = False
+			response = dict(stopped=True)
+			return flask.jsonify(response)
 
 	##~~ Softwareupdate hook
 	def get_update_information(self):
