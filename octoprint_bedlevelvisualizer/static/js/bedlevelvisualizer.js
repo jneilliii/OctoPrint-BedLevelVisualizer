@@ -109,11 +109,13 @@ $(function () {
 					}
 				];
 
+				var background_color = $('#tabs_content').css('background-color');
+				var foreground_color = $('#tabs_content').css('color');
 				var layout = {
 					//title: 'Bed Leveling Mesh',
 					autosize: true,
-					plot_bgcolor: $('#tabs_content').css('background-color'),
-					paper_bgcolor: $('#tabs_content').css('background-color'),
+					plot_bgcolor: background_color,
+					paper_bgcolor: background_color,
 					margin: {
 						l: 0,
 						r: 0,
@@ -129,13 +131,13 @@ $(function () {
 							}
 						},
 						xaxis: {
-							color: $('#tabs_content').css('color')
+							color: foreground_color
 						},
 						yaxis: {
-							color: $('#tabs_content').css('color')
+							color: foreground_color
 						},
 						zaxis: {
-							color: $('#tabs_content').css('color'),
+							color: foreground_color,
 							range: [-2,2]
 						}
 					}
