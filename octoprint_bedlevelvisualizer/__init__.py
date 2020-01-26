@@ -237,6 +237,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 	def on_api_get(self, request):
 		if request.args.get("stopProcessing"):
 			self.processing = False
+			self.mesh = []
 			response = dict(stopped=True)
 			return flask.jsonify(response)
 
