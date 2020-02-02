@@ -236,8 +236,13 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 
 	def on_api_get(self, request):
 		if request.args.get("stopProcessing"):
+			self._bedlevelvisualizer_logger.debug("Canceling mesh collection per user request")
+			self._bedlevelvisualizer_logger.debug("Mesh data collected prior to cancel:")
+			self._bedlevelvisualizer_logger.debug(self.mesh)
 			self.processing = False
 			self.mesh = []
+			self._bedlevelvisualizer_logger.debug("Mesh data after clearing:")
+			self._bedlevelvisualizer_logger.debug(self.mesh)
 			response = dict(stopped=True)
 			return flask.jsonify(response)
 
