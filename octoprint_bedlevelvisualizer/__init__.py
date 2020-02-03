@@ -16,6 +16,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 
 	def __init__(self):
 		self.processing = False
+		self.mesh_collection_canceled = False
 		self.old_marlin = False
 		self.old_marlin_offset = 0
 		self.repetier_firmware = False
@@ -103,7 +104,11 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		if cmd.startswith("@BEDLEVELVISUALIZER"):
 			self.mesh = []
 			self.box = []
-			self.processing = True
+			if not self.mesh_collection_canceled and not self.processing:
+				self.processing = True
+			if self.mesh_collection_canceled:
+				self.mesh_collection_canceled = False
+				return
 			self._bedlevelvisualizer_logger.debug("mesh collection started")
 		return
 
@@ -240,6 +245,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self._bedlevelvisualizer_logger.debug("Mesh data collected prior to cancel:")
 			self._bedlevelvisualizer_logger.debug(self.mesh)
 			self.processing = False
+			self.collection_cancelled = True
 			self.mesh = []
 			self._bedlevelvisualizer_logger.debug("Mesh data after clearing:")
 			self._bedlevelvisualizer_logger.debug(self.mesh)
