@@ -71,6 +71,8 @@ $(function () {
 				return;
 			}
 			if (mesh_data.error) {
+				clearTimeout(self.timeout);
+				self.processing(false);
 				new PNotify({
 					title: 'Bed Visualizer Error',
 					text: '<div class="row-fluid"><p>Looks like your settings are not correct or there was an error.</p><p>Please see the <a href="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/#tips" target="_blank">Readme</a> for configuration tips.</p></div><p><pre style="padding-top: 5px;">'+mesh_data.error+'</pre></p>',
