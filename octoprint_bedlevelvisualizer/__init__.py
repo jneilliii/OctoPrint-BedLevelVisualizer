@@ -118,7 +118,6 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		if self._settings.get_boolean(["ignore_correction_matrix"]) and re.match(r"^(Mesh )?Bed Level (Correction Matrix|data):.*$", line.strip()):
 			line = "ok"
 		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+(\s+\],?)?$", line.strip()):
-		# if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\[?\s?\+?\-?\d+?\.?\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
 			new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
 			self._bedlevelvisualizer_logger.debug(new_line)
 
@@ -160,8 +159,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self._bedlevelvisualizer_logger.debug("using old marlin offset")
 
 		if self.processing and "Home XYZ first" in line or "Invalid mesh" in line:
-		# if self.processing and "Home XYZ first" in line:
-			self._bedlevelvisualizer_logger.debug("stopping mesh collection because homing required")
+			reason = "data is invalid" if "Invalid" in line else "homing required"
+			self._bedlevelvisualizer_logger.debug("stopping mesh collection because %s" % reason)
 			self._plugin_manager.send_plugin_message(self._identifier, dict(error=line.strip()))
 			self.processing = False
 			return line
