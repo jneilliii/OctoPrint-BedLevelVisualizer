@@ -75,49 +75,81 @@
 			</div>
 			<div id="bedlevelvisualizer_custom_commands" class="tab-pane">
 				<div class="row-fluid">
-					<div class="span2">Icon</div>
-					<div class="span2">Label</div>
-					<div class="span5">Tooltip</div>
-					<div class="span1" style="text-align: center;">Enabled</div>
-					<div class="span2" style="text-align: center;"><button class="btn btn-mini" data-bind="click: addCommand" title="Add custom command"><i class="fa fa-plus"></i> Add</button></div>
+					<div class="span10">Click on button to configure options. Use the drop-down to select icon.</div>
+					<div class="span2" style="text-align: center;"><button class="btn btn-mini" data-bind="click: addCommand" title="Add custom command button"><i class="fa fa-plus"></i> Add</button></div>
 				</div>
-				<div data-bind="sortable: { data: settingsViewModel.settings.plugins.bedlevelvisualizer.commands, options: { cancel: '.unsortable', handle: '.grabber'} }" class="row-fluid">
+				<div data-bind="sortable: { data: settingsViewModel.settings.plugins.bedlevelvisualizer.commands, options: { cancel: '.unsortable', handle: '.move_command'} }" class="row-fluid">
+					<div class="btn-group" style="margin: 5px;">
+						<button type="button" class="btn iconpicker-component" data-bind="click: $root.showEditor, attr: {title: (tooltip() ? tooltip : command)}"><i class="fa-lg" data-bind="css: icon"></i> <span data-bind="text: label"></span></button>
+						<button type="button" class="icp icp-dd btn dropdown-toggle" data-selected="fa-car" data-toggle="dropdown" aria-expanded="false" data-bind="iconpicker: icon,iconpickerOptions: {searchInFooter: true, hideOnSelect: true, collision: true}">
+							<span class="caret"></span>
+							<span class="sr-only">Toggle Dropdown</span>
+						</button>
+						<div class="dropdown-menu iconpicker-container"></div>
+						<button type="button" class="btn btn-mini move_command" title="Move button">
+							<i class="fa fa-arrows"></i>
+						</button>
+						<button type="button" class="btn btn-mini copy_command" data-bind="click: $parent.copyCommand" title="Copy button">
+							<i class="fa fa-copy"></i>
+						</button>
+						<button type="button" class="btn btn-mini btn-danger removeJob" data-bind="click: $parent.removeCommand" title="Delete button">
+							<i class="fa fa-times"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="BedLevelVisulizerCommandEditor" data-bind="with: selected_command" class="modal hide fade">
+	<div class="modal-header">
+		<a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+		<h3>Command Editor</h3>
+	</div>
+	<div class="modal-body">
+		<div class="controls"><label class="control-label">{{ _('Label') }}</label><input type="text" class="input-block-level" data-bind="value: label"/></div>
+		<div class="controls"><label class="control-label">{{ _('Tooltip') }}</label><input type="text" class="input-block-level" data-bind="value: tooltip"/></div>
+		<div class="controls"><label class="checkbox">{{ _('Enabled While Printing') }}<input type="checkbox" data-bind="checked: enabled_while_printing" title="Enabled While Printing"/></label></div>
+		<div class="controls"><label class="checkbox">{{ _('Enabled While Graphing') }}<input type="checkbox" data-bind="checked: enabled_while_graphing" title="Enabled While Graphing"/></label></div>
+		<div class="controls"><label class="checkbox">{{ _('Confirm') }}<input type="checkbox" data-bind="checked: confirmation" title="Prompt for Confirmation"/></label></div>
+		<!-- ko if: confirmation -->
+		<div class="controls"><label class="control-label">{{ _('Message') }}</label><input type="text" class="input-block-level" data-bind="value: message"/></div>
+		<!-- /ko -->
+		<div class="controls"><label class="control-label">{{ _('Command') }}</label><textarea class="input-block-level" id="terminalcommandsextended_command" rows="4" data-bind="value: command"></textarea></div>
+		<div>
+			<div><small><a href="#" class="muted" data-bind="toggleContent: { class: 'fa-caret-right fa-caret-down', container: '#BedLevelVisulizerCommandEditor .parameters' }"><i class="fa fa-caret-right"></i> Command Parameters</a></small></div>
+			<div class="parameters row-fluid" data-bind="style: { display: input().length > 0 ? 'block' : 'none' }">
+				<div class="row-fluid">
+					<div class="span4">Label</div>
+					<div class="span3">Parameter</div>
+					<div class="span4">Default</div>
+					<div class="span1"><button class="btn btn-mini" data-bind="click: $root.addParameter" title="Add Command Paramter"><i class="fa fa-plus"></i></button></div>
+				</div>
+				<!-- ko foreach: input -->
 					<div class="row-fluid">
-						<div class="span2">
-							<div class="input-prepend input-block-level">
-								<span class="add-on grabber" style="width: 25px;"><i class="fa-lg" data-bind="css: icon"></i></span>
-								<input type="text" data-bind="iconpicker: icon,iconpickerOptions: {hideOnSelect: true, collision: true}" class="iconpicker input-block-level"/>
-							</div>
-						</div>
-						<div class="span2">
-							<input type="text" class="input-block-level" data-bind="value: label"/>
-						</div>
-						<div class="span5">
-							<input type="text" class="input-block-level" data-bind="value: tooltip"/>
-						</div>
-						<div class="span1" style="text-align: center;">
-							<input type="checkbox" data-bind="checked: enabled_while_printing" title="While printing"/>
-							<input type="checkbox" data-bind="checked: enabled_while_graphing" title="While graphing"/>
-						</div>
-						<div class="span2" style="text-align: center;">
-							<div class="btn-group action-buttons" style="margin-top: 5px;">
-								<button class="btn btn-mini moveJobUp" data-bind="click: $parent.moveCommandUp, enable: $index() !== 0" title="Move command up">
-									<i class="fa fa-arrow-up"></i>
-								</button>
-								<button class="btn btn-mini moveJobDown" data-bind="click: $parent.moveCommandDown, enable: $index() !== $parent.settingsViewModel.settings.plugins.bedlevelvisualizer.commands().length - 1" title="Move command down">
-									<i class="fa fa-arrow-down"></i>
-								</button>
-								<button class="btn btn-mini btn-danger removeJob" data-bind="click: $parent.removeCommand" title="Remove command">
-									<i class="fa fa-times"></i>
-								</button>
+						<div class="span4"><input type="text" class="input-block-level" data-bind="value: label"/></div>
+						<div class="span3"><input type="text" class="input-block-level" data-bind="value: parameter"/></div>
+						<div class="span4"><input type="text" class="input-block-level" data-bind="value: value"/></div>
+						<div class="span1">
+							<div class="btn-group" style="padding-top: 3px;">
+								<button class="btn btn-mini" data-bind="click: $root.insertParameter" title="Append to End of Command Input Above"><i class="fa fa-plus"></i></button>
+								<button class="btn btn-mini btn-danger" data-bind="click: $root.removeParameter" title="Remove Command Parameter"><i class="fa fa-times"></i></button>
 							</div>
 						</div>
 					</div>
-					<div class="row-fluid">
-						<div class="span2" style="text-align: right;padding-top: 5px;">Command:</div>
-						<div class="span10" style="padding-right: 18px;"><textarea class="input-block-level" id="bedlevelvisualizer_command" rows="1" data-bind="value: command"></textarea></div>
-					</div>
-				</div>
+				<!-- /ko -->
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<div class="row-fluid" style="text-align: center;">
+			<div class="btn-group" style="display: inline-block; margin-left: 0px;">
+			<!-- ko foreach: input -->
+				<span style="cursor: default" data-bind="text: label" class="btn"></span>
+				<input type="text" class="input-mini btn active" style="cursor: text;" data-bind="attr: {placeholder: label}, value: value">
+			<!-- /ko -->
+				<button type="button" class="btn" data-dismiss="modal" data-bind="attr: {title: (tooltip() ? tooltip : command)}"><i class="fa-lg" data-bind="css: icon"></i> <span data-bind="text: label"></span></button>
 			</div>
 		</div>
 	</div>

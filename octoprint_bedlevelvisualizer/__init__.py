@@ -48,6 +48,21 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			commands=[],
 			show_labels=True)
 
+	def get_settings_version(self):
+		return 1
+
+	def on_settings_migrate(self, target, current=None):
+		if current is None or current < 1:
+			# Loop through commands adding new fields
+			commands_new = []
+			self._logger.info(self._settings.get(['commands']))
+			for command in self._settings.get(['commands']):
+				command["confirmation"] = False
+				command["input"] = []
+				command["message"] = ""
+				commands_new.append(command)
+			self._settings.set(["commands"],commands_new)
+
 	def on_settings_save(self, data):
 		old_debug_logging = self._settings.get_boolean(["debug_logging"])
 
@@ -247,7 +262,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self._bedlevelvisualizer_logger.debug("Mesh data collected prior to cancel:")
 			self._bedlevelvisualizer_logger.debug(self.mesh)
 			self.processing = False
-			self.collection_cancelled = True
+			self.mesh_collection_canceled = True
 			self.mesh = []
 			self._bedlevelvisualizer_logger.debug("Mesh data after clearing:")
 			self._bedlevelvisualizer_logger.debug(self.mesh)

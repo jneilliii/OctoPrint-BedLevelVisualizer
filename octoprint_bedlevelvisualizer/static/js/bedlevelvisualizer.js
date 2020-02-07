@@ -12,6 +12,7 @@ $(function () {
 		self.mesh_data_y = ko.observableArray([]);
 		self.mesh_data_z_height = ko.observable();
 		self.save_mesh = ko.observable();
+		self.selected_command = ko.observable();
 		self.mesh_status = ko.computed(function(){
 			if(self.processing()){
 				return 'Collecting mesh data.';
@@ -229,6 +230,25 @@ $(function () {
 		}
 
 		// Custom command list 
+
+		self.showEditor = function(data) {
+			self.selected_command(data);
+			$('#BedLevelVisulizerCommandEditor').modal('show');
+		};
+
+		self.copyCommand = function(data) {
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.push({
+																					icon: ko.observable(data.icon()),
+																					label: ko.observable(data.label()),
+																					tooltip: ko.observable(data.tooltip()),
+																					command: ko.observable(data.command()),
+																					confirmation: ko.observable(data.confirmation()),
+																					message: ko.observable(data.message()),
+																					enabled_while_printing: ko.observable(data.enabled_while_printing()),
+																					enabled_while_graphing: ko.observable(data.enabled_while_graphing()),
+																					input: ko.observableArray(data.input())});
+		};
+
 		self.moveCommandUp = function(data) {
 			let currentIndex = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.indexOf(data);
 			if (currentIndex > 0) {
@@ -246,26 +266,62 @@ $(function () {
 		}
 
 		self.addCommand = function() {
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.push({icon: ko.observable(), label: ko.observable(), tooltip: ko.observable(), command: ko.observable(), enabled_while_printing: ko.observable(false), enabled_while_graphing: ko.observable(false)});
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.push({icon: ko.observable('fas fa-gear'), label: ko.observable(''), tooltip: ko.observable(''), command: ko.observable(''), confirmation: ko.observable(false), message: ko.observable(''), input: ko.observableArray([]), enabled_while_printing: ko.observable(false), enabled_while_graphing: ko.observable(false)});
 		}
 
 		self.removeCommand = function(data) {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.remove(data);
 		}
 
-		self.runCustomCommand = function(data) {
+		self.addParameter = function(data) {
+			data.input.push({label: ko.observable(''), parameter: ko.observable(''), value: ko.observable('')});
+		}
+
+		self.insertParameter = function(data) {
+			var text = self.selected_command().command();
+			text += '%(' + data.parameter() + ')s';
+			self.selected_command().command(text);
+			console.log(data);
+		}
+
+		self.removeParameter = function(data) {
+			var text = self.selected_command().command();
+			var search = '%\\(' + data.parameter() + '\\)s';
+			var re = new RegExp(search,"gm");
+			var new_text = text.replace(re, '');
+			self.selected_command().command(new_text);
+			self.selected_command().input.remove(data);
+		}
+
+		self.runCustomCommand = function(data, event) {
 			var gcode_cmds = data.command().split("\n");
-			if (gcode_cmds.indexOf("@BEDLEVELVISUALIZER") > -1){
-				self.processing(true);
-				self.timeout = setTimeout(function(){self.processing(false);new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before prcessing completed. Processing may still be running or there may be a configuration error. Consider increasing the timeout value in settings.</div>',type: 'info',hide: true});}, (parseInt(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout())*1000));
-			}
+			var parameters = {};
+			
 			// clean extraneous code
 			gcode_cmds = gcode_cmds.filter(function(array_val) {
 					var x = Boolean(array_val);
 					return x == true;
 				});
-			OctoPrint.control.sendGcode(gcode_cmds);
-		}
+			if (data.input().length > 0) {
+				_.each(data.input(), function (input) {
+					if (!input.hasOwnProperty("parameter") || !input.hasOwnProperty("value")) {
+						return;
+					}
+					parameters[input.parameter()] = input.value();
+				});
+			}
+			if (data.confirmation()) {
+				showConfirmationDialog({
+					message: data.message(),
+					onproceed: function (e) {
+						OctoPrint.control.sendGcodeWithParameters(gcode_cmds, parameters);
+					}
+				});
+            } else {
+				OctoPrint.control.sendGcodeWithParameters(gcode_cmds, parameters);
+			}
+			event.currentTarget.blur();
+		};
 	}
 
 	OCTOPRINT_VIEWMODELS.push({
