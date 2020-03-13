@@ -27,6 +27,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			stored_mesh=[],
 			stored_mesh_x=[],
 			stored_mesh_y=[],
+			screw_hub=0.5, ## NEW
 			stored_mesh_z_height=2,
 			save_mesh=True,
 			mesh_timestamp="",
