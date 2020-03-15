@@ -46,7 +46,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			ignore_correction_matrix=False,
 			debug_logging = False,
 			commands=[],
-			show_labels=True)
+			show_labels=True,
+			show_webcam=False)
 
 	def get_settings_version(self):
 		return 1
@@ -95,7 +96,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 	def get_assets(self):
 		return dict(
 			js=["js/jquery-ui.min.js","js/knockout-sortable.js","js/fontawesome-iconpicker.js","js/ko.iconpicker.js","js/plotly-latest.min.js","js/bedlevelvisualizer.js"],
-			css=["css/font-awesome.min.css","css/font-awesome-v4-shims.min.css","css/fontawesome-iconpicker.css"]
+			css=["css/font-awesome.min.css","css/font-awesome-v4-shims.min.css","css/fontawesome-iconpicker.css","css/bedlevelvisualizer.css"]
 		)
 
 	##~~ WizardPlugin
