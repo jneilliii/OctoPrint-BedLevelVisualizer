@@ -58,3 +58,9 @@
 <script type="text/html" id="customBedLevelVisulizerControls_controlTemplate_command">
 	<button class="btn" data-bind="click: $root.runCustomCommand, attr: {title: (tooltip() ? tooltip : command)}, enable: $root.controlViewModel.isOperational() && (!$root.controlViewModel.isPrinting() || enabled_while_printing()) && (!$root.processing() || enabled_while_graphing)"><i data-bind="css: icon"></i> <span data-bind="text: label"/></button>
 </script>
+
+<div class="row-fluid" data-bind="visible: loginStateViewModel.isUser() && settingsViewModel.settings.plugins.bedlevelvisualizer.command() !== ''">
+	<div style="padding-top: 5px;" class="row-fluid" data-bind="if: $root.showdegree">
+		<table style="margin-left:auto; margin-right:auto;" data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_adjustment(), len: 0}}"></table>
+	</div>
+</div>
