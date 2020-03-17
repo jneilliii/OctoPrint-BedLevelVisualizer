@@ -8,7 +8,7 @@ import numpy as np
 class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.TemplatePlugin,
 				octoprint.plugin.AssetPlugin,
-                octoprint.plugin.SettingsPlugin,
+				octoprint.plugin.SettingsPlugin,
 				octoprint.plugin.WizardPlugin):
 
 	def __init__(self):
@@ -20,14 +20,17 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self.box = []
 		self.flip_x = False
 		self.flip_y = False
+		self.flip_y = False
+		self.flip_y = False
 
 	##~~ SettingsPlugin
 	def get_settings_defaults(self):
-		return dict(command="",
+		return dict(
+			command="",
+			read="", # LMS0815
 			stored_mesh=[],
 			stored_mesh_x=[],
 			stored_mesh_y=[],
-			screw_hub=0.5, ## NEW
 			stored_mesh_z_height=2,
 			save_mesh=True,
 			mesh_timestamp="",
@@ -37,7 +40,13 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			use_center_origin=False,
 			use_relative_offsets=False,
 			timeout=60,
-			ignore_correction_matrix=False)
+			ignore_correction_matrix=False,
+			screw_hub=0.5, # LMS0815
+			mesh_unit=1, # LMS0815
+			reverse=False,
+			showdegree=False,
+			imperial=False,
+			descending=False)
 
 	##~~ StartupPlugin
 	def on_after_startup(self):

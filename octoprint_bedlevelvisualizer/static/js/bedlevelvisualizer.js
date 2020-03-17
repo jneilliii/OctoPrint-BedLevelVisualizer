@@ -4,7 +4,7 @@
  * Amendments by: LMS0815
  * License: AGPLv3
  *
- * http://beautifytools.com/javascriptsssssssss-validator.php
+ * http://beautifytools.com/javascript-validator.php
  *
 */
 $(function () {
@@ -20,7 +20,24 @@ $(function () {
 		self.mesh_data_x = ko.observableArray([]);
 		self.mesh_data_y = ko.observableArray([]);
 		self.mesh_data_z_height = ko.observable();
+
+		self.flipX = ko.observable();
+		self.use_center_origin = ko.observable();
+		self.stripFirst = ko.observable();
+		self.flipY = ko.observable();
+		self.use_relative_offsets = ko.observable();
+		self.ignore_correction_matrix = ko.observable();
+
+		self.timeout = ko.observable();
+		self.command = ko.observable();
+		self.read = ko.observable();
+
 		self.screw_hub = ko.observable();
+		self.mesh_unit = ko.observable();
+		self.reverse = ko.observable();
+		self.showdegree = ko.observable();
+		self.imperial = ko.observable();
+		self.descending = ko.observable();
 		self.save_mesh = ko.observable();
 		self.mesh_status = ko.computed(function(){
 			if(self.processing()){
@@ -32,23 +49,83 @@ $(function () {
 				return 'Update mesh.';
 			}
 		});
+		self.mesh_zero = ko.observable(0);
+		self.mesh_adjustment = ko.computed(
+			function() {
+				var degrees = ko.utils.arrayMap(
+					self.mesh_data(),
+					function(line) {
+					return ko.utils.arrayMap(
+						line,
+						function(item) {
+						return ((parseFloat(item) - parseFloat(self.mesh_zero())) * parseFloat(self.mesh_unit()) * 360 / (self.imperial()?25.4/parseFloat(self.screw_hub()):parseFloat(self.screw_hub())));
+						}
+				);
+					}
+				);
+				return degrees;
+				},
+			self);
+
+			// temp.justIDs = ko.computed(function() {var ids = ko.utils.arrayMap(self.presets(), function(item) {return item.id().toUpperCase();});return ids.sort();}, temp);
+
+
 
 		self.onBeforeBinding = function() {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 			self.mesh_data_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x());
 			self.mesh_data_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y());
 			self.mesh_data_z_height(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
-			self.screw_hub(self.settingsViewModel.settings.plugins.bedlevelvisualizer.screw_hub());
 			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
+			self.mesh_unit(self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit());
+			self.screw_hub(self.settingsViewModel.settings.plugins.bedlevelvisualizer.screw_hub());
+			self.reverse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse());
+			self.showdegree(self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree());
+			self.imperial(self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial());
+			self.descending(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending());
+
+			self.flipX(self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipX());
+			self.flipY(self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipY());
+			self.use_center_origin(self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin());
+			self.stripFirst(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stripFirst());
+			self.use_relative_offsets(self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_relative_offsets());
+			self.ignore_correction_matrix(self.settingsViewModel.settings.plugins.bedlevelvisualizer.ignore_correction_matrix());
+
+			self.timeout(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout());
+			self.command(self.settingsViewModel.settings.plugins.bedlevelvisualizer.command());
+			self.read(self.settingsViewModel.settings.plugins.bedlevelvisualizer.read());
 		};
 
 		self.onAfterBinding = function() {
 			$('div#settings_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#tab_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#wizard_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#settings_plugin_bedlevelvisualizer pre[data-toggle="tooltip"]').tooltip();
 		};
 
+		self.onSettingsBeforeSave = function() {
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh(self.save_mesh());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit(self.mesh_unit());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.screw_hub(self.screw_hub());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse(self.reverse());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree(self.showdegree());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial(self.imperial());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending(self.descending());
+
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipX(self.flipX());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipY(self.flipY());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin(self.use_center_origin());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.stripFirst(self.stripFirst());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_relative_offsets(self.use_relative_offsets());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.ignore_correction_matrix(self.ignore_correction_matrix());
+
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout(self.timeout());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.command(self.command());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.read(self.read());
+};
+
 		self.onEventSettingsUpdated = function () {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
-			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
+			self.mesh_data_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x());
+			self.mesh_data_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y());
+			self.mesh_data_z_height(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
 		};
 
 		self.onDataUpdaterPluginMessage = function (plugin, mesh_data) {
@@ -140,7 +217,7 @@ $(function () {
 				};
 
 				var config_options = {
-					modeBarButtonsToRemove: ['resetCameraLastSave3d'],
+					modeBarButtonsToRemove: ['resetCameraLastSave3d', 'resetCameraDefault3d'], // https://plot.ly/javascript/configuration-options/#remove-modebar-buttons , 'sendDataToCloud'
 					modeBarButtonsToAdd: [{
 					name: 'Move Nozzle',
 					icon: Plotly.Icons.autoscale,
@@ -150,7 +227,7 @@ $(function () {
 						var button_enabled = button._previousVal || false;
 						if(!button_enabled){
 							gd.on('plotly_click', function(data){
-									var gcode_command = 'G1 X' + data.points[0].x + ' Y' + data.points[0].y;
+									var gcode_command = 'G0 X' + data.points[0].x + ' Y' + data.points[0].y + ' F4000';
 									OctoPrint.control.sendGcode([gcode_command]);
 								});
 							button._previousVal = true;
@@ -194,6 +271,23 @@ $(function () {
 			self.processing(true);
 			self.timeout = setTimeout(function(){self.processing(false);new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before prcessing completed. Processing may still be running or there may be a configuration error. Consider increasing the timeout value in settings.</div>',type: 'info',hide: true});}, (parseInt(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout())*1000));
 			var gcode_cmds = self.settingsViewModel.settings.plugins.bedlevelvisualizer.command().split("\n");
+			if (gcode_cmds.indexOf("@BEDLEVELVISUALIZER") == -1){
+				gcode_cmds = ["@BEDLEVELVISUALIZER"].concat(gcode_cmds);
+			}
+			// clean extraneous code
+			gcode_cmds = gcode_cmds.filter(function(array_val) {
+					return Boolean(array_val) === true;
+				});
+
+			console.log(gcode_cmds);
+
+			OctoPrint.control.sendGcode(gcode_cmds);
+		};
+
+		self.readMesh = function () {
+			self.processing(true);
+			self.timeout = setTimeout(function(){self.processing(false);new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before prcessing completed. Processing may still be running or there may be a configuration error. Consider increasing the timeout value in settings.</div>',type: 'info',hide: true});}, (parseInt(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout())*1000));
+			var gcode_cmds = self.settingsViewModel.settings.plugins.bedlevelvisualizer.read().split("\n");
 			if (gcode_cmds.indexOf("@BEDLEVELVISUALIZER") == -1){
 				gcode_cmds = ["@BEDLEVELVISUALIZER"].concat(gcode_cmds);
 			}
