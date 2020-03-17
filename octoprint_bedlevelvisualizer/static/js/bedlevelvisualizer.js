@@ -139,7 +139,7 @@ $(function () {
 					var y_data = [];
 
 					for(i = 0;i <= (mesh_data.mesh[0].length - 1);i++){
-						if((mesh_data.bed.type == "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()){
+						if((mesh_data.bed.type == "circular") || self.use_center_origin()){
 							x_data.push(Math.round(mesh_data.bed.x_min - (mesh_data.bed.x_max/2)+i/(mesh_data.mesh[0].length - 1)*(mesh_data.bed.x_max - mesh_data.bed.x_min)));
 						} else {
 							x_data.push(Math.round(mesh_data.bed.x_min+i/(mesh_data.mesh[0].length - 1)*(mesh_data.bed.x_max - mesh_data.bed.x_min)));
@@ -147,7 +147,7 @@ $(function () {
 					}
 
 					for(i = 0;i <= (mesh_data.mesh.length - 1);i++){
-						if((mesh_data.bed.type == "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()){
+						if((mesh_data.bed.type == "circular") || self.use_center_origin()){
 							y_data.push(Math.round(mesh_data.bed.y_min - (mesh_data.bed.y_max/2)+i/(mesh_data.mesh.length - 1)*(mesh_data.bed.y_max - mesh_data.bed.y_min)));
 						} else {
 							y_data.push(Math.round(mesh_data.bed.y_min+i/(mesh_data.mesh.length - 1)*(mesh_data.bed.y_max - mesh_data.bed.y_min)));
@@ -269,8 +269,8 @@ $(function () {
 
 		self.updateMesh = function () {
 			self.processing(true);
-			self.timeout = setTimeout(function(){self.processing(false);new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before prcessing completed. Processing may still be running or there may be a configuration error. Consider increasing the timeout value in settings.</div>',type: 'info',hide: true});}, (parseInt(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout())*1000));
-			var gcode_cmds = self.settingsViewModel.settings.plugins.bedlevelvisualizer.command().split("\n");
+			self.timeout = setTimeout(function(){self.processing(false);new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before prcessing completed. Processing may still be running or there may be a configuration error. Consider increasing the timeout value in settings.</div>',type: 'info',hide: true});}, (parseInt(self.timeout())*1000));
+			var gcode_cmds = self.command().split("\n");
 			if (gcode_cmds.indexOf("@BEDLEVELVISUALIZER") == -1){
 				gcode_cmds = ["@BEDLEVELVISUALIZER"].concat(gcode_cmds);
 			}
@@ -286,8 +286,8 @@ $(function () {
 
 		self.readMesh = function () {
 			self.processing(true);
-			self.timeout = setTimeout(function(){self.processing(false);new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before prcessing completed. Processing may still be running or there may be a configuration error. Consider increasing the timeout value in settings.</div>',type: 'info',hide: true});}, (parseInt(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout())*1000));
-			var gcode_cmds = self.settingsViewModel.settings.plugins.bedlevelvisualizer.read().split("\n");
+			self.timeout = setTimeout(function(){self.processing(false);new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before prcessing completed. Processing may still be running or there may be a configuration error. Consider increasing the timeout value in settings.</div>',type: 'info',hide: true});}, (parseInt(self.timeout())*1000));
+			var gcode_cmds = self.read().split("\n");
 			if (gcode_cmds.indexOf("@BEDLEVELVISUALIZER") == -1){
 				gcode_cmds = ["@BEDLEVELVISUALIZER"].concat(gcode_cmds);
 			}

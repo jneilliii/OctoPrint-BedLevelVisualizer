@@ -76,7 +76,7 @@
 									</select>
 								<!-- /ko -->
 								<!-- ko ifnot: $data.len -->
-									<div title="Click on meshpoint to normalize adjustments" data-toggle="tooltip">Adjustment angle</div>
+									<div title="Click on meshpoint to normalize adjustment to that point.<br/>click this clear adjustment." data-toggle="tooltip" data-bind="click: function(){$root.mesh_zero(0);}">Adjustment angle</div>
 								<!-- /ko -->
 							</th>
 						</tr>
@@ -86,12 +86,19 @@
 							<tr>
 								<th style="text-align: right; background-color:#f2f2f2;" data-bind="text: $root.mesh_data_y()[$root.descending()?$root.mesh_data_y().length-1-$index():$index()]"></th>
 								<!-- ko foreach:  { data: $parent.mesh[$root.descending()?$root.mesh_data_y().length-1-$index():$index()], as: 'Zvalue', noChildContext: true }-->
-									<td style="text-align: right;"
+									<td style="text-align: right; padding-left: 0.5em;""
 										data-bind="
 											text: (!$parentContext.$parent.len?Math.abs(parseFloat(Zvalue)):parseFloat(Zvalue)).toFixed($parentContext.$parent.len),
 											click: function(){$root.mesh_zero($root.mesh_data()[$root.descending()?$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$index()]);},
-											style: {'color': ['blue','black','red'][1+Math.sign(parseFloat(Zvalue))]},
-											attr: { 'title': !$parentContext.$parent.len?['turn wheel '+Math.abs(Zvalue).toFixed(0)+'&deg; clockwise (right)','','turn wheel '+Math.abs(Zvalue).toFixed(0)+'&deg; anticlockwise (left)'][1+($root.reverse()?-Math.sign(parseFloat(Zvalue)):Math.sign(parseFloat(Zvalue)))]:'Z height'}">
+											style: {'color' : ['blue','black','red'][1+Math.sign(parseFloat(Zvalue))]},
+											attr: {'title' : $parentContext.$parent.len ? 'Z height' : !parseFloat(Zvalue) ? '-' : (
+															(parseFloat(Zvalue)<0? 'raise' : 'lower') +
+															' bed: move wheel ' +
+															Math.round(Math.abs(parseFloat(Zvalue))/36)/10 + ' ' +
+															'turn'+(!Math.trunc(Math.abs(parseFloat(Zvalue))/360) ? '' : 's') + ' ' +
+															(parseFloat(Zvalue)<0? 'clockwise (right)' : 'anticlockwise (left)')
+														)
+													}">
 									</td>
 								<!-- /ko -->
 							</tr>
@@ -154,12 +161,12 @@
 				</div>
 				<div style="padding-top: 5px;" class="row-fluid">
 					<div class="control-group span4">
-						<i class="icon icon-info-sign" title="Adjustment screw hub for a full 360° turn in millimeters" data-toggle="tooltip"></i> Imperial screws <input class="input-checkbox" type="checkbox" data-bind="checked: $root.imperial" style="display: inline-block;margin-bottom: 5px;"></input>
+						<i class="icon icon-info-sign" title="Adjustment screw hub for a full 360° turn in millimeters" data-toggle="tooltip"></i> Imperial screws <input class="input-checkbox" type="checkbox" data-bind="checked: $root.imperial, click: function(){$root.screw_hub(25.4/$root.screw_hub()); return true;}" style="display: inline-block;margin-bottom: 5px;"></input>
 					</div>
-					<div class="control-group span2" title="Adjustment screw details." data-toggle="tooltip">
+					<div class="control-group span4" title="Adjustment screw details." data-toggle="tooltip">
 						<div class="input-append">
-							<input style="width: 3em;" type="number" min="0" step="0.001" class="input-mini text-right" oninput="this.value = Math.abs(parseFloat(this.value || 0.25));" data-bind="value: $root.screw_hub">
-							<span class="add-on" data-bind="text: $root.imperial()?'tpi':'mmpt'"></span>
+							<input style="width: 4em;" type="number" min="0" step="0.001" class="input-mini text-right" oninput="this.value = Math.abs(parseFloat(this.value || 0.25));" data-bind="value: $root.screw_hub">
+							<span class="add-on" data-bind="text: $root.imperial()?'turns per inch':'mm per turn'"></span>
 						</div>
 					</div>
 					<div class="control-group span4">
