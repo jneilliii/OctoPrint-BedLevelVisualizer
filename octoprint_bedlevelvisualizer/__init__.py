@@ -4,19 +4,15 @@ from __future__ import absolute_import
 import octoprint.plugin
 import re
 import numpy as np
-import logging
-import flask
 
 class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.TemplatePlugin,
 				octoprint.plugin.AssetPlugin,
 				octoprint.plugin.SettingsPlugin,
-				octoprint.plugin.WizardPlugin,
-				octoprint.plugin.SimpleApiPlugin):
+				octoprint.plugin.WizardPlugin):
 
 	def __init__(self):
 		self.processing = False
-		self.mesh_collection_canceled = False
 		self.old_marlin = False
 		self.old_marlin_offset = 0
 		self.repetier_firmware = False
@@ -24,12 +20,14 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self.box = []
 		self.flip_x = False
 		self.flip_y = False
-		self._logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer")
-		self._bedlevelvisualizer_logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer.debug")
+		self.flip_y = False
+		self.flip_y = False
 
 	##~~ SettingsPlugin
 	def get_settings_defaults(self):
-		return dict(command="",
+		return dict(
+			command="",
+			read="", # LMS0815
 			stored_mesh=[],
 			stored_mesh_x=[],
 			stored_mesh_y=[],
@@ -42,61 +40,22 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			use_center_origin=False,
 			use_relative_offsets=False,
 			timeout=60,
-			rotation=0,
 			ignore_correction_matrix=False,
-			debug_logging = False,
-			commands=[],
-			show_labels=True,
-			show_webcam=False)
-
-	def get_settings_version(self):
-		return 1
-
-	def on_settings_migrate(self, target, current=None):
-		if current is None or current < 1:
-			# Loop through commands adding new fields
-			commands_new = []
-			self._logger.info(self._settings.get(['commands']))
-			for command in self._settings.get(['commands']):
-				command["confirmation"] = False
-				command["input"] = []
-				command["message"] = ""
-				commands_new.append(command)
-			self._settings.set(["commands"],commands_new)
-
-	def on_settings_save(self, data):
-		old_debug_logging = self._settings.get_boolean(["debug_logging"])
-
-		octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
-
-		new_debug_logging = self._settings.get_boolean(["debug_logging"])
-		if old_debug_logging != new_debug_logging:
-			if new_debug_logging:
-				self._bedlevelvisualizer_logger.setLevel(logging.DEBUG)
-			else:
-				self._bedlevelvisualizer_logger.setLevel(logging.INFO)
+			screw_hub=0.5, # LMS0815
+			mesh_unit=1, # LMS0815
+			reverse=False,
+			showdegree=False,
+			imperial=False,
+			descending=False)
 
 	##~~ StartupPlugin
-
-	def on_startup(self, host, port):
-		# setup customized logger
-		from octoprint.logging.handlers import CleaningTimedRotatingFileHandler
-		bedlevelvisualizer_logging_handler = CleaningTimedRotatingFileHandler(self._settings.get_plugin_logfile_path(postfix="debug"), when="D", backupCount=3)
-		bedlevelvisualizer_logging_handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s: %(message)s"))
-		bedlevelvisualizer_logging_handler.setLevel(logging.DEBUG)
-
-		self._bedlevelvisualizer_logger.addHandler(bedlevelvisualizer_logging_handler)
-		self._bedlevelvisualizer_logger.setLevel(logging.DEBUG if self._settings.get_boolean(["debug_logging"]) else logging.INFO)
-		self._bedlevelvisualizer_logger.propagate = False
-
 	def on_after_startup(self):
 		self._logger.info("OctoPrint-BedLevelVisualizer loaded!")
 
 	##~~ AssetPlugin
 	def get_assets(self):
 		return dict(
-			js=["js/jquery-ui.min.js","js/knockout-sortable.js","js/fontawesome-iconpicker.js","js/ko.iconpicker.js","js/plotly-latest.min.js","js/bedlevelvisualizer.js"],
-			css=["css/font-awesome.min.css","css/font-awesome-v4-shims.min.css","css/fontawesome-iconpicker.css","css/bedlevelvisualizer.css"]
+			js=["js/bedlevelvisualizer.js","js/plotly-latest.min.js"],
 		)
 
 	##~~ WizardPlugin
@@ -120,30 +79,20 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		if cmd.startswith("@BEDLEVELVISUALIZER"):
 			self.mesh = []
 			self.box = []
-			if not self.mesh_collection_canceled and not self.processing:
-				self.processing = True
-			if self.mesh_collection_canceled:
-				self.mesh_collection_canceled = False
-				return
-			self._bedlevelvisualizer_logger.debug("mesh collection started")
+			self.processing = True
 		return
 
 	def processGCODE(self, comm, line, *args, **kwargs):
-		if self.processing == True:
-			self._bedlevelvisualizer_logger.debug(line.strip())
-		if self._settings.get_boolean(["ignore_correction_matrix"]) and re.match(r"^(Mesh )?Bed Level (Correction Matrix|data):.*$", line.strip()):
+		if self._settings.get_boolean(["ignore_correction_matrix"]) and re.match(r"^Bed Level Correction Matrix:.*$", line.strip()):
 			line = "ok"
-		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+(\s+\],?)?$", line.strip()):
+		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+$", line.strip()):
 			new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
-			self._bedlevelvisualizer_logger.debug(new_line)
 
 			if re.match(r"^Bed x:.+$", line.strip()):
 				self.old_marlin = True
-				self._bedlevelvisualizer_logger.debug("using old marlin flag")
 
 			if re.match(r"^G33 X.+$", line.strip()):
 				self.repetier_firmware = True
-				self._bedlevelvisualizer_logger.debug("using repetier flag")
 
 			if self._settings.get(["stripFirst"]):
 				new_line.pop(0)
@@ -154,7 +103,6 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			return line
 
 		if self.processing and "ok" not in line and re.match(r"^Subdivided with CATMULL ROM Leveling Grid:.*$", line.strip()):
-			self._bedlevelvisualizer_logger.debug("resetting mesh to blank because of CATMULL subdivision")
 			self.mesh = []
 			return line
 
@@ -172,11 +120,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 
 		if self.processing and self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
 			self.old_marlin_offset = re.sub("^(Eqn coefficients:.+)(\d+.\d+)$",r"\2", line.strip())
-			self._bedlevelvisualizer_logger.debug("using old marlin offset")
 
-		if self.processing and "Home XYZ first" in line or "Invalid mesh" in line:
-			reason = "data is invalid" if "Invalid" in line else "homing required"
-			self._bedlevelvisualizer_logger.debug("stopping mesh collection because %s" % reason)
+		if self.processing and "Home XYZ first" in line:
 			self._plugin_manager.send_plugin_message(self._identifier, dict(error=line.strip()))
 			self.processing = False
 			return line
@@ -208,66 +153,37 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				max_y = max([y for x, y in self.box])
 
 			bed = dict(type=bed_type,x_min=min_x,x_max=max_x,y_min=min_y,y_max=max_y,z_min=min_z,z_max=max_z)
-			self._bedlevelvisualizer_logger.debug(bed)
 
 			if self.old_marlin or self.repetier_firmware:
 				a = np.swapaxes(self.mesh,1,0)
 				x = np.unique(a[0]).astype(np.float)
 				y = np.unique(a[1]).astype(np.float)
 				z = a[2].reshape((len(x),len(y)))
-				self._bedlevelvisualizer_logger.debug(a)
-				self._bedlevelvisualizer_logger.debug(x)
-				self._bedlevelvisualizer_logger.debug(y)
-				self._bedlevelvisualizer_logger.debug(z)
+				self._logger.debug(a)
+				self._logger.debug(x)
+				self._logger.debug(y)
+				self._logger.debug(z)
 				offset = 0
 				if self.old_marlin:
 					offset = self.old_marlin_offset
-				self._bedlevelvisualizer_logger.debug(offset)
+				self._logger.debug(offset)
 				self.mesh = np.subtract(z, [offset], dtype=np.float, casting='unsafe').tolist()
-				self._bedlevelvisualizer_logger.debug(self.mesh)
+				self._logger.debug(self.mesh)
 
 			self.processing = False
-			self._bedlevelvisualizer_logger.debug("stopping mesh collection")
 			if bool(self.flip_y) != bool(self._settings.get(["flipY"])):
-				self._bedlevelvisualizer_logger.debug("flipping y axis")
 				self.mesh.reverse()
 
 			if self._settings.get(["use_relative_offsets"]):
-				self._bedlevelvisualizer_logger.debug("using relative offsets")
 				self.mesh = np.array(self.mesh)
 				if self._settings.get(["use_center_origin"]):
-					self._bedlevelvisualizer_logger.debug("using center origin")
 					self.mesh = np.subtract(self.mesh, self.mesh[len(self.mesh[0])/2,len(self.mesh)/2], dtype=np.float, casting='unsafe').tolist()
 				else:
 					self.mesh = np.subtract(self.mesh, self.mesh[0,0], dtype=np.float, casting='unsafe').tolist()
 
-			if int(self._settings.get(["rotation"])) > 0:
-				self._bedlevelvisualizer_logger.debug("rotating mesh by %s" % self._settings.get(["rotation"]))
-				self.mesh = np.array(self.mesh)
-				self.mesh = np.rot90(self.mesh, int(self._settings.get(["rotation"]))/90).tolist()
-
-			self._bedlevelvisualizer_logger.debug(self.mesh)
-
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh,bed=bed))
 
 		return line
-
-	##~~ SimpleApiPlugin mixin
-	def get_api_commands(self):
-		return dict(stopProcessing=[])
-
-	def on_api_get(self, request):
-		if request.args.get("stopProcessing"):
-			self._bedlevelvisualizer_logger.debug("Canceling mesh collection per user request")
-			self._bedlevelvisualizer_logger.debug("Mesh data collected prior to cancel:")
-			self._bedlevelvisualizer_logger.debug(self.mesh)
-			self.processing = False
-			self.mesh_collection_canceled = True
-			self.mesh = []
-			self._bedlevelvisualizer_logger.debug("Mesh data after clearing:")
-			self._bedlevelvisualizer_logger.debug(self.mesh)
-			response = dict(stopped=True)
-			return flask.jsonify(response)
 
 	##~~ Softwareupdate hook
 	def get_update_information(self):
