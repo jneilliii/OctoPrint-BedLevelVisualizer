@@ -30,7 +30,10 @@ div#bedlevelvisualizergraph div.modebar {
 		<button class="btn" data-bind="click: readMesh,   visible: (settingsViewModel.settings.plugins.bedlevelvisualizer.read().trim() || '') !== '',   enable: controlViewModel.isOperational() && loginStateViewModel.isUser() && !processing()"><i class="icon-2 icon-info-sign" title="Click to read mash data from printer EEPROM" data-toggle="tooltip"></i> Read</button>
 		<button class="btn" data-bind="click: updateMesh, visible: (settingsViewModel.settings.plugins.bedlevelvisualizer.command().trim() || '')!== '', enable: controlViewModel.isOperational() && !controlViewModel.isPrinting() && loginStateViewModel.isUser() && !processing()"><i class="icon-2 icon-info-sign" title="Cleck to create mesh data and save to printer EEPROM" data-toggle="tooltip"></i> Create</button>
 	</div>
-	<div style="padding-top: 5px;" class="row-fluid" data-bind="if: $root.showdegree">
-		<table style="margin-left:auto; margin-right:auto;" data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_adjustment(), len: 0}}"></table>
+
+	<div data-bind="if: $root.showdegree">
+		<hr/>
+		<h3>Bed Level Adjustment Guide</h3>
+		<span data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_adjustment(), len: 0}}"></span>
 	</div>
 </div>
