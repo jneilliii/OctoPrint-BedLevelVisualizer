@@ -1,3 +1,12 @@
+/*
+ * View model for OctoPrint
+ *
+ * Amendments by: LMS0815
+ * License: AGPLv3
+ *
+ * http://beautifytools.com/javascript-validator.php
+ *
+*/
 $(function () {
 	function bedlevelvisualizerViewModel(parameters) {
 		var self = this;
@@ -11,18 +20,56 @@ $(function () {
 		self.mesh_data_x = ko.observableArray([]);
 		self.mesh_data_y = ko.observableArray([]);
 		self.mesh_data_z_height = ko.observable();
+
+		self.flipX = ko.observable();
+		self.use_center_origin = ko.observable();
+		self.stripFirst = ko.observable();
+		self.flipY = ko.observable();
+		self.use_relative_offsets = ko.observable();
+		self.ignore_correction_matrix = ko.observable();
+
+		self.timeout = ko.observable();
+		self.command = ko.observable();
+
+		self.screw_hub = ko.observable();
+		self.mesh_unit = ko.observable();
+		self.reverse = ko.observable();
+		self.showdegree = ko.observable();
+		self.imperial = ko.observable();
+		self.descending = ko.observable();
 		self.save_mesh = ko.observable();
 		self.selected_command = ko.observable();
-		self.mesh_status = ko.computed(function(){
-			if(self.processing()){
+		self.mesh_status = ko.computed(function() {
+			if (self.processing()) {
 				return 'Collecting mesh data.';
 			}
 			if (self.save_mesh() && self.mesh_data().length > 0) {
 				return 'Using saved mesh data from ' + self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp() + '.';
 			} else {
-				return 'Update mesh.'
+				return 'Update mesh.';
 			}
 		});
+		self.mesh_zero = ko.observable(0);
+		self.mesh_adjustment = ko.computed(
+			function() {
+				var degrees = ko.utils.arrayMap(
+					self.mesh_data(),
+					function(line) {
+					return ko.utils.arrayMap(
+						line,
+						function(item) {
+						return ((parseFloat(item) - parseFloat(self.mesh_zero())) * parseFloat(self.mesh_unit()) * 360 / (self.imperial()?25.4/parseFloat(self.screw_hub()):parseFloat(self.screw_hub())));
+						}
+				);
+					}
+				);
+				return degrees;
+				},
+			self);
+
+			// temp.justIDs = ko.computed(function() {var ids = ko.utils.arrayMap(self.presets(), function(item) {return item.id().toUpperCase();});return ids.sort();}, temp);
+
+
 
 		self.onBeforeBinding = function() {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
@@ -30,41 +77,78 @@ $(function () {
 			self.mesh_data_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y());
 			self.mesh_data_z_height(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
 			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
-		}
+			self.mesh_unit(self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit());
+			self.screw_hub(self.settingsViewModel.settings.plugins.bedlevelvisualizer.screw_hub());
+			self.reverse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse());
+			self.showdegree(self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree());
+			self.imperial(self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial());
+			self.descending(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending());
+
+			self.flipX(self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipX());
+			self.flipY(self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipY());
+			self.use_center_origin(self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin());
+			self.stripFirst(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stripFirst());
+			self.use_relative_offsets(self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_relative_offsets());
+			self.ignore_correction_matrix(self.settingsViewModel.settings.plugins.bedlevelvisualizer.ignore_correction_matrix());
+
+			self.timeout(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout());
+			self.command(self.settingsViewModel.settings.plugins.bedlevelvisualizer.command());
+		};
 
 		self.onAfterBinding = function() {
 			$('div#settings_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#tab_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#wizard_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#settings_plugin_bedlevelvisualizer pre[data-toggle="tooltip"]').tooltip();
-		}
+		};
 
-		self.onEventSettingsUpdated = function (payload) {
+		self.onSettingsBeforeSave = function() {
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh(self.save_mesh());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit(self.mesh_unit());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.screw_hub(self.screw_hub());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse(self.reverse());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree(self.showdegree());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial(self.imperial());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending(self.descending());
+
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipX(self.flipX());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipY(self.flipY());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin(self.use_center_origin());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.stripFirst(self.stripFirst());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_relative_offsets(self.use_relative_offsets());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.ignore_correction_matrix(self.ignore_correction_matrix());
+
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout(self.timeout());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.command(self.command());
+};
+
+		self.onEventSettingsUpdated = function () {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
-		}
+		};
 
 		self.onDataUpdaterPluginMessage = function (plugin, mesh_data) {
 			if (plugin !== "bedlevelvisualizer") {
 				return;
 			}
+			var i;
 			if (mesh_data.mesh) {
 				if (mesh_data.mesh.length > 0) {
 					var x_data = [];
 					var y_data = [];
 
-					for(var i = 0;i <= (mesh_data.mesh[0].length - 1);i++) {
+					for( i = 0;i <= (mesh_data.mesh[0].length - 1);i++) {
 						if ((mesh_data.bed.type == "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()) {
 							x_data.push(Math.round(mesh_data.bed.x_min - (mesh_data.bed.x_max/2)+i/(mesh_data.mesh[0].length - 1)*(mesh_data.bed.x_max - mesh_data.bed.x_min)));
 						} else {
 							x_data.push(Math.round(mesh_data.bed.x_min+i/(mesh_data.mesh[0].length - 1)*(mesh_data.bed.x_max - mesh_data.bed.x_min)));
 						}
-					};
+					}
 
-					for(var i = 0;i <= (mesh_data.mesh.length - 1);i++) {
+					for( i = 0;i <= (mesh_data.mesh.length - 1);i++) {
 						if ((mesh_data.bed.type == "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()) {
 							y_data.push(Math.round(mesh_data.bed.y_min - (mesh_data.bed.y_max/2)+i/(mesh_data.mesh.length - 1)*(mesh_data.bed.y_max - mesh_data.bed.y_min)));
 						} else {
 							y_data.push(Math.round(mesh_data.bed.y_min+i/(mesh_data.mesh.length - 1)*(mesh_data.bed.y_max - mesh_data.bed.y_min)));
 						}
-					};
+					}
 
 					self.drawMesh(mesh_data.mesh,true,x_data,y_data,mesh_data.bed.z_max);
 				}
@@ -87,7 +171,7 @@ $(function () {
 			// console.log(mesh_data_z+'\n'+store_data+'\n'+mesh_data_x+'\n'+mesh_data_y+'\n'+mesh_data_z_height);
 			clearTimeout(self.timeout);
 			self.processing(false);
-			if (self.save_mesh()) {
+			if ( self.save_mesh()) {
 				if (store_data) {
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh(mesh_data_z);
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x(mesh_data_x);
@@ -95,7 +179,7 @@ $(function () {
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height(mesh_data_z_height);
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp(new Date().toLocaleString());
 					self.settingsViewModel.saveData();
-				};
+				}
 			}
 
 			try {
@@ -114,6 +198,7 @@ $(function () {
 
 				var background_color = $('#tabs_content').css('background-color');
 				var foreground_color = $('#tabs_content').css('color');
+
 				var layout = {
 					//title: 'Bed Leveling Mesh',
 					autosize: true,
@@ -130,7 +215,7 @@ $(function () {
 							eye: {
 								x: -1.25,
 								y: -1.25,
-								z: .25
+								z: 0.25
 							}
 						},
 						xaxis: {
@@ -148,7 +233,7 @@ $(function () {
 
 				var config_options = {
 					displaylogo: false,
-					modeBarButtonsToRemove: ['resetCameraLastSave3d'],
+					modeBarButtonsToRemove: ['resetCameraLastSave3d', 'resetCameraDefault3d'], // https://plot.ly/javascript/configuration-options/#remove-modebar-buttons , 'sendDataToCloud'
 					modeBarButtonsToAdd: [{
 					name: 'Move Nozzle',
 					icon: Plotly.Icons.autoscale,
@@ -158,7 +243,7 @@ $(function () {
 						var button_enabled = button._previousVal || false;
 						if (!button_enabled) {
 							gd.on('plotly_click', function(data) {
-									var gcode_command = 'G1 X' + data.points[0].x + ' Y' + data.points[0].y
+									var gcode_command = 'G0 X' + data.points[0].x + ' Y' + data.points[0].y + ' F4000';
 									OctoPrint.control.sendGcode([gcode_command]);
 								});
 							button._previousVal = true;
@@ -168,7 +253,7 @@ $(function () {
 						}
 					}
 					}]
-				}
+				};
 
 				Plotly.react('bedlevelvisualizergraph', data, layout, config_options);
 			} catch(err) {
@@ -200,16 +285,15 @@ $(function () {
 
 		self.updateMesh = function () {
 			self.processing(true);
-			self.timeout = setTimeout(function(){self.cancelMeshUpdate();new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before prcessing completed. Processing may still be running or there may be a configuration error. Consider increasing the timeout value in settings.</div>',type: 'info',hide: true});}, (parseInt(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout())*1000));
+			self.timeout = setTimeout(function() {self.cancelMeshUpdate();new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before prcessing completed. Processing may still be running or there may be a configuration error. Consider increasing the timeout value in settings.</div>',type: 'info',hide: true});}, (parseInt(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout())*1000));
 			var gcode_cmds = self.settingsViewModel.settings.plugins.bedlevelvisualizer.command().split("\n");
 			if (gcode_cmds.indexOf("@BEDLEVELVISUALIZER") == -1) {
 				gcode_cmds = ["@BEDLEVELVISUALIZER"].concat(gcode_cmds);
 			}
 			// clean extraneous code
 			gcode_cmds = gcode_cmds.filter(function(array_val) {
-				var x = Boolean(array_val);
-				return x == true;
-			});
+					return Boolean(array_val) === true;
+				});
 
 			console.log(gcode_cmds);
 
@@ -229,9 +313,9 @@ $(function () {
 					self.processing(false);
 				}
 				});
-		}
+		};
 
-		// Custom command list 
+		// Custom command list
 
 		self.showEditor = function(data) {
 			self.selected_command(data);
@@ -252,39 +336,39 @@ $(function () {
 		};
 
 		self.moveCommandUp = function(data) {
-			let currentIndex = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.indexOf(data);
+			var currentIndex = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.indexOf(data);
 			if (currentIndex > 0) {
-				let queueArray = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands();
+				var queueArray = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands();
 				self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.splice(currentIndex-1, 2, queueArray[currentIndex], queueArray[currentIndex - 1]);
 			}
-		}
+		};
 
 		self.moveCommandDown = function(data) {
-			let currentIndex = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.indexOf(data);
+			var currentIndex = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.indexOf(data);
 			if (currentIndex < self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands().length - 1) {
-				let queueArray = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands();
+				var queueArray = self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands();
 				self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.splice(currentIndex, 2, queueArray[currentIndex + 1], queueArray[currentIndex]);
 			}
-		}
+		};
 
 		self.addCommand = function() {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.push({icon: ko.observable('fas fa-gear'), label: ko.observable(''), tooltip: ko.observable(''), command: ko.observable(''), confirmation: ko.observable(false), message: ko.observable(''), input: ko.observableArray([]), enabled_while_printing: ko.observable(false), enabled_while_graphing: ko.observable(false)});
-		}
+		};
 
 		self.removeCommand = function(data) {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.commands.remove(data);
-		}
+		};
 
 		self.addParameter = function(data) {
 			data.input.push({label: ko.observable(''), parameter: ko.observable(''), value: ko.observable('')});
-		}
+		};
 
 		self.insertParameter = function(data) {
 			var text = self.selected_command().command();
 			text += '%(' + data.parameter() + ')s';
 			self.selected_command().command(text);
 			console.log(data);
-		}
+		};
 
 		self.removeParameter = function(data) {
 			var text = self.selected_command().command();
@@ -293,16 +377,16 @@ $(function () {
 			var new_text = text.replace(re, '');
 			self.selected_command().command(new_text);
 			self.selected_command().input.remove(data);
-		}
+		};
 
-		self.runCustomCommand = function(data, event) {
+		self.runCustomCommand = function(data) {
 			var gcode_cmds = data.command().split("\n");
 			var parameters = {};
-			
+
 			// clean extraneous code
 			gcode_cmds = gcode_cmds.filter(function(array_val) {
 					var x = Boolean(array_val);
-					return x == true;
+					return x === true;
 				});
 			if (data.input().length > 0) {
 				_.each(data.input(), function (input) {
@@ -315,11 +399,11 @@ $(function () {
 			if (data.confirmation()) {
 				showConfirmationDialog({
 					message: data.message(),
-					onproceed: function (e) {
+					onproceed: function () {
 						OctoPrint.control.sendGcodeWithParameters(gcode_cmds, parameters);
 					}
 				});
-            } else {
+			} else {
 				OctoPrint.control.sendGcodeWithParameters(gcode_cmds, parameters);
 			}
 			event.currentTarget.blur();
