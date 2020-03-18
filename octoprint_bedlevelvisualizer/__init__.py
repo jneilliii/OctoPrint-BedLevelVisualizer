@@ -20,8 +20,6 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self.box = []
 		self.flip_x = False
 		self.flip_y = False
-		self.flip_y = False
-		self.flip_y = False
 
 	##~~ SettingsPlugin
 	def get_settings_defaults(self):
