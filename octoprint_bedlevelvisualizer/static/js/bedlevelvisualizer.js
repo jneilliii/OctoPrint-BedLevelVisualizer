@@ -252,6 +252,14 @@ $(function () {
 							button._previousVal = null;
 						}
 					}
+					},
+					{
+					name: 'Home',
+					icon: Plotly.Icons.home,
+					toggle: true,
+					click: function(gd, ev) {
+						self.drawMesh(mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height)
+						}
 					}]
 				};
 
