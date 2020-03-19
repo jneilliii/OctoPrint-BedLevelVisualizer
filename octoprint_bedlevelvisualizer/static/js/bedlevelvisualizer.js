@@ -20,26 +20,6 @@ $(function () {
 		self.mesh_data_x = ko.observableArray([]);
 		self.mesh_data_y = ko.observableArray([]);
 		self.mesh_data_z_height = ko.observable();
-
-		self.flipX = ko.observable();
-		self.use_center_origin = ko.observable();
-		self.stripFirst = ko.observable();
-		self.flipY = ko.observable();
-		self.use_relative_offsets = ko.observable();
-		self.ignore_correction_matrix = ko.observable();
-
-		self.timeout = ko.observable();
-		self.command = ko.observable();
-
-		self.screw_hub = ko.observable();
-		self.mesh_unit = ko.observable();
-		self.reverse = ko.observable();
-		self.showdegree = ko.observable();
-		self.imperial = ko.observable();
-		self.descending_x = ko.observable();
-		self.descending_y = ko.observable();
-		self.save_mesh = ko.observable();
-		self.selected_command = ko.observable();
 		self.mesh_status = ko.computed(function() {
 			if (self.processing()) {
 				return 'Collecting mesh data.';
@@ -50,6 +30,14 @@ $(function () {
 				return 'Update mesh.';
 			}
 		});
+
+		self.screw_hub = ko.observable();
+		self.mesh_unit = ko.observable();
+		self.reverse = ko.observable();
+		self.showdegree = ko.observable();
+		self.imperial = ko.observable();
+		self.descending_x = ko.observable();
+		self.descending_y = ko.observable();
 		self.mesh_zero = ko.observable(0);
 		self.mesh_adjustment = ko.computed(
 			function() {
@@ -74,23 +62,14 @@ $(function () {
 			self.mesh_data_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y());
 			self.mesh_data_z_height(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
 			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
-			self.mesh_unit(self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit());
+
 			self.screw_hub(self.settingsViewModel.settings.plugins.bedlevelvisualizer.screw_hub());
+			self.mesh_unit(self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit());
 			self.reverse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse());
 			self.showdegree(self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree());
 			self.imperial(self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial());
 			self.descending_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x());
 			self.descending_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y());
-
-			self.flipX(self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipX());
-			self.flipY(self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipY());
-			self.use_center_origin(self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin());
-			self.stripFirst(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stripFirst());
-			self.use_relative_offsets(self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_relative_offsets());
-			self.ignore_correction_matrix(self.settingsViewModel.settings.plugins.bedlevelvisualizer.ignore_correction_matrix());
-
-			self.timeout(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout());
-			self.command(self.settingsViewModel.settings.plugins.bedlevelvisualizer.command());
 		};
 
 		self.onAfterBinding = function() {
@@ -98,24 +77,13 @@ $(function () {
 		};
 
 		self.onSettingsBeforeSave = function() {
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh(self.save_mesh());
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit(self.mesh_unit());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.screw_hub(self.screw_hub());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit(self.mesh_unit());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse(self.reverse());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree(self.showdegree());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial(self.imperial());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x(self.descending_x());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y(self.descending_y());
-
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipX(self.flipX());
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipY(self.flipY());
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin(self.use_center_origin());
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.stripFirst(self.stripFirst());
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_relative_offsets(self.use_relative_offsets());
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.ignore_correction_matrix(self.ignore_correction_matrix());
-
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout(self.timeout());
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.command(self.command());
 };
 
 		self.onEventSettingsUpdated = function () {
