@@ -20,6 +20,8 @@ $(function () {
 		self.mesh_data_x = ko.observableArray([]);
 		self.mesh_data_y = ko.observableArray([]);
 		self.mesh_data_z_height = ko.observable();
+		self.save_mesh = ko.observable();
+		self.selected_command = ko.observable();
 		self.mesh_status = ko.computed(function() {
 			if (self.processing()) {
 				return 'Collecting mesh data.';
