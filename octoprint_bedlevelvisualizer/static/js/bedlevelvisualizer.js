@@ -68,10 +68,6 @@ $(function () {
 				},
 			self);
 
-			// temp.justIDs = ko.computed(function() {var ids = ko.utils.arrayMap(self.presets(), function(item) {return item.id().toUpperCase();});return ids.sort();}, temp);
-
-
-
 		self.onBeforeBinding = function() {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 			self.mesh_data_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x());
@@ -260,8 +256,8 @@ $(function () {
 					name: 'Home',
 					icon: Plotly.Icons.home,
 					toggle: true,
-					click: function(gd, ev) {
-						self.drawMesh(mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height)
+					click: function() {
+						self.drawMesh(mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height);
 						}
 					}]
 				};
