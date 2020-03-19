@@ -41,7 +41,7 @@
 <div id="control-bedlevelvisualizer-custom" style="clear: both; display: none; padding-top: 10px; padding-bottom: 10px;" data-bind="visible: loginStateViewModel.isUser && settingsViewModel.settings.plugins.bedlevelvisualizer.commands().length > 0, template: { name: 'customBedLevelVisulizerControls_controlTemplate', foreach: settingsViewModel.settings.plugins.bedlevelvisualizer.commands }"></div>
 
 <!-- Container for custom controls -->
-<div data-bind="if: $root.showdegree">
+<div data-bind="if: $root.showdegree && $root.mesh_data().length">
 	<hr/>
 	<h3>Bed Level Adjustment Guide</h3>
 	<span data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_adjustment(), len: 0}}"></span>
