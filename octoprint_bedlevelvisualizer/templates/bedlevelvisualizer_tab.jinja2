@@ -77,19 +77,19 @@
 		<tbody>
 			<!-- ko foreach:  { data: $root.mesh_data_y(), noChildContext: true }-->
 				<tr>
-					<th style="text-align: right; background-color:#f2f2f2;" data-bind="text: $root.mesh_data_y()[$root.descending()?$root.mesh_data_y().length-1-$index():$index()]"></th>
-					<!-- ko foreach:  { data: $parent.mesh[$root.descending()?$root.mesh_data_y().length-1-$index():$index()], as: 'Zvalue', noChildContext: true }-->
+					<th style="text-align: right; background-color:#f2f2f2;" data-bind="text: $root.mesh_data_y()[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()]"></th>
+					<!-- ko foreach:  { data: $parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()], as: 'Zvalue', noChildContext: true }-->
 						<td style="text-align: right; padding-left: 0.5em;"
 							data-bind="
-								text: (!$parentContext.$parent.len?Math.abs(parseFloat(Zvalue)):parseFloat(Zvalue)).toFixed($parentContext.$parent.len),
-								click: function(){$root.mesh_zero($root.mesh_data()[$root.descending()?$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$index()]);},
-								style: {'color' : ['blue','black','red'][1+Math.sign(parseFloat(Zvalue))]},
-								attr: {'title' : $parentContext.$parent.len ? 'Z height' : !parseFloat(Zvalue) ? '-' : (
-												(parseFloat(Zvalue)<0? 'raise' : 'lower') +
+								text: (!$parentContext.$parent.len?Math.abs(parseFloat($parentContext.$parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()])):parseFloat($parentContext.$parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()])).toFixed($parentContext.$parent.len),
+								click: function(){$root.mesh_zero($root.mesh_data()[$root.descending_y()?$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]);},
+								style: {'color' : ['blue','black','red'][1+Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]))]},
+								attr: {'title' : $parentContext.$parent.len ? 'Z height' : !parseFloat($parentContext.$parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]) ? '-' : (
+												(parseFloat($parentContext.$parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()])<0? 'raise' : 'lower') +
 												' bed: move wheel ' +
-												Math.round(Math.abs(parseFloat(Zvalue))/36)/10 + ' ' +
-												'turn'+(!Math.trunc(Math.abs(parseFloat(Zvalue))/360) ? '' : 's') + ' ' +
-												(parseFloat(Zvalue)<0 ^ $root.reverse() ? 'clockwise (right)' : 'anticlockwise (left)')
+												Math.round(Math.abs(parseFloat($parentContext.$parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]))/36)/10 + ' ' +
+												'turn'+(!Math.trunc(Math.abs(parseFloat($parentContext.$parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]))/360) ? '' : 's') + ' ' +
+												(parseFloat($parentContext.$parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()])<0 ^ $root.reverse() ? 'clockwise (right)' : 'anticlockwise (left)')
 											)
 										}">
 						</td>
@@ -101,7 +101,7 @@
 			<tr>
 				<th style="text-align: right; background-color:#f2f2f2; color: green;" >x</th>
 				<!-- ko foreach:  { data: ko.utils.range(0,$root.mesh_data_x().length-1), as: 'Xindex', noChildContext: true }-->
-					<th style="text-align: right; background-color:#f2f2f2; color: green;" data-bind="text: $root.mesh_data_x()[Xindex]"></th>
+					<th style="text-align: right; background-color:#f2f2f2; color: green;" data-bind="text: $root.mesh_data_x()[$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]"></th>
 				<!-- /ko -->
 			</tr>
 		</tfoot>

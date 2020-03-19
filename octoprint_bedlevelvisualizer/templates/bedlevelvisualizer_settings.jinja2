@@ -111,7 +111,10 @@
 				<span data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_data(), len: 3}}"></span>
 				<div class="row-fluid">
 					<div class="control-group span4">
-						<i class="icon icon-info-sign" title="Display mesh with descending y axis" data-toggle="tooltip"></i> Descending y axis <input class="input-checkbox" type="checkbox" data-bind="checked: $root.descending" style="display: inline-block;margin-bottom: 5px;"></input>
+						<i class="icon icon-info-sign" title="Display mesh with descending y axis" data-toggle="tooltip"></i> Descending y axis <input class="input-checkbox" type="checkbox" data-bind="checked: $root.descending_y" style="display: inline-block;margin-bottom: 5px;"></input>
+					</div>
+					<div class="control-group span4">
+						<i class="icon icon-info-sign" title="Display mesh with descending x axis" data-toggle="tooltip"></i> Descending x axis <input class="input-checkbox" type="checkbox" data-bind="checked: $root.descending_x" style="display: inline-block;margin-bottom: 5px;"></input>
 					</div>
 				</div>
 			</div>

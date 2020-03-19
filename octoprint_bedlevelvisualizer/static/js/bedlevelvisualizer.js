@@ -36,7 +36,8 @@ $(function () {
 		self.reverse = ko.observable();
 		self.showdegree = ko.observable();
 		self.imperial = ko.observable();
-		self.descending = ko.observable();
+		self.descending_x = ko.observable();
+		self.descending_y = ko.observable();
 		self.save_mesh = ko.observable();
 		self.selected_command = ko.observable();
 		self.mesh_status = ko.computed(function() {
@@ -82,7 +83,8 @@ $(function () {
 			self.reverse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse());
 			self.showdegree(self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree());
 			self.imperial(self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial());
-			self.descending(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending());
+			self.descending_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x());
+			self.descending_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y());
 
 			self.flipX(self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipX());
 			self.flipY(self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipY());
@@ -106,7 +108,8 @@ $(function () {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse(self.reverse());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree(self.showdegree());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial(self.imperial());
-			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending(self.descending());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x(self.descending_x());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y(self.descending_y());
 
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipX(self.flipX());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.flipY(self.flipY());
