@@ -28,6 +28,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self._bedlevelvisualizer_logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer.debug")
 
 	##~~ SettingsPlugin
+
 	def get_settings_defaults(self):
 		return dict(command="",
 			stored_mesh=[],
@@ -44,6 +45,13 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			timeout=60,
 			rotation=0,
 			ignore_correction_matrix=False,
+			screw_hub=0.5,
+			mesh_unit=1,
+			reverse=False,
+			showdegree=False,
+			imperial=False,
+			descending_y=False,
+			descending_x=False,
 			debug_logging = False,
 			commands=[],
 			show_labels=True,
@@ -77,7 +85,6 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self._bedlevelvisualizer_logger.setLevel(logging.INFO)
 
 	##~~ StartupPlugin
-
 	def on_startup(self, host, port):
 		# setup customized logger
 		from octoprint.logging.handlers import CleaningTimedRotatingFileHandler
@@ -126,6 +133,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self.mesh_collection_canceled = False
 				return
 			self._bedlevelvisualizer_logger.debug("mesh collection started")
+			self.processing = True
 		return
 
 	def processGCODE(self, comm, line, *args, **kwargs):
@@ -177,6 +185,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		if self.processing and "Home XYZ first" in line or "Invalid mesh" in line:
 			reason = "data is invalid" if "Invalid" in line else "homing required"
 			self._bedlevelvisualizer_logger.debug("stopping mesh collection because %s" % reason)
+
+		if self.processing and "Home XYZ first" in line:
 			self._plugin_manager.send_plugin_message(self._identifier, dict(error=line.strip()))
 			self.processing = False
 			return line
@@ -247,6 +257,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self.mesh = np.rot90(self.mesh, int(self._settings.get(["rotation"]))/90).tolist()
 
 			self._bedlevelvisualizer_logger.debug(self.mesh)
+
 
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh,bed=bed))
 
