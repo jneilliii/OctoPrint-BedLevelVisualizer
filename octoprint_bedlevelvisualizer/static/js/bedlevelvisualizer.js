@@ -57,6 +57,7 @@ $(function () {
 				return degrees;
 				},
 			self);
+		self.turn = ko.observable(0);
 
 		self.onBeforeBinding = function() {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
