@@ -124,7 +124,7 @@
 				<span data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_adjustment(), len: 0}}"></span>
 				<div class="row-fluid">
 					<div class="control-group span4">
-						<i class="icon icon-info-sign" title="Display on plugin main tab screen" data-toggle="tooltip"></i> Display on tab screen<input class="input-checkbox" type="checkbox" data-bind="checked: $root.showdegree" style="display: inline-block;margin-bottom: 5px;"></input>
+						<i class="icon icon-info-sign" title="Display on plugin main tab screen" data-toggle="tooltip"></i> Display on tab screen <input class="input-checkbox" type="checkbox" data-bind="checked: $root.showdegree" style="display: inline-block;margin-bottom: 5px;"></input>
 					</div>
 					<div class="control-group span4">
 						<i class="icon icon-info-sign" title="Adjustment screw hub for a full 360° turn in millimeters" data-toggle="tooltip"></i> Imperial screws <input class="input-checkbox" type="checkbox" data-bind="checked: $root.imperial, click: function(){$root.screw_hub(25.4/$root.screw_hub()); return true;}" style="display: inline-block;margin-bottom: 5px;"></input>

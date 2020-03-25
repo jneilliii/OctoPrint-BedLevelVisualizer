@@ -41,7 +41,7 @@
 <div id="control-bedlevelvisualizer-custom" style="clear: both; display: none; padding-top: 10px; padding-bottom: 10px;" data-bind="visible: loginStateViewModel.isUser && settingsViewModel.settings.plugins.bedlevelvisualizer.commands().length > 0, template: { name: 'customBedLevelVisulizerControls_controlTemplate', foreach: settingsViewModel.settings.plugins.bedlevelvisualizer.commands }"></div>
 
 <!-- Container for custom controls -->
-<div data-bind="if: $root.showdegree && $root.mesh_data().length">
+<div data-bind="if: $root.showdegree() && $root.mesh_data().length">
 	<hr/>
 	<h3>Bed Level Adjustment Guide</h3>
 	<span data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_adjustment(), len: 0}}"></span>
@@ -70,22 +70,30 @@
 					</select>
 				<!-- /ko -->
 				<!-- ko ifnot: $data.len -->
-					<div title="Click on meshpoint to normalize adjustment to that point.<br/>click this clear adjustment." data-toggle="tooltip" data-bind="click: function(){$root.mesh_zero(0);}">Adjustment angle</div>
+					<div title="Click to clear adjustment. Click on meshpoint to normalize adjustment to that point." data-toggle="tooltip" data-bind="click: function(){$root.mesh_zero(0);}">Adjustment angle</div>
 				<!-- /ko -->
 			</th>
-			<th style="text-align: center;"  data-bind="if: !$data.len && $root.turn, attr: { 'rowspan': $root.mesh_data_y().length + 2 }">
-				<span	style="	width: 5em;
+
+			<th style="text-align: center;"  data-bind="if: !$data.len && $root.turn, attr: { 'rowspan': $root.mesh_data_y().length + 2 }, style: {'color': $root.turn()<0?'blue':'red'}">
+				<div><span data-bind="text: $root.turn()<0?'{{ _('raise') }}':'{{ _('lower') }}'"></span>&nbsp;{{ _('bed') }}</div>
+				<div	style="	width: 5em;
 								height: 5em;
 								display: block;
 								border-radius: 50%;
-								border: 1px solid black;
+								border: 2px solid black;
 								float: left;
 								margin: 1em;"
 						data-bind="style: {	'background-color': $root.turn()<0?'blue':'red',
 											'background-image': $root.turn()<0 ^ $root.reverse() ?
 													'linear-gradient(' + (Math.abs($root.turn()%360)<180?(Math.abs($root.turn()%360)+ 90):(Math.abs($root.turn()%360)- 90)) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(90deg, silver 50%, transparent 50%)':
-													'linear-gradient(' + (360-Math.abs($root.turn()%360)<180?(450-Math.abs($root.turn()%360)):(270-Math.abs($root.turn()%360))) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(270deg, silver 50%, transparent 50%)'}"
-				></span>
+													'linear-gradient(' + (360-Math.abs($root.turn()%360)<180?(450-Math.abs($root.turn()%360)):(270-Math.abs($root.turn()%360))) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(270deg, silver 50%, transparent 50%)'}">
+				</div>
+				<div>
+					<div>{{ _('turn') }}&nbsp;<span data-bind="text: $root.turn()<0 ^ $root.reverse() ?'{{ _('right') }}':'{{ _('left') }}'"></span></div>
+					<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&uarr;' : '&darr;'"></span>
+					<span data-bind="text: (Math.abs($root.turn()/360)).toFixed(2)"></span>
+					<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&darr;' : '&uarr;'"></span>
+				</div>
 			</th>
 		</tr>
 		<!-- ko foreach:  { data: $root.mesh_data_y(), noChildContext: true }-->
@@ -128,25 +136,7 @@
 												$root.mesh_data_y().length-1-$parentContext.$index():
 												$parentContext.$index()][$root.descending_x()?
 													$root.mesh_data_x().length-1-$index():
-													$index()])<0? 'raise' : 'lower') +
-										' bed: move wheel ' +
-										Math.round(Math.abs(parseFloat($parentContext.$parent.mesh[$root.descending_y()?
-											$root.mesh_data_y().length-1-$parentContext.$index():
-											$parentContext.$index()][$root.descending_x()?
-												$root.mesh_data_x().length-1-$index():
-												$index()]))/36)/10 + ' ' +
-										'turn'+(!Math.trunc(Math.abs(parseFloat($parentContext.$parent.mesh[$root.descending_y()?
-											$root.mesh_data_y().length-1-$parentContext.$index():
-											$parentContext.$index()][$root.descending_x()?
-												$root.mesh_data_x().length-1-$index():
-												$index()]))/360) ? '' : 's') + ' ' +
-										(parseFloat($parentContext.$parent.mesh[$root.descending_y()?
-											$root.mesh_data_y().length-1-$parentContext.$index():
-											$parentContext.$index()][$root.descending_x()?
-												$root.mesh_data_x().length-1-$index():
-												$index()])<0 ^ $root.reverse() ?
-													'clockwise (right)' :
-													'anticlockwise (left)')
+													$index()])<0? '&uarr;' : '&darr;')
 								)
 							}">
 					</td>
