@@ -13,6 +13,13 @@ $(function () {
 		self.mesh_data_z_height = ko.observable();
 		self.save_mesh = ko.observable();
 		self.selected_command = ko.observable();
+		self.webcam_streamUrl = ko.computed(function(){
+			if(self.processing() && self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_webcam() && (self.settingsViewModel.webcam_streamUrl() !== "")) {
+				return self.settingsViewModel.webcam_streamUrl();
+			} else {
+				return "";
+			}
+		});
 		self.mesh_status = ko.computed(function(){
 			if(self.processing()){
 				return 'Collecting mesh data.';
@@ -191,10 +198,6 @@ $(function () {
 					self.drawMesh(self.mesh_data(),false,self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
 				}
 				return;
-			}
-
-			if (previous === "#tab_plugin_bedlevelvisualizer") {
-				//Plotly.purge('bedlevelvisualizergraph');
 			}
 		};
 
