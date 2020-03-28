@@ -78,6 +78,7 @@ or manually using this URL:
 ## Changelog
 
 **[0.1.13]** (03/28/2020)
+
 **Added**
 - Screw adjustment angle calculations in degrees based on screw size
 
@@ -92,6 +93,7 @@ or manually using this URL:
 Thanks to [@LMS0815](https://github.com/LMS0815) for screw adjustment angle changes mentioned above
 
 **[0.1.12]** (03/15/2019)
+
 **Added**
 - Rotation options to mesh visualization, community forum request.
 - Custom debug logging for future troubleshooting
