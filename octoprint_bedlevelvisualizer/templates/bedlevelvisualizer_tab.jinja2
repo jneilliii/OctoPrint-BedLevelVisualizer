@@ -37,26 +37,23 @@
 </div>
 
 
-<!-- Container for mesh degrees -->
+<!-- Container for custom controls -->
 <div id="control-bedlevelvisualizer-custom" style="clear: both; display: none; padding-top: 10px; padding-bottom: 10px;" data-bind="visible: loginStateViewModel.isUser && settingsViewModel.settings.plugins.bedlevelvisualizer.commands().length > 0, template: { name: 'customBedLevelVisulizerControls_controlTemplate', foreach: settingsViewModel.settings.plugins.bedlevelvisualizer.commands }"></div>
 
-<!-- Container for custom controls -->
-<div data-bind="if: $root.showdegree() && $root.mesh_data().length">
+<!-- Container for mesh degrees -->
+<div data-bind="if: $root.showdegree() && $root.mesh_data().length" class="row-fluid" align="center">
 	<hr/>
-	<h3>Bed Level Adjustment Guide</h3>
 	<span data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_adjustment(), len: 0}}"></span>
 </div>
 
 <!-- Template for mesh degrees -->
 <script type="text/html" id="bedlevelvisualize_meshtable">
-	<h3 data-bind="ifnot: $data.mesh.length">No Mesh Data Available</h3>
-	<!-- {# <style> table, th, td {  border: 1px solid black;}</style> #} -->
 	<table data-bind="if: $data.mesh.length">
 		<tr>
-			<th style="text-align: right; background-color:silver;" >y</th>
+			<th style="text-align: right; background-color:silver;">y</th>
 			<th style="text-align: center; background-color:silver; color: normal;" data-bind="attr: { 'colspan': $root.mesh_data_x().length }">
 				<!-- ko if: $data.len -->
-					Mesh z heigth in:
+					Mesh z Height in:
 					<select style="width: 5em;"
 					oninput="this.value = Math.abs(parseFloat(this.value || 1.0));"
 					type="number"
@@ -70,30 +67,8 @@
 					</select>
 				<!-- /ko -->
 				<!-- ko ifnot: $data.len -->
-					<div title="Click to clear adjustment. Click on meshpoint to normalize adjustment to that point." data-toggle="tooltip" data-bind="click: function(){$root.mesh_zero(0);}">Adjustment angle</div>
+					<div title="Click to clear adjustment. Click on meshpoint to normalize adjustment to that point." data-toggle="tooltip" data-bind="click: function(){$root.mesh_zero(0);}">Adjustment Angle (degrees)</div>
 				<!-- /ko -->
-			</th>
-
-			<th style="text-align: center;"  data-bind="if: !$data.len && $root.turn, attr: { 'rowspan': $root.mesh_data_y().length + 2 }, style: {'color': $root.turn()<0?'blue':'red'}">
-				<div><span data-bind="text: $root.turn()<0?'{{ _('raise') }}':'{{ _('lower') }}'"></span>&nbsp;{{ _('bed') }}</div>
-				<div	style="	width: 5em;
-								height: 5em;
-								display: block;
-								border-radius: 50%;
-								border: 2px solid black;
-								float: left;
-								margin: 1em;"
-						data-bind="style: {	'background-color': $root.turn()<0?'blue':'red',
-											'background-image': $root.turn()<0 ^ $root.reverse() ?
-													'linear-gradient(' + (Math.abs($root.turn()%360)<180?(Math.abs($root.turn()%360)+ 90):(Math.abs($root.turn()%360)- 90)) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(90deg, silver 50%, transparent 50%)':
-													'linear-gradient(' + (360-Math.abs($root.turn()%360)<180?(450-Math.abs($root.turn()%360)):(270-Math.abs($root.turn()%360))) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(270deg, silver 50%, transparent 50%)'}">
-				</div>
-				<div>
-					<div>{{ _('turn') }}&nbsp;<span data-bind="text: $root.turn()<0 ^ $root.reverse() ?'{{ _('right') }}':'{{ _('left') }}'"></span></div>
-					<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&uarr;' : '&darr;'"></span>
-					<span data-bind="text: (Math.abs($root.turn()/360)).toFixed(2)"></span>
-					<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&darr;' : '&uarr;'"></span>
-				</div>
 			</th>
 		</tr>
 		<!-- ko foreach:  { data: $root.mesh_data_y(), noChildContext: true }-->
@@ -149,29 +124,53 @@
 				<th style="text-align: right; background-color:silver; color: green;" data-bind="text: $root.mesh_data_x()[$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]"></th>
 			<!-- /ko -->
 		</tr>
+		<tr>
+			<td data-bind="attr: {colspan: ($root.mesh_data_x().length+1)/2}"><div class="row-fluid" style="font-weight: bold; color: green;text-align: center;">x - Position</div></td>
+			<td data-bind="attr: {colspan: ($root.mesh_data_x().length+1)/2}"><div class="row-fluid" style="font-weight: bold; color: black;text-align: center;">y - Position</div></td>
+		</tr>
+		<tr>
+			<td data-bind="attr: {colspan: $root.mesh_data_x().length+1}" style="text-align: center">
+				<div class="control-group" title="Printer bed leveling screws turn direction." data-toggle="tooltip">
+					<!-- ko if: $data.len -->
+						<span style="color: normal;">Z Height: </span>
+						<span style="color: blue;">below offset</span>
+						<span style="color: normal;"> / </span>
+						<span style="color: red;">above offset</span>
+					<!-- /ko -->
+					<!-- ko ifnot: $data.len -->
+						<span style="color: normal;">Turn direction - </span>
+						<span style="color: blue;" data-bind="text: $root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
+						<span style="color: normal;"> / </span>
+						<span style="color: red;"  data-bind="text: !$root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
+					<!-- /ko -->
+				</div>
+			</td>
+		</tr>
+		<tr data-bind="if: !$data.len && $root.turn && false">
+			<th data-bind="attr: {'colspan': ($root.mesh_data_x().length + 1)/3}"></th>
+			<th data-bind="attr: {'colspan': (($root.mesh_data_x().length + 1)/3) * 2 }, style: {'color': $root.turn()<0?'blue':'red'}">
+				<div	style="	width: 5em;
+								height: 5em;
+								display: block;
+								border-radius: 50%;
+								border: 2px solid black;
+								float: left;
+								margin: 1em;"
+						data-bind="style: {	'background-color': $root.turn()<0?'blue':'red',
+											'background-image': $root.turn()<0 ^ $root.reverse() ?
+													'linear-gradient(' + (Math.abs($root.turn()%360)<180?(Math.abs($root.turn()%360)+ 90):(Math.abs($root.turn()%360)- 90)) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(90deg, silver 50%, transparent 50%)':
+													'linear-gradient(' + (360-Math.abs($root.turn()%360)<180?(450-Math.abs($root.turn()%360)):(270-Math.abs($root.turn()%360))) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(270deg, silver 50%, transparent 50%)'}">
+				</div>
+				<div style="text-align: left;padding-top: 20px;">
+					<span data-bind="text: $root.turn()<0?'{{ _('raise') }}':'{{ _('lower') }}'"></span>
+					<div>{{ _('turn') }}&nbsp;<span data-bind="text: $root.turn()<0 ^ $root.reverse() ?'{{ _('right') }}':'{{ _('left') }}'"></span></div>
+					<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&uarr;' : '&darr;'"></span>
+					<span data-bind="text: (Math.abs($root.turn()/360)).toFixed(2)"></span>
+					<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&darr;' : '&uarr;'"></span>
+				</div>
+			</th>
+		</tr>
 	</table>
-	<div style="padding-top: 5px;" class="row-fluid">
-		<div class="control-group span2">
-			<div style="font-weight: bold; color: green;">x - Position</div>
-		</div>
-		<div class="control-group span2">
-			<div style="font-weight: bold; color: normal;">y - Position</div>
-		</div>
-		<div class="control-group span8" title="Printer bed leveling screws turn direction." data-toggle="tooltip">
-			<!-- ko if: $data.len -->
-				<span style="color: normal;">Z height: </span>
-				<span style="color: blue;">below offset</span>
-				<span style="color: normal;"> / </span>
-				<span style="color: red;">above offset</span>
-			<!-- /ko -->
-			<!-- ko ifnot: $data.len -->
-				<span style="color: normal;">Turn direction - </span>
-				<span style="color: blue;" data-bind="text: $root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
-				<span style="color: normal;"> / </span>
-				<span style="color: red;"  data-bind="text: !$root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
-			<!-- /ko -->
-		</div>
-	</div>
 </script>
 
 <!-- Template for custom controls -->

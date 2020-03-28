@@ -77,6 +77,37 @@ or manually using this URL:
 
 ## Changelog
 
+**[0.1.13]** (03/28/2020)
+**Added**
+- Screw adjustment angle calculations in degrees based on screw size
+
+**Updated**
+- Default timeout value increased to 30 minutes to hopefully resolve confusion
+- Timeout notification to hopefully make it more clear what needs to be fixed
+
+**Fixed**
+- New webcam feature consuming network bandiwdth while idle or not visible
+
+**Thanks**
+Thanks to [@LMS0815](https://github.com/LMS0815) for screw adjustment angle changes mentioned above
+
+**[0.1.12]** (03/15/2019)
+**Added**
+- Rotation options to mesh visualization, community forum request.
+- Custom debug logging for future troubleshooting
+- Custom commands that will give additional buttons on tab
+- Cancel button to stop processing when visualization gets stuck
+- Larger precision number processing
+- Themify support, will now color the background and axis based on tab colors
+- Marlin Mesh Bed Leveling support
+- Marlin OpenScad Output support
+- Option to show webcam while processing
+
+**Updated**
+- Several UI improvements
+- Timeout logic to also stop processing on server side
+- Plotly library to version 1.52.2 
+
 **[0.1.11]** (10/06/2019)
 
 **Added**
@@ -225,27 +256,29 @@ or manually using this URL:
 
 **Initial Release**
 
-[0.1.11]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.11
-[0.1.10]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.10
-[0.1.9]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.9
-[0.1.8]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.8
-[0.1.7]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.7
-[0.1.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.6
-[0.1.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.5
-[0.1.4]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.4
-[0.1.3]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.3
-[0.1.2]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.2
-[0.1.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.1
-[0.1.0]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.1.0
-[0.0.9]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.9
-[0.0.8]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.8
-[0.0.7]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.7
-[0.0.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.6
-[0.0.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.5
-[0.0.4]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.4
-[0.0.3]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.3
-[0.0.2]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.2
-[0.0.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/tree/0.0.1
+[0.1.13]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.13.zip
+[0.1.12]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.12.zip
+[0.1.11]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.11.zip
+[0.1.10]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.10.zip
+[0.1.9]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.9.zip
+[0.1.8]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.8.zip
+[0.1.7]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.7.zip
+[0.1.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.6.zip
+[0.1.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.5.zip
+[0.1.4]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.4.zip
+[0.1.3]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.3.zip
+[0.1.2]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.2.zip
+[0.1.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.1.zip
+[0.1.0]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.1.0.zip
+[0.0.9]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.0.9.zip
+[0.0.8]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.0.8.zip
+[0.0.7]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.0.7.zip
+[0.0.6]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.0.6.zip
+[0.0.5]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.0.5.zip
+[0.0.4]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.0.4.zip
+[0.0.3]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.0.3.zip
+[0.0.2]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.0.2.zip
+[0.0.1]: https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/0.0.1.zip
 
 ## To-Do
 - [ ] Pause standard OctoPrint temperature polling or squash the responses until processing is completed.
