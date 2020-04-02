@@ -213,7 +213,9 @@ $(function () {
 
 				var config_options = {
 					displaylogo: false,
-					modeBarButtonsToRemove: ['resetCameraLastSave3d', 'resetCameraDefault3d'], // https://plot.ly/javascript/configuration-options/#remove-modebar-buttons , 'sendDataToCloud'
+					showEditInChartStudio: true,
+					plotlyServerURL: "https://chart-studio.plotly.com",
+					modeBarButtonsToRemove: ['resetCameraLastSave3d', 'resetCameraDefault3d'],
 					modeBarButtonsToAdd: [{
 					name: 'Move Nozzle',
 					icon: Plotly.Icons.autoscale,
