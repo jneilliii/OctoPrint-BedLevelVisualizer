@@ -102,7 +102,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 	##~~ AssetPlugin
 	def get_assets(self):
 		return dict(
-			js=["js/jquery-ui.min.js","js/knockout-sortable.js","js/fontawesome-iconpicker.js","js/ko.iconpicker.js","js/plotly-latest.min.js","js/bedlevelvisualizer.js"],
+			js=["js/jquery-ui.min.js","js/knockout-sortable.js","js/fontawesome-iconpicker.js","js/ko.iconpicker.js","js/plotly.min.js","js/bedlevelvisualizer.js"],
 			css=["css/font-awesome.min.css","css/font-awesome-v4-shims.min.css","css/fontawesome-iconpicker.css","css/bedlevelvisualizer.css"]
 		)
 
