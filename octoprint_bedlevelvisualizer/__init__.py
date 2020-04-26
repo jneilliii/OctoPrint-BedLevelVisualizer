@@ -137,61 +137,66 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		return
 
 	def processGCODE(self, comm, line, *args, **kwargs):
-		if self.processing == True:
-			self._bedlevelvisualizer_logger.debug(line.strip())
+		if not self.processing:
+			return line
+
+		self._bedlevelvisualizer_logger.debug(line.strip())
+
 		if self._settings.get_boolean(["ignore_correction_matrix"]) and re.match(r"^(Mesh )?Bed Level (Correction Matrix|data):.*$", line.strip()):
 			line = "ok"
-		if self.processing and "ok" not in line and re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+(\s+\],?)?$", line.strip()):
-			new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
-			self._bedlevelvisualizer_logger.debug(new_line)
 
-			if re.match(r"^Bed x:.+$", line.strip()):
-				self.old_marlin = True
-				self._bedlevelvisualizer_logger.debug("using old marlin flag")
+		if "ok" not in line:
+			if re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+(\s+\],?)?$", line.strip()):
+				new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
+				self._bedlevelvisualizer_logger.debug(new_line)
 
-			if re.match(r"^G33 X.+$", line.strip()):
-				self.repetier_firmware = True
-				self._bedlevelvisualizer_logger.debug("using repetier flag")
+				if re.match(r"^Bed x:.+$", line.strip()):
+					self.old_marlin = True
+					self._bedlevelvisualizer_logger.debug("using old marlin flag")
 
-			if self._settings.get(["stripFirst"]):
-				new_line.pop(0)
-			if len(new_line) > 0:
-				if bool(self.flip_x) != bool(self._settings.get(["flipX"])):
-					new_line.reverse()
-				self.mesh.append(new_line)
-			return line
+				if re.match(r"^G33 X.+$", line.strip()):
+					self.repetier_firmware = True
+					self._bedlevelvisualizer_logger.debug("using repetier flag")
 
-		if self.processing and "ok" not in line and re.match(r"^Subdivided with CATMULL ROM Leveling Grid:.*$", line.strip()):
-			self._bedlevelvisualizer_logger.debug("resetting mesh to blank because of CATMULL subdivision")
-			self.mesh = []
-			return line
+				if self._settings.get(["stripFirst"]):
+					new_line.pop(0)
+				if len(new_line) > 0:
+					if bool(self.flip_x) != bool(self._settings.get(["flipX"])):
+						new_line.reverse()
+					self.mesh.append(new_line)
+				return line
 
-		if self.processing and "ok" not in line and re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip()):
-			box = re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip())
-			if len(box) == 2:
-				self.box += [[float(x), float(y)] for x, y in box]
-			if len(self.box) == 2:
-				if self.box[0][0] > self.box[1][0]:
-					self.flip_x = True
-			if len(self.box) == 4:
-				if self.box[0][1] > self.box[3][1]:
-					self.flip_y = True
-			return line
+			if re.match(r"^Subdivided with CATMULL ROM Leveling Grid:.*$", line.strip()):
+				self._bedlevelvisualizer_logger.debug("resetting mesh to blank because of CATMULL subdivision")
+				self.mesh = []
+				return line
 
-		if self.processing and self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
+			if re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip()):
+				box = re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip())
+				if len(box) == 2:
+					self.box += [[float(x), float(y)] for x, y in box]
+				if len(self.box) == 2:
+					if self.box[0][0] > self.box[1][0]:
+						self.flip_x = True
+				if len(self.box) == 4:
+					if self.box[0][1] > self.box[3][1]:
+						self.flip_y = True
+				return line
+
+		if self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
 			self.old_marlin_offset = re.sub("^(Eqn coefficients:.+)(\d+.\d+)$",r"\2", line.strip())
 			self._bedlevelvisualizer_logger.debug("using old marlin offset")
 
-		if self.processing and "Home XYZ first" in line or "Invalid mesh" in line:
+		if "Home XYZ first" in line or "Invalid mesh" in line:
 			reason = "data is invalid" if "Invalid" in line else "homing required"
 			self._bedlevelvisualizer_logger.debug("stopping mesh collection because %s" % reason)
 
-		if self.processing and "Home XYZ first" in line:
+		if "Home XYZ first" in line:
 			self._plugin_manager.send_plugin_message(self._identifier, dict(error=line.strip()))
 			self.processing = False
 			return line
 
-		if self.processing and ("ok" in line or (self.repetier_firmware and "T:" in line)) and len(self.mesh) > 0:
+		if ("ok" in line or (self.repetier_firmware and "T:" in line)) and len(self.mesh) > 0:
 			octoprint_printer_profile = self._printer_profile_manager.get_current()
 			volume = octoprint_printer_profile["volume"]
 			bed_type = volume["formFactor"]
