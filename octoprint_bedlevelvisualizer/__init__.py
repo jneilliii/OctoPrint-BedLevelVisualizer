@@ -312,7 +312,7 @@ def __plugin_load__():
 
 	global __plugin_hooks__
 	__plugin_hooks__ = {
-		"octoprint.comm.protocol.gcode.sending": __plugin_implementation__.flagMeshCollection,
+		"octoprint.comm.protocol.gcode.sent": __plugin_implementation__.flagMeshCollection,
 		"octoprint.comm.protocol.gcode.received": __plugin_implementation__.processGCODE,
 		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
 	}
