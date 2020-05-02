@@ -15,19 +15,7 @@
 <div class="row-fluid" id="bedlevelvisualizerwarning" style="text-align: center;font-size: 25px;vertical-align: middle;" data-bind="visible: !loginStateViewModel.isUser()"><i class="icon-warning-sign icon-3" style="color:red"></i> <b>You must be logged in.</b></div>
 <div class="row_fluid" id="bedlevelvisualizercommandmissing" data-bind="visible: settingsViewModel.settings.plugins.bedlevelvisualizer.command() == ''">
 	<div class="row_fluid">
-		<p>In order for this plugin to work properly, you must configure the GCODE commands necessary to send back a Bed Topography Report. Common examples are listed below.</p>
-		<ul>
-			<li>G29 T</li>
-			<li>G81</li>
-			<li>M420 V</li>
-		</ul>
-		<p>If you run into any problems please check the <a href="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues?utf8=%E2%9C%93&q=is%3Aissue" target="_blank">Issues</a> for possible fixes or report a bug.</p>
-	</div>
-	<div class="row_fluid">
-		<div class="control-group">
-			<label for="bedlevelvisualizer_command"><i class="icon icon-info-sign" title="GCODE commands to send to printer to retrieve grid data" data-toggle="tooltip"></i> GCODE Commands</label>
-			<textarea class="input-block-level" id="bedlevelvisualizer_command" rows="4" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.command"></textarea>
-		</div>
+		<p>In order for this plugin to work properly, you must configure the GCODE commands necessary to send back a Bed Topography Report in <a href="#" data-bind="click: function(){ settingsViewModel.show('#settings_plugin_bedlevelvisualizer'); }">Settings</a>.</p>
 	</div>
 </div>
 <div class="row-fluid" data-bind="visible: loginStateViewModel.isUser() && settingsViewModel.settings.plugins.bedlevelvisualizer.command() !== ''">
@@ -48,10 +36,12 @@
 
 <!-- Template for mesh degrees -->
 <script type="text/html" id="bedlevelvisualize_meshtable">
-	<table data-bind="if: $data.mesh.length">
-		<tr>
-			<th style="text-align: right; background-color:silver;">y</th>
-			<th style="text-align: center; background-color:silver; color: normal;" data-bind="attr: { 'colspan': $root.mesh_data_x().length }">
+<div class="span8 offset2">
+	<table data-bind="if: $data.mesh.length" class="table table-bordered table-condensed">
+		<thead>
+		<tr class="info">
+			<th class="text-right">y</th>
+			<th data-bind="attr: { 'colspan': $root.mesh_data_x().length }" class="text-center">
 				<!-- ko if: $data.len -->
 					Mesh z Height in:
 					<select style="width: 5em;"
@@ -71,12 +61,14 @@
 				<!-- /ko -->
 			</th>
 		</tr>
+		</thead>
+		<tbody>
 		<!-- ko foreach:  { data: $root.mesh_data_y(), noChildContext: true }-->
 			<tr>
-				<th style="text-align: right; background-color:silver;" data-bind="text: $root.mesh_data_y()[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()]"></th>
+				<td class="text-right info" data-bind="text: $root.mesh_data_y()[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()]"></td>
 				<!-- ko foreach:  { data: $parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()], as: 'Zvalue', noChildContext: true }-->
 				<!-- {# angle math #} -->
-					<td style="text-align: right; padding-left: 0.5em;"
+					<td class="text-right" style="padding-left: 0.5em;"
 						data-bind="
 							text: (!$parentContext.$parent.len?
 								Math.abs(parseFloat(	$parentContext.$parent.mesh[$root.descending_y()?
@@ -118,10 +110,12 @@
 				<!-- /ko -->
 			</tr>
 		<!-- /ko -->
-		<tr>
-			<th style="text-align: right; background-color:silver; color: green;" >x</th>
+		</tbody>
+		<tfoot>
+		<tr class="info">
+			<th class="text-right" style="color: green;" >x</th>
 			<!-- ko foreach:  { data: ko.utils.range(0,$root.mesh_data_x().length-1), as: 'Xindex', noChildContext: true }-->
-				<th style="text-align: right; background-color:silver; color: green;" data-bind="text: $root.mesh_data_x()[$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]"></th>
+				<th class="text-right" style="color: green;" data-bind="text: $root.mesh_data_x()[$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]"></th>
 			<!-- /ko -->
 		</tr>
 		<tr>
@@ -146,7 +140,8 @@
 				</div>
 			</td>
 		</tr>
-		<tr data-bind="if: !$data.len && $root.turn && false">
+		</tfoot>
+		<tr class="info" data-bind="if: !$data.len && $root.turn && false">
 			<th data-bind="attr: {'colspan': ($root.mesh_data_x().length + 1)/3}"></th>
 			<th data-bind="attr: {'colspan': (($root.mesh_data_x().length + 1)/3) * 2 }, style: {'color': $root.turn()<0?'blue':'red'}">
 				<div	style="	width: 5em;
@@ -171,6 +166,7 @@
 			</th>
 		</tr>
 	</table>
+</div>
 </script>
 
 <!-- Template for custom controls -->

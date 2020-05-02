@@ -6,6 +6,7 @@ import re
 import numpy as np
 import logging
 import flask
+from collections import deque
 
 class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.TemplatePlugin,
@@ -13,6 +14,9 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.SettingsPlugin,
 				octoprint.plugin.WizardPlugin,
 				octoprint.plugin.SimpleApiPlugin):
+
+	INTERVAL = 2.0
+	MAX_HISTORY = 10
 
 	def __init__(self):
 		self.processing = False
@@ -26,6 +30,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self.flip_y = False
 		self._logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer")
 		self._bedlevelvisualizer_logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer.debug")
+		self._collected_lines = deque([])
 
 	##~~ SettingsPlugin
 
@@ -85,6 +90,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self._bedlevelvisualizer_logger.setLevel(logging.INFO)
 
 	##~~ StartupPlugin
+
 	def on_startup(self, host, port):
 		# setup customized logger
 		from octoprint.logging.handlers import CleaningTimedRotatingFileHandler
@@ -100,52 +106,55 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self._logger.info("OctoPrint-BedLevelVisualizer loaded!")
 
 	##~~ AssetPlugin
+
 	def get_assets(self):
 		return dict(
 			js=["js/jquery-ui.min.js","js/knockout-sortable.js","js/fontawesome-iconpicker.js","js/ko.iconpicker.js","js/plotly.min.js","js/bedlevelvisualizer.js"],
 			css=["css/font-awesome.min.css","css/font-awesome-v4-shims.min.css","css/fontawesome-iconpicker.css","css/bedlevelvisualizer.css"]
 		)
 
-	##~~ WizardPlugin
-	def is_wizard_required(self):
-		if not self._settings.get(["command"]) == "":
-			return False
-		else:
-			return True
-
-	def is_wizard_ignored(self, seen_wizards, implementation):
-		if not self._settings.get(["command"]) == "":
-			return True
-		else:
-			return False
-
-	# def get_wizard_version(self):
-		# return 1
-
 	##~~ GCODE hook
+
 	def flagMeshCollection(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
-		if cmd.startswith("@BEDLEVELVISUALIZER"):
-			self.mesh = []
-			self.box = []
-			if not self.mesh_collection_canceled and not self.processing:
-				self.processing = True
-			if self.mesh_collection_canceled:
-				self.mesh_collection_canceled = False
-				return
-			self._bedlevelvisualizer_logger.debug("mesh collection started")
+		if cmd[:1] != "@":
+			return
+
+		if cmd != "@BEDLEVELVISUALIZER":
+			return
+
+		self.mesh = []
+		self.box = []
+		if not self.mesh_collection_canceled and not self.processing:
 			self.processing = True
+		if self.mesh_collection_canceled:
+			self.mesh_collection_canceled = False
+			return
+		self._bedlevelvisualizer_logger.debug("mesh collection started")
+		self.processing = True
+		return
+
+	def processCollectedLines(self):
+		regex = re.compile(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+(\s+\],?)?$")
+		self._logger.info(self._collected_lines)
+		test = deque(filter(regex.search, self._collected_lines))
+		self._logger.info(test)
+		self.processing = False
+		self._collected_lines.clear()
+		self._plugin_manager.send_plugin_message(self._identifier, dict(error="Testing"))
 		return
 
 	def processGCODE(self, comm, line, *args, **kwargs):
 		if not self.processing:
 			return line
 
-		self._bedlevelvisualizer_logger.debug(line.strip())
+		# self._bedlevelvisualizer_logger.debug(line.strip())
 
 		if self._settings.get_boolean(["ignore_correction_matrix"]) and re.match(r"^(Mesh )?Bed Level (Correction Matrix|data):.*$", line.strip()):
 			line = "ok"
 
 		if "ok" not in line:
+			self._collected_lines.append(line.strip())
+
 			if re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+(\s+\],?)?$", line.strip()):
 				new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
 				self._bedlevelvisualizer_logger.debug(new_line)
@@ -164,14 +173,12 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 					if bool(self.flip_x) != bool(self._settings.get(["flipX"])):
 						new_line.reverse()
 					self.mesh.append(new_line)
-				return line
 
-			if re.match(r"^Subdivided with CATMULL ROM Leveling Grid:.*$", line.strip()):
+			elif re.match(r"^Subdivided with CATMULL ROM Leveling Grid:.*$", line.strip()):
 				self._bedlevelvisualizer_logger.debug("resetting mesh to blank because of CATMULL subdivision")
 				self.mesh = []
-				return line
 
-			if re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip()):
+			elif re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip()):
 				box = re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip())
 				if len(box) == 2:
 					self.box += [[float(x), float(y)] for x, y in box]
@@ -181,20 +188,18 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				if len(self.box) == 4:
 					if self.box[0][1] > self.box[3][1]:
 						self.flip_y = True
-				return line
 
-		if self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
-			self.old_marlin_offset = re.sub("^(Eqn coefficients:.+)(\d+.\d+)$",r"\2", line.strip())
-			self._bedlevelvisualizer_logger.debug("using old marlin offset")
+			if self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
+				self.old_marlin_offset = re.sub("^(Eqn coefficients:.+)(\d+.\d+)$",r"\2", line.strip())
+				self._bedlevelvisualizer_logger.debug("using old marlin offset")
 
-		if "Home XYZ first" in line or "Invalid mesh" in line:
-			reason = "data is invalid" if "Invalid" in line else "homing required"
-			self._bedlevelvisualizer_logger.debug("stopping mesh collection because %s" % reason)
+			if "Home XYZ first" in line or "Invalid mesh" in line:
+				reason = "data is invalid" if "Invalid" in line else "homing required"
+				self._bedlevelvisualizer_logger.debug("stopping mesh collection because %s" % reason)
 
-		if "Home XYZ first" in line:
-			self._plugin_manager.send_plugin_message(self._identifier, dict(error=line.strip()))
-			self.processing = False
-			return line
+			if "Home XYZ first" in line:
+				self._plugin_manager.send_plugin_message(self._identifier, dict(error=line.strip()))
+				self.processing = False
 
 		if ("ok" in line or (self.repetier_firmware and "T:" in line)) and len(self.mesh) > 0:
 			octoprint_printer_profile = self._printer_profile_manager.get_current()
@@ -263,12 +268,12 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 
 			self._bedlevelvisualizer_logger.debug(self.mesh)
 
-
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh,bed=bed))
 
 		return line
 
 	##~~ SimpleApiPlugin mixin
+
 	def get_api_commands(self):
 		return dict(stopProcessing=[])
 
@@ -286,6 +291,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			return flask.jsonify(response)
 
 	##~~ Softwareupdate hook
+
 	def get_update_information(self):
 		return dict(
 			bedlevelvisualizer=dict(
@@ -312,7 +318,7 @@ def __plugin_load__():
 
 	global __plugin_hooks__
 	__plugin_hooks__ = {
-		"octoprint.comm.protocol.gcode.sent": __plugin_implementation__.flagMeshCollection,
+		"octoprint.comm.protocol.gcode.sending": __plugin_implementation__.flagMeshCollection,
 		"octoprint.comm.protocol.gcode.received": __plugin_implementation__.processGCODE,
 		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
 	}

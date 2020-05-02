@@ -57,3 +57,15 @@ div#bedlevelvisualizergraph div.modebar {
 	height:100%;
 	object-fit:contain;
 }
+
+.table thead tr.info > th, .table tbody tr td.info, .table tfoot tr.info > th {
+    background-color: #d9edf7;
+}
+
+.table thead tr.info th.text-right, .table tbody tr td.text-right, .table tfoot tr.info th.text-right {
+	text-align: right;
+}
+
+.table thead tr.info th.text-center {
+	text-align: center;
+}
