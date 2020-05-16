@@ -4,8 +4,9 @@ This plugin visualises the output from various firmware that support bed mesh le
 
 ## Supported Firmware:
 
-* Prusa i3 MK2 to MK3S version 3.2.3 to 3.8.1
 * Marlin 2.0.5.3 
+* Prusa i3 MK2 to MK3S version 3.2.3 to 3.8.1
+* Klipper
 * Older Marlin and Repetier firmware.
 
 ## Example
