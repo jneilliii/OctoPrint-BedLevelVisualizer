@@ -1,7 +1,16 @@
 # OctoPrint-BedLevelVisualizer
 
-This plugin utilizes [Plotly](https://plot.ly/plotly-js-scientific-d3-charting-library/) js library to render a 3D surface of the bed's reported mesh on a tab within OctoPrint. It converts this
+This plugin visualises the output from various firmware that support bed mesh leveling, noteably the Prusa `G81` mesh leveling report and the Marlin `G29 T` bed topography report. The plugin utilizes [Plotly](https://plot.ly/plotly-js-scientific-d3-charting-library/) js library to render a 3D surface of the bed's reported mesh on a tab within OctoPrint.
 
+## Supported Firmware:
+
+* Marlin 2.0.5.3 
+* Prusa i3 MK2 to MK3S version 3.2.3 to 3.8.1
+* Klipper
+* Older Marlin and Repetier firmware.
+
+## Example
+ It converts this:
 ```
 Send: G29 T
 Recv: echo:Home XYZ first
