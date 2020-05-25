@@ -84,6 +84,18 @@ or manually using this URL:
 
     https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/master.zip
 
+### Custom commands
+#### Parameters
+For inserting a custom code paremeter GCODE command, the plus button beside the parameter can be used, or the following syntax can be used:
+```
+%(parameter_name)s
+```
+##### Example
+For creating a preheating command, after creating a parameter called `bed_temp` with a default value of 60, the custom command including parameter would look like this:
+```
+M140 S%(bed_temp)s
+```
+
 ## Changelog
 
 **[0.1.13]** (03/28/2020)
