@@ -155,7 +155,11 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		if "ok" not in line:
 			self._collected_lines.append(line.strip())
 
-			if re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+(\s+\],?)?$", line.strip()):
+			if re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?)|(nan\s?\,?))+(\s+\],?)?$", line.strip()):
+				if re.match(r"^(nan\s?\,?)+$", line.strip()):
+					self._bedlevelvisualizer_logger.debug("stupid smoothieware issue...")
+					line = re.sub(r"(nan)", "0.0", line)
+
 				new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
 				self._bedlevelvisualizer_logger.debug(new_line)
 
@@ -166,6 +170,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				if re.match(r"^G33 X.+$", line.strip()):
 					self.repetier_firmware = True
 					self._bedlevelvisualizer_logger.debug("using repetier flag")
+
+					new_line = re.findall(r"(nan)",line)
 
 				if self._settings.get(["stripFirst"]):
 					new_line.pop(0)
