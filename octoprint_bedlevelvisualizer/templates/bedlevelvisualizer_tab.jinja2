@@ -141,8 +141,8 @@
 			</td>
 		</tr>
 		<tr class="info" data-bind="if: !$data.len && $root.turn">
-			<th data-bind="attr: {'colspan': ($root.mesh_data_x().length + 1)/3}"></th>
-			<th data-bind="attr: {'colspan': (($root.mesh_data_x().length + 1)/3) * 2 }, style: {'color': $root.turn()<0?'blue':'red'}">
+			<th data-bind="attr: {'colspan': Math.round(($root.mesh_data_x().length + 1)/3) }"></th>
+			<th data-bind="attr: {'colspan': Math.round((($root.mesh_data_x().length + 1)/3) * 2) }, style: {'color': $root.turn()<0?'blue':'red'}">
 				<div	style="	width: 5em;
 								height: 5em;
 								display: block;
