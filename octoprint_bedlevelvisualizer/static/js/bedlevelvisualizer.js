@@ -172,7 +172,11 @@ $(function () {
 							tickfont: {
 								color: $('#tabs_content').css('color')
 							}
-						}
+						},
+						autocolorscale: false,
+						colorscale: [[0, 'red'],[0.5, 'blue'],[1, 'red']],
+						cmin: -2,
+						cmax: 2
 					}
 				];
 
@@ -249,7 +253,7 @@ $(function () {
 			} catch(err) {
 				new PNotify({
 						title: 'Bed Visualizer Error',
-						text: '<div class="row-fluid">Looks like your settings are not correct or there was an error.  Please see the <a href="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/#octoprint-bedlevelvisualizer" target="_blank">Readme</a> for configuration hints.</div><pre style="padding-top: 5px;">'+err+'</pre>',
+						text: '<div class="row-fluid">Errors while attempting render of mesh data.</div><div class="row-fluid">Error:</div><div class="row-fluid"><pre style="padding-top: 5px;">'+err+'</pre></div><div class="row-fluid">Received Data:</div><div class="row-fluid"><pre style="padding-top: 5px;">'+data+'</pre></div>',
 						type: 'error',
 						hide: false
 						});
