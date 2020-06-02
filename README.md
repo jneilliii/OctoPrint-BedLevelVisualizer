@@ -63,26 +63,65 @@ into this
   - If you have Marlin's Auto Temperature Reporting feature enabled you will want to have M155 S30 and M155 S3 surrounding your reporting GCODE command, otherwise the collected data will be tainted with temperature information.
   - If you end up requiring multiple commands it is recommended to enter `@BEDLEVELVISUALIZER` just prior to the reporting command.
 
-    ~~~
-	G28	
-    M155 S30	
-    @BEDLEVELVISUALIZER	
-    G29 T	
-    M155 S3
-	~~~
-	
-	Use the following command for Klipper (per https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/92):
-	~~~
-	@BEDLEVELVISUALIZER
-	BED_MESH_OUTPUT
-	~~~
-
 ## Setup
 
 Install via the bundled [Plugin Manager](https://github.com/foosel/OctoPrint/wiki/Plugin:-Plugin-Manager)
 or manually using this URL:
 
     https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/master.zip
+
+## Mesh Update Process GCODE
+
+### Marlin Bilinear bed leveling
+
+See [G29 - Bed Leveling (Bilinear)](https://marlinfw.org/docs/gcode/G029-abl-bilinear.html)
+
+```
+G28      ; aome all axes
+M155 S30 ; reduce temperature reporting rate to reduce output pollution
+@BEDLEVELVISUALIZER	; tell the plugin to watch for reported mesh
+G29 T	   ; run bilinear probing
+M155 S3  ; reset temperature reporting
+```
+
+### Marlin Unified Bed Leveling (UBL)
+
+See [G29 - Bed Leveling (Unified)](https://marlinfw.org/docs/gcode/G029-ubl.html)
+
+```
+G28       ; home all axes
+M155 S30  ; reduce temperature reporting rate to reduce output pollution
+M190 S65  ; (optional) wait for the bed to get up to temperature
+G29 P1    ; automatically populate mesh with all reachable points
+G29 P3    ; infer the rest of the mesh values
+@BEDLEVELVISUALIZER	; tell the plugin to watch for reported mesh
+M420 S1 V ; enabled leveling and report the new mesh
+M500      ; save the new mesh to EEPROM
+M155 S3   ; reset temperature reporting
+```
+
+### Klipper
+
+Use the following command for Klipper (per https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/92):
+
+```
+@BEDLEVELVISUALIZER
+BED_MESH_OUTPUT
+```
+
+---
+
+### Custom commands
+#### Parameters
+For inserting a custom code paremeter GCODE command, the plus button beside the parameter can be used, or the following syntax can be used:
+```
+%(parameter_name)s
+```
+##### Example
+For creating a preheating command, after creating a parameter called `bed_temp` with a default value of 60, the custom command including parameter would look like this:
+```
+M140 S%(bed_temp)s
+```
 
 ## Changelog
 
