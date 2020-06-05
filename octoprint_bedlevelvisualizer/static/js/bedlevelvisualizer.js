@@ -174,7 +174,7 @@ $(function () {
 							}
 						},
 						autocolorscale: false,
-						colorscale: [[0, 'red'],[0.5, 'blue'],[1, 'red']],
+						colorscale: [[0, 'red'],[0.375, 'red'],[0.5, 'blue'],[0.625, 'red'],[1, 'red']],
 						cmin: -2,
 						cmax: 2
 					}

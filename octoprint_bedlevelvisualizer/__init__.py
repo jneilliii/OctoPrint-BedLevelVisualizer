@@ -134,7 +134,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		return
 
 	def processCollectedLines(self):
-		regex = re.compile(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?))+(\s+\],?)?$")
+		regex = re.compile(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?)|(nan\s?\,?)|(=======\s?\,?))+(\s+\],?)?$")
 		self._logger.info(self._collected_lines)
 		test = deque(filter(regex.search, self._collected_lines))
 		self._logger.info(test)
@@ -147,18 +147,19 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		if not self.processing:
 			return line
 
-		# self._bedlevelvisualizer_logger.debug(line.strip())
-
 		if self._settings.get_boolean(["ignore_correction_matrix"]) and re.match(r"^(Mesh )?Bed Level (Correction Matrix|data):.*$", line.strip()):
 			line = "ok"
 
 		if "ok" not in line:
 			self._collected_lines.append(line.strip())
 
-			if re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?)|(nan\s?\,?))+(\s+\],?)?$", line.strip()):
+			if re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?)|(nan\s?\,?)|(=======\s?\,?))+(\s+\],?)?$", line.strip()):
 				if re.match(r"^(nan\s?\,?)+$", line.strip()):
 					self._bedlevelvisualizer_logger.debug("stupid smoothieware issue...")
 					line = re.sub(r"(nan)", "0.0", line)
+				if re.match(r"^(=======\s?\,?)+$", line.strip()):
+					self._bedlevelvisualizer_logger.debug("stupid equal signs...")
+					line = re.sub(r"(=======)", "0.0", line)
 
 				new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
 				self._bedlevelvisualizer_logger.debug(new_line)
