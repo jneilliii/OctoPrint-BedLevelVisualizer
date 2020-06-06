@@ -328,4 +328,7 @@ I, jneilliii, programmed this plugin for fun and do my best effort to support th
 
 [![Patreon](patreon-with-text-new.png)](https://www.patreon.com/jneilliii) [![paypal](paypal-with-text.png)](https://paypal.me/jneilliii)
 
-<small>No paypal.me? Send funds via PayPal to jneilliii&#64;gmail&#46;com</small>
+<small>No paypal.me? Send funds via PayPal to jneilliii&#64;gmail&#46;com
+
+You can use [this](https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=jneilliii@gmail.com) link too. But the normal PayPal fee will be deducted.
+</small>
