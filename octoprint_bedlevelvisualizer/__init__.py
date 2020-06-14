@@ -6,7 +6,6 @@ import re
 import numpy as np
 import logging
 import flask
-from collections import deque
 
 class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				octoprint.plugin.TemplatePlugin,
@@ -30,8 +29,17 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self.flip_y = False
 		self._logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer")
 		self._bedlevelvisualizer_logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer.debug")
-		self._collected_lines = deque([])
-		self.mesh_data_regex = re.compile(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?)|(nan\s?\,?)|(=======\s?\,?))+(\s+\],?)?$")
+		self.regex_mesh_data = re.compile(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?)|(nan\s?\,?)|(=======\s?\,?))+(\s+\],?)?$")
+		self.regex_bed_level_correction = re.compile(r"^(Mesh )?Bed Level (Correction Matrix|data):.*$")
+		self.regex_nans = re.compile(r"^(nan\s?\,?)+$")
+		self.regex_equal_signs = re.compile(r"^(=======\s?\,?)+$")
+		self.regex_mesh_data_extraction = re.compile(r"(\+?\-?\d*\.\d*)")
+		self.regex_old_marlin = re.compile(r"^Bed x:.+$")
+		self.regex_repetier = re.compile(r"^G33 X.+$")
+		self.regex_nan = re.compile(r"(nan)")
+		self.regex_catmull = re.compile(r"^Subdivided with CATMULL ROM Leveling Grid:.*$")
+		self.regex_extracted_box = re.compile(r"\(\s*(\d+),\s*(\d+)\)")
+		self.regex_eqn_coefficients = re.compile(r"^Eqn coefficients:.+$")
 
 	##~~ SettingsPlugin
 
@@ -115,80 +123,63 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			css=["css/font-awesome.min.css","css/font-awesome-v4-shims.min.css","css/fontawesome-iconpicker.css","css/bedlevelvisualizer.css"]
 		)
 
-	##~~ GCODE hook
+	##~~ atcommand hook
 
-	def flagMeshCollection(self, comm_instance, phase, cmd, cmd_type, gcode, *args, **kwargs):
-		if cmd[:1] != "@":
-			return
-
-		if cmd != "@BEDLEVELVISUALIZER":
-			return
-
-		self.mesh = []
-		self.box = []
-		if not self.mesh_collection_canceled and not self.processing:
+	def flagMeshCollection(self, comm_instance, phase, command, parameters, tags=None, *args, **kwargs):
+		if command == 'BEDLEVELVISUALIZER':
+			self.mesh = []
+			self.box = []
+			if not self.mesh_collection_canceled and not self.processing:
+				self.processing = True
+			if self.mesh_collection_canceled:
+				self.mesh_collection_canceled = False
+				return
+			self._bedlevelvisualizer_logger.debug("mesh collection started")
 			self.processing = True
-		if self.mesh_collection_canceled:
-			self.mesh_collection_canceled = False
 			return
-		self._bedlevelvisualizer_logger.debug("mesh collection started")
-		self.processing = True
-		return
-
-	def processCollectedLines(self):
-		
-		self._logger.info(self._collected_lines)
-		test = deque(filter(regex.search, self._collected_lines))
-		self._logger.info(test)
-		self.processing = False
-		self._collected_lines.clear()
-		self._plugin_manager.send_plugin_message(self._identifier, dict(error="Testing"))
-		return
 
 	def processGCODE(self, comm, line, *args, **kwargs):
 		if not self.processing:
 			return line
 
-		if self._settings.get_boolean(["ignore_correction_matrix"]) and re.match(r"^(Mesh )?Bed Level (Correction Matrix|data):.*$", line.strip()):
+		if self._settings.get_boolean(["ignore_correction_matrix"]) and self.regex_bed_level_correction.match(line.strip()):
 			line = "ok"
 
 		if "ok" not in line:
-			self._collected_lines.append(line.strip())
-
-			if self.mesh_data_regex.match(line.strip()):
-				if re.match(r"^(nan\s?\,?)+$", line.strip()):
+			if self.regex_mesh_data.match(line.strip()):
+				if self.regex_nans.match(line.strip()):
 					self._bedlevelvisualizer_logger.debug("stupid smoothieware issue...")
-					line = re.sub(r"(nan)", "0.0", line)
-				if re.match(r"^(=======\s?\,?)+$", line.strip()):
+					line = self.regex_nans.sub("0.0", line)
+				if self.regex_equal_signs.match(line.strip()):
 					self._bedlevelvisualizer_logger.debug("stupid equal signs...")
-					line = re.sub(r"(=======)", "0.0", line)
+					line = self.regex_equal_signs.sub("0.0", line)
 
-				new_line = re.findall(r"(\+?\-?\d*\.\d*)",line)
+				new_line = self.regex_mesh_data_extraction.findall(line)
 				self._bedlevelvisualizer_logger.debug(new_line)
 
-				if re.match(r"^Bed x:.+$", line.strip()):
+				if self.regex_old_marlin.match(line.strip()):
 					self.old_marlin = True
 					self._bedlevelvisualizer_logger.debug("using old marlin flag")
 
-				if re.match(r"^G33 X.+$", line.strip()):
+				if self.regex_repetier.match(line.strip()):
 					self.repetier_firmware = True
 					self._bedlevelvisualizer_logger.debug("using repetier flag")
 
-					new_line = re.findall(r"(nan)",line)
+					new_line = regex_nan.findall(line)
 
-				if self._settings.get(["stripFirst"]):
+				if self._settings.get_boolean(["stripFirst"]):
 					new_line.pop(0)
 				if len(new_line) > 0:
-					if bool(self.flip_x) != bool(self._settings.get(["flipX"])):
+					if bool(self.flip_x) != self._settings.get_boolean(["flipX"]):
 						new_line.reverse()
 					self.mesh.append(new_line)
 
-			elif re.match(r"^Subdivided with CATMULL ROM Leveling Grid:.*$", line.strip()):
+			elif self.regex_catmull.match(line.strip()):
 				self._bedlevelvisualizer_logger.debug("resetting mesh to blank because of CATMULL subdivision")
 				self.mesh = []
 
-			elif re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip()):
-				box = re.findall(r"\(\s*(\d+),\s*(\d+)\)", line.strip())
+			elif self.regex_extracted_box.findall(line.strip()):
+				box = self.regex_extracted_box.findall(line.strip())
 				if len(box) == 2:
 					self.box += [[float(x), float(y)] for x, y in box]
 				if len(self.box) == 2:
@@ -198,8 +189,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 					if self.box[0][1] > self.box[3][1]:
 						self.flip_y = True
 
-			if self.old_marlin and re.match(r"^Eqn coefficients:.+$", line.strip()):
-				self.old_marlin_offset = re.sub("^(Eqn coefficients:.+)(\d+.\d+)$",r"\2", line.strip())
+			if self.old_marlin and self.regex_eqn_coefficients.match(line.strip()):
+				self.old_marlin_offset = self.regex_eqn_coefficients.sub(r"\2", line.strip())
 				self._bedlevelvisualizer_logger.debug("using old marlin offset")
 
 			if "Home XYZ first" in line or "Invalid mesh" in line:
@@ -261,19 +252,19 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self._bedlevelvisualizer_logger.debug("flipping y axis")
 				self.mesh.reverse()
 
-			if self._settings.get(["use_relative_offsets"]):
+			if self._settings.get_boolean(["use_relative_offsets"]):
 				self._bedlevelvisualizer_logger.debug("using relative offsets")
 				self.mesh = np.array(self.mesh)
-				if self._settings.get(["use_center_origin"]):
+				if self._settings.get_boolean(["use_center_origin"]):
 					self._bedlevelvisualizer_logger.debug("using center origin")
 					self.mesh = np.subtract(self.mesh, self.mesh[len(self.mesh[0])/2,len(self.mesh)/2], dtype=np.float, casting='unsafe').tolist()
 				else:
 					self.mesh = np.subtract(self.mesh, self.mesh[0,0], dtype=np.float, casting='unsafe').tolist()
 
-			if int(self._settings.get(["rotation"])) > 0:
+			if int(self._settings.get_int(["rotation"])) > 0:
 				self._bedlevelvisualizer_logger.debug("rotating mesh by %s" % self._settings.get(["rotation"]))
 				self.mesh = np.array(self.mesh)
-				self.mesh = np.rot90(self.mesh, int(self._settings.get(["rotation"]))/90).tolist()
+				self.mesh = np.rot90(self.mesh, self._settings.get_int(["rotation"])/90).tolist()
 
 			self._bedlevelvisualizer_logger.debug(self.mesh)
 
@@ -327,7 +318,7 @@ def __plugin_load__():
 
 	global __plugin_hooks__
 	__plugin_hooks__ = {
-		"octoprint.comm.protocol.gcode.sending": __plugin_implementation__.flagMeshCollection,
+		"octoprint.comm.protocol.atcommand.sending": __plugin_implementation__.flagMeshCollection,
 		"octoprint.comm.protocol.gcode.received": __plugin_implementation__.processGCODE,
 		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
 	}
