@@ -31,6 +31,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self._logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer")
 		self._bedlevelvisualizer_logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer.debug")
 		self._collected_lines = deque([])
+		self.mesh_data_regex = re.compile(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?)|(nan\s?\,?)|(=======\s?\,?))+(\s+\],?)?$")
 
 	##~~ SettingsPlugin
 
@@ -60,7 +61,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			debug_logging = False,
 			commands=[],
 			show_labels=True,
-			show_webcam=False)
+			show_webcam=False,
+			graph_z_limits="-2,2")
 
 	def get_settings_version(self):
 		return 1
@@ -134,7 +136,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		return
 
 	def processCollectedLines(self):
-		regex = re.compile(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?)|(nan\s?\,?)|(=======\s?\,?))+(\s+\],?)?$")
+		
 		self._logger.info(self._collected_lines)
 		test = deque(filter(regex.search, self._collected_lines))
 		self._logger.info(test)
@@ -153,7 +155,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		if "ok" not in line:
 			self._collected_lines.append(line.strip())
 
-			if re.match(r"^((G33.+)|(Bed.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?\-?\d?\.\d+\]?\s*\,?)|(\s?\.\s*)|(NAN\,?)|(nan\s?\,?)|(=======\s?\,?))+(\s+\],?)?$", line.strip()):
+			if self.mesh_data_regex.match(line.strip()):
 				if re.match(r"^(nan\s?\,?)+$", line.strip()):
 					self._bedlevelvisualizer_logger.debug("stupid smoothieware issue...")
 					line = re.sub(r"(nan)", "0.0", line)

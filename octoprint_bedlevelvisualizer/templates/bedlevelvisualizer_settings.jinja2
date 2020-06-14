@@ -36,20 +36,24 @@
 					</div>
 				</div>
 				<div class="row-fluid">
-					<div class="control-group">
+					<div class="control-group span4">
+						<label for="bedlevelvisualizer_timeout"><i class="icon icon-info-sign" title="Timeout value that will stop processing of visualizer in seconds." data-toggle="tooltip"></i> Processing Timeout</label>
+						<div class="input-append">
+							<input type="number" min="0" step="10" id="bedlevelvisualizer_timeout" class="input-mini text-right" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.timeout">
+							<span class="add-on">secs</span>
+						</div>
+					</div>
+					<div class="control-group span4">
 						<label for="bedlevelvisualizer_rotate"><i class="icon icon-info-sign" title="Clockwise rotation angle of visualized mesh to match physical orientation of bed." data-toggle="tooltip"></i> Clockwise Rotation</label>
 						<div class="input-append">
 							<input type="number" min="0" max="270" step="90" id="bedlevelvisualizer_rotate" class="input-mini text-right" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.rotation">
 							<span class="add-on">degs</span>
 						</div>
 					</div>
-				</div>
-				<div class="row-fluid">
-					<div class="control-group">
-						<label for="bedlevelvisualizer_timeout"><i class="icon icon-info-sign" title="Timeout value that will stop processing of visualizer in seconds." data-toggle="tooltip"></i> Processing Timeout</label>
-						<div class="input-append">
-							<input type="number" min="0" step="10" id="bedlevelvisualizer_timeout" class="input-mini text-right" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.timeout">
-							<span class="add-on">secs</span>
+					<div class="control-group span4">
+						<label for="bedlevelvisualizer_z_offset"><i class="icon icon-info-sign" title="Comma separated list of integers for controlling the z offset of the visualized graph in the format of <z-min>,<z-max>. For example the default value is -2,2. This also affects the color map. " data-toggle="tooltip"></i> Graph Z-Limits</label>
+						<div class="controls">
+							<input type="text" id="bedlevelvisualizer_z_offset" class="input-small" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.graph_z_limits">
 						</div>
 					</div>
 				</div>

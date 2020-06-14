@@ -65,6 +65,7 @@ $(function () {
 				},
 			self);
 		self.turn = ko.observable(0);
+		self.graph_z_limits = ko.observable();
 
 		self.onBeforeBinding = function() {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
@@ -80,6 +81,7 @@ $(function () {
 			self.imperial(self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial());
 			self.descending_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x());
 			self.descending_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y());
+			self.graph_z_limits(self.settingsViewModel.settings.plugins.bedlevelvisualizer.graph_z_limits());
 		};
 
 		self.onAfterBinding = function() {
@@ -99,6 +101,7 @@ $(function () {
 		self.onEventSettingsUpdated = function () {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
+			self.graph_z_limits(self.settingsViewModel.settings.plugins.bedlevelvisualizer.graph_z_limits());
 		};
 
 		self.onDataUpdaterPluginMessage = function (plugin, mesh_data) {
@@ -174,9 +177,9 @@ $(function () {
 							}
 						},
 						autocolorscale: false,
-						colorscale: [[0, 'red'],[0.375, 'red'],[0.5, 'blue'],[0.625, 'red'],[1, 'red']],
-						cmin: -2,
-						cmax: 2
+						colorscale: [[0, 'red'],[0.5, 'blue'],[1, 'red']],
+						cmin: self.graph_z_limits().split(",")[0],
+						cmax: self.graph_z_limits().split(",")[1]
 					}
 				];
 
@@ -210,7 +213,7 @@ $(function () {
 						},
 						zaxis: {
 							color: foreground_color,
-							range: [-2,2]
+							range: self.graph_z_limits().split(',')
 						}
 					}
 				};
