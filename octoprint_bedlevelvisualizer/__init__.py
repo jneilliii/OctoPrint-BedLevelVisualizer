@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 
 import octoprint.plugin
+from octoprint.events import Events
 import re
 import numpy as np
 import logging
@@ -267,8 +268,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self.mesh = np.rot90(self.mesh, self._settings.get_int(["rotation"])/90).tolist()
 
 			self._bedlevelvisualizer_logger.debug(self.mesh)
-
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh,bed=bed))
+			self.send_mesh_data_collected_event(self.mesh,bed)
 
 		return line
 
@@ -289,6 +290,19 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self._bedlevelvisualizer_logger.debug(self.mesh)
 			response = dict(stopped=True)
 			return flask.jsonify(response)
+
+	##~~ Custom Event Hook
+
+	def send_mesh_data_collected_event(self, mesh_data, bed_data):
+		event = Events.PLUGIN_BEDLEVELVISUALIZER_MESH_DATA_COLLECTED
+		custom_payload = dict(
+			mesh=mesh_data,
+			bed=bed_data
+		)
+		self._event_bus.fire(event, payload=custom_payload)
+
+	def register_custom_events(*args, **kwargs):
+		return ["mesh_data_collected"]
 
 	##~~ Softwareupdate hook
 
@@ -320,5 +334,6 @@ def __plugin_load__():
 	__plugin_hooks__ = {
 		"octoprint.comm.protocol.atcommand.sending": __plugin_implementation__.flagMeshCollection,
 		"octoprint.comm.protocol.gcode.received": __plugin_implementation__.processGCODE,
+		"octoprint.events.register_custom_events": __plugin_implementation__.register_custom_events,
 		"octoprint.plugin.softwareupdate.check_config": __plugin_implementation__.get_update_information
 	}
