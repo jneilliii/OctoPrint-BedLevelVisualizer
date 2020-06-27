@@ -177,7 +177,7 @@ $(function () {
 							}
 						},
 						autocolorscale: false,
-						colorscale: [[0, 'red'],[0.4, 'red'],[0.45, 'blue'],[0.5, 'green'],[0.55, 'blue'],[0.6, 'red'],[1, 'red']],
+						colorscale: [[0, 'rebeccapurple'],[0.4, 'rebeccapurple'],[0.45, 'blue'],[0.5, 'green'],[0.55, 'yellow'],[0.6, 'red'],[1, 'red']],
 						cmin: self.graph_z_limits().split(",")[0],
 						cmax: self.graph_z_limits().split(",")[1]
 					}

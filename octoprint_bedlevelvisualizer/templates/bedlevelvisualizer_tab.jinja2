@@ -36,12 +36,11 @@
 
 <!-- Template for mesh degrees -->
 <script type="text/html" id="bedlevelvisualize_meshtable">
-<div class="span10 offset1">
+<div class="meshtable">
 	<table data-bind="if: $data.mesh.length" class="table table-bordered table-condensed">
 		<thead>
 		<tr class="info">
-			<th class="text-right">y</th>
-			<th data-bind="attr: { 'colspan': $root.mesh_data_x().length }" class="text-center">
+			<th data-bind="attr: { 'colspan': $root.mesh_data_x().length + 1}" class="text-center">
 				<!-- ko if: $data.len -->
 					Mesh z Height in:
 					<select style="width: 5em;"
@@ -59,17 +58,17 @@
 				<!-- ko ifnot: $data.len -->
 					<div title="Click to clear adjustment. Click on meshpoint to normalize adjustment to that point." data-toggle="tooltip" data-bind="click: function(){$root.mesh_zero(0);}">Adjustment Angle (degrees)</div>
 				<!-- /ko -->
-			</th>
-			<th class="info" style="width: 150px;"></th>
+			</th>			
+			<th class="text-center" style="width: 150px;" ><span data-bind="visible: $root.turn(), text: $root.turn()<0?'{{ _('RAISE') }}':'{{ _('LOWER') }}', style: {'color': $root.turn()<0?'blue':'red'}"></span></th>
 		</tr>
 		</thead>
 		<tbody>
 		<!-- ko foreach:  { data: $root.mesh_data_y(), noChildContext: true }-->
 			<tr>
-				<td class="text-right info" data-bind="text: $root.mesh_data_y()[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()]"></td>
+				<td class="text-center info" data-bind="text: $root.mesh_data_y()[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()]"></td>
 				<!-- ko foreach:  { data: $parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()], as: 'Zvalue', noChildContext: true }-->
 				<!-- {# angle math #} -->
-					<td class="text-right" style="padding-left: 0.5em;"
+					<td class="text-center" style="padding-left: 0.5em;"
 						data-bind="
 							text: (!$parentContext.$parent.len?
 								Math.abs(parseFloat(	$parentContext.$parent.mesh[$root.descending_y()?
@@ -108,8 +107,11 @@
 								)
 							}">
 					</td>
-					<!-- ko if: $parentContext.$index() == 0 && $root.mesh_data_y().length-1-$index() == 1 -->
-					<td class="info" style="width: 150px;" data-bind="attr: {rowspan: $root.mesh_data_x().length + 1}">
+					<input type="hidden" data-bind="value: $parentContext.$index()"/>
+					<input type="hidden" data-bind="value: $root.mesh_data_y().length"/>
+					<input type="hidden" data-bind="value: $index()"/>
+					<!-- ko if: $parentContext.$index() == 0 && $root.mesh_data_y().length-$index() == 1 -->
+					<td class="text-center info" style="width: 150px; min-height: 200px; height: 200px;vertical-align: top;" data-bind="attr: {rowspan: $root.mesh_data_x().length + 1}">
 						<div data-bind="if: !$data.len">
 							<div data-bind="style: {'color': $root.turn()<0?'blue':'red'}">
 								<div	style="	width: 120px;
@@ -124,8 +126,7 @@
 																	'linear-gradient(' + (360-Math.abs($root.turn()%360)<180?(450-Math.abs($root.turn()%360)):(270-Math.abs($root.turn()%360))) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(270deg, silver 50%, transparent 50%)'}">
 								</div>
 							</div>
-							<div style="text-align: center;font-weight: bold;" data-bind="visible: $root.turn(), style: {'color': $root.turn()<0?'blue':'red'}">
-								<span data-bind="text: $root.turn()<0?'{{ _('raise') }}':'{{ _('lower') }}'"></span>
+							<div class="text-center" style="text-align: center;font-weight: bold;" data-bind="visible: $root.turn(), style: {'color': $root.turn()<0?'blue':'red'}">
 								<div>{{ _('turn') }}&nbsp;<span data-bind="text: $root.turn()<0 ^ $root.reverse() ?'{{ _('right') }}':'{{ _('left') }}'"></span></div>
 								<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&uarr;' : '&darr;'"></span>
 								<span data-bind="text: (Math.abs($root.turn()/360)).toFixed(2)"></span>
@@ -141,9 +142,9 @@
 		</tbody>
 		<tfoot>
 		<tr class="info">
-			<th class="text-right" style="color: green;" >x</th>
+			<th class="text-center" style="color: green;" ></th>
 			<!-- ko foreach:  { data: ko.utils.range(0,$root.mesh_data_x().length-1), as: 'Xindex', noChildContext: true }-->
-				<th class="text-right" style="color: green;" data-bind="text: $root.mesh_data_x()[$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]"></th>
+				<th class="text-center" style="color: green;" data-bind="text: $root.mesh_data_x()[$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]"></th>
 			<!-- /ko -->
 			<th style="width: 150px;"></th>
 		</tr>

@@ -66,6 +66,7 @@ div#bedlevelvisualizergraph div.modebar {
 	text-align: right;
 }
 
-.table thead tr.info th.text-center {
+.table tr.info th.text-center, .table tbody td.text-center {
 	text-align: center;
+	vertical-align: middle;
 }
