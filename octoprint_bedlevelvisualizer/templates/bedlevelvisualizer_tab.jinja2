@@ -58,8 +58,10 @@
 				<!-- ko ifnot: $data.len -->
 					<div title="Click to clear adjustment. Click on meshpoint to normalize adjustment to that point." data-toggle="tooltip" data-bind="click: function(){$root.mesh_zero(0);}">Adjustment Angle (degrees)</div>
 				<!-- /ko -->
-			</th>			
+			</th>
+            <!-- ko if: !$root.settings_active() -->
 			<th class="text-center" style="width: 150px;" ><span data-bind="visible: $root.turn(), text: $root.turn()<0?'{{ _('RAISE') }}':'{{ _('LOWER') }}', style: {'color': $root.turn()<0?'blue':'red'}"></span></th>
+            <!-- /ko -->
 		</tr>
 		</thead>
 		<tbody>
@@ -110,7 +112,7 @@
 					<input type="hidden" data-bind="value: $parentContext.$index()"/>
 					<input type="hidden" data-bind="value: $root.mesh_data_y().length"/>
 					<input type="hidden" data-bind="value: $index()"/>
-					<!-- ko if: $parentContext.$index() == 0 && $root.mesh_data_y().length-$index() == 1 -->
+					<!-- ko if: $parentContext.$index() == 0 && $root.mesh_data_y().length-$index() == 1 && !$root.settings_active() -->
 					<td class="text-center info" style="width: 150px; min-height: 200px; height: 200px;vertical-align: top;" data-bind="attr: {rowspan: $root.mesh_data_x().length + 1}">
 						<div data-bind="if: !$data.len">
 							<div data-bind="style: {'color': $root.turn()<0?'blue':'red'}">
@@ -146,16 +148,18 @@
 			<!-- ko foreach:  { data: ko.utils.range(0,$root.mesh_data_x().length-1), as: 'Xindex', noChildContext: true }-->
 				<th class="text-center" style="color: green;" data-bind="text: $root.mesh_data_x()[$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]"></th>
 			<!-- /ko -->
+            <!-- ko if: !$root.settings_active() -->
 			<th style="width: 150px;"></th>
+            <!-- /ko -->
 		</tr>
 		<tr>
-			<td data-bind="attr: {colspan: $root.mesh_data_x().length+2}" style="text-align: center">
+			<td data-bind="attr: {colspan: !$root.settings_active() ? $root.mesh_data_x().length+2 : $root.mesh_data_x().length+1}" style="text-align: center">
 				<div class="span5 offset1" style="font-weight: bold; color: green;text-align: center;">x - Position</div>
 				<div class="span5" style="font-weight: bold; color: black;text-align: center;">y - Position</div>
 			</td>
 		</tr>
 		<tr>
-			<td data-bind="attr: {colspan: $root.mesh_data_x().length+2}" style="text-align: center">
+			<td data-bind="attr: {colspan: !$root.settings_active() ? $root.mesh_data_x().length+2 : $root.mesh_data_x().length+1}" style="text-align: center">
 				<div class="control-group" title="Printer bed leveling screws turn direction." data-toggle="tooltip">
 					<!-- ko if: $data.len -->
 						<span style="color: normal;">Z Height: </span>

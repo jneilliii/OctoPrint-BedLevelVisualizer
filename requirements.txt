@@ -8,7 +8,7 @@
 
 .
 
-setuptools~=42.0.2
-OctoPrint>=1.2.0
+setuptools
+OctoPrint
 numpy>=1.16.0
-Flask~=1.1.2
+Flask

@@ -136,13 +136,14 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		if command == 'BEDLEVELVISUALIZER':
 			self.mesh = []
 			self.box = []
-			if not self.mesh_collection_canceled and not self.processing:
-				self.processing = True
-			if self.mesh_collection_canceled:
-				self.mesh_collection_canceled = False
-				return
+			# if not self.mesh_collection_canceled and not self.processing:
+			# 	self.processing = True
+			# if self.mesh_collection_canceled:
+			# 	self.mesh_collection_canceled = False
+			# 	return
 			self._bedlevelvisualizer_logger.debug("mesh collection started")
 			self.processing = True
+			self._plugin_manager.send_plugin_message(self._identifier, dict(processing=True))
 			return
 
 	def process_gcode(self, comm, line, *args, **kwargs):
@@ -254,7 +255,6 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self.mesh = np.subtract(z, [offset], dtype=np.float, casting='unsafe').tolist()
 				self._bedlevelvisualizer_logger.debug(self.mesh)
 
-			self.processing = False
 			self._bedlevelvisualizer_logger.debug("stopping mesh collection")
 			if bool(self.flip_y) != bool(self._settings.get(["flipY"])):
 				self._bedlevelvisualizer_logger.debug("flipping y axis")
@@ -275,6 +275,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self.mesh = np.array(self.mesh)
 				self.mesh = np.rot90(self.mesh, self._settings.get_int(["rotation"]) / 90).tolist()
 
+			self.processing = False
 			self._bedlevelvisualizer_logger.debug(self.mesh)
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh, bed=bed))
 			self.send_mesh_data_collected_event(self.mesh, bed)

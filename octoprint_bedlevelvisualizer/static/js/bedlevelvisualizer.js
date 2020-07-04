@@ -22,6 +22,7 @@ $(function () {
 		self.mesh_data_z_height = ko.observable();
 		self.save_mesh = ko.observable();
 		self.selected_command = ko.observable();
+		self.settings_active = ko.observable(false);
 		self.webcam_streamUrl = ko.computed(function(){
 			if(self.processing() && self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_webcam() && (self.settingsViewModel.webcam_streamUrl() !== "")) {
 				return self.settingsViewModel.webcam_streamUrl();
@@ -86,6 +87,15 @@ $(function () {
 
 		self.onAfterBinding = function() {
 			$('div#settings_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#tab_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#wizard_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#settings_plugin_bedlevelvisualizer pre[data-toggle="tooltip"]').tooltip();
+			$('#bedlevelvisualizer_tabs a').on('show.bs.tab', function(event){
+				if($(event.target).text() === 'Current Mesh Data'){
+					self.settings_active(true);
+					return
+				}
+				if ($(event.relatedTarget).text() === 'Current Mesh Data'){
+					self.settings_active(false);
+				}
+			});
 		};
 
 		self.onSettingsBeforeSave = function() {
@@ -96,7 +106,11 @@ $(function () {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial(self.imperial());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x(self.descending_x());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y(self.descending_y());
-};
+		};
+
+		self.onSettingsHidden = function() {
+			self.settings_active(false);
+		};
 
 		self.onEventSettingsUpdated = function () {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
@@ -146,6 +160,9 @@ $(function () {
 					hide: true
 				});
 				return;
+			}
+			if (mesh_data.processing) {
+				self.processing(true);
 			}
 			return;
 		};
