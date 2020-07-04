@@ -60,14 +60,14 @@
 				<!-- /ko -->
 			</th>
             <!-- ko if: !$root.settings_active() -->
-			<th class="text-center" style="width: 150px;" ><span data-bind="visible: $root.turn(), text: $root.turn()<0?'{{ _('RAISE') }}':'{{ _('LOWER') }}', style: {'color': $root.turn()<0?'blue':'red'}"></span></th>
+			<th class="text-center" style="width: 150px;" ><span data-bind="visible: $root.turn(), text: $root.turn()<0?'{{ _('RAISE') }}':'{{ _('LOWER') }}', css: {'raise': $root.turn()<0, 'lower': $root.turn()>0}"></span></th>
             <!-- /ko -->
 		</tr>
 		</thead>
 		<tbody>
 		<!-- ko foreach:  { data: $root.mesh_data_y(), noChildContext: true }-->
 			<tr>
-				<td class="text-center info" data-bind="text: $root.mesh_data_y()[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()]"></td>
+				<td class="text-center info x-axis-label" data-bind="text: $root.mesh_data_y()[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()]"></td>
 				<!-- ko foreach:  { data: $parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()], as: 'Zvalue', noChildContext: true }-->
 				<!-- {# angle math #} -->
 					<td class="text-center" style="padding-left: 0.5em;"
@@ -89,10 +89,16 @@
 										$root.mesh_data_x().length-1-$index():
 										$index()]);},
 							event: { mouseover: function(item){$root.turn(item);},mouseout: function(){$root.turn(0);}},
-							style: {'color' : ['blue','black','red'][1+Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y()?
-								$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$root.descending_x()?
-									$root.mesh_data_x().length-1-$index():
-									$index()]))]},
+							css: {
+                                'raise': (Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y() ?
+                                            $root.mesh_data_y().length - 1 - $parentContext.$index() : $parentContext.$index()][$root.descending_x() ?
+                                            $root.mesh_data_x().length - 1 - $index() :
+                                            $index()]))) < 0,
+                                'lower': (Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y() ?
+                                            $root.mesh_data_y().length - 1 - $parentContext.$index() : $parentContext.$index()][$root.descending_x() ?
+                                            $root.mesh_data_x().length - 1 - $index() :
+                                            $index()]))) > 0
+                            },
 							attr: {'title' : $parentContext.$parent.len ?
 								'Z height' :
 								!parseFloat($parentContext.$parent.mesh[$root.descending_y()?
@@ -144,9 +150,9 @@
 		</tbody>
 		<tfoot>
 		<tr class="info">
-			<th class="text-center" style="color: green;" ></th>
+			<th class="text-center" ></th>
 			<!-- ko foreach:  { data: ko.utils.range(0,$root.mesh_data_x().length-1), as: 'Xindex', noChildContext: true }-->
-				<th class="text-center" style="color: green;" data-bind="text: $root.mesh_data_x()[$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]"></th>
+				<th class="text-center  y-axis-label" data-bind="text: $root.mesh_data_x()[$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]"></th>
 			<!-- /ko -->
             <!-- ko if: !$root.settings_active() -->
 			<th style="width: 150px;"></th>
@@ -154,24 +160,24 @@
 		</tr>
 		<tr>
 			<td data-bind="attr: {colspan: !$root.settings_active() ? $root.mesh_data_x().length+2 : $root.mesh_data_x().length+1}" style="text-align: center">
-				<div class="span5 offset1" style="font-weight: bold; color: green;text-align: center;">x - Position</div>
-				<div class="span5" style="font-weight: bold; color: black;text-align: center;">y - Position</div>
+				<div class="span5 offset1 x-axis-label" style="font-weight: bold; text-align: center;">x - Position</div>
+				<div class="span5 y-axis-label" style="font-weight: bold; text-align: center;">y - Position</div>
 			</td>
 		</tr>
 		<tr>
 			<td data-bind="attr: {colspan: !$root.settings_active() ? $root.mesh_data_x().length+2 : $root.mesh_data_x().length+1}" style="text-align: center">
 				<div class="control-group" title="Printer bed leveling screws turn direction." data-toggle="tooltip">
 					<!-- ko if: $data.len -->
-						<span style="color: normal;">Z Height: </span>
-						<span style="color: blue;">below offset</span>
-						<span style="color: normal;"> / </span>
-						<span style="color: red;">above offset</span>
+						<span>Z Height: </span>
+						<span class="raise">below offset</span>
+						<span> / </span>
+						<span class="lower">above offset</span>
 					<!-- /ko -->
 					<!-- ko ifnot: $data.len -->
-						<span style="color: normal;">Turn direction - </span>
-						<span style="color: blue;" data-bind="text: $root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
-						<span style="color: normal;"> / </span>
-						<span style="color: red;"  data-bind="text: !$root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
+						<span>Turn direction - </span>
+						<span data-bind="css: {'raise': !$root.reverse(), 'lower': $root.reverse()}, text: $root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
+						<span> / </span>
+						<span data-bind="css: {'raise': $root.reverse(), 'lower': !$root.reverse()}, text: !$root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
 					<!-- /ko -->
 				</div>
 			</td>
