@@ -7,6 +7,7 @@ import re
 import numpy as np
 import logging
 import flask
+import json
 
 
 class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
@@ -22,6 +23,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self.processing = False
 		self.mesh_collection_canceled = False
 		self.old_marlin = False
+		self.makergear = False
 		self.old_marlin_offset = 0
 		self.repetier_firmware = False
 		self.mesh = []
@@ -38,6 +40,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self.regex_equal_signs = re.compile(r"^(=======\s?,?)+$")
 		self.regex_mesh_data_extraction = re.compile(r"(\+?-?\d*\.\d*)")
 		self.regex_old_marlin = re.compile(r"^(Bed x:.+)|(Llit x:.+)$")
+		self.regex_makergear = re.compile(r"^(\s=\s\[)(\s*,?\s*\[(\s?-?\d+.\d+,?)+\])+\];?$")
 		self.regex_repetier = re.compile(r"^G33 X.+$")
 		self.regex_nan = re.compile(r"(nan)")
 		self.regex_catmull = re.compile(r"^Subdivided with CATMULL ROM Leveling Grid:.*$")
@@ -136,11 +139,6 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		if command == 'BEDLEVELVISUALIZER':
 			self.mesh = []
 			self.box = []
-			# if not self.mesh_collection_canceled and not self.processing:
-			# 	self.processing = True
-			# if self.mesh_collection_canceled:
-			# 	self.mesh_collection_canceled = False
-			# 	return
 			self._bedlevelvisualizer_logger.debug("mesh collection started")
 			self.processing = True
 			self._plugin_manager.send_plugin_message(self._identifier, dict(processing=True))
@@ -198,6 +196,13 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 					if self.box[0][1] > self.box[3][1]:
 						self.flip_y = True
 
+			if self.regex_makergear.match(line) is not None:
+				self._bedlevelvisualizer_logger.debug("using makergear format report")
+				self.mesh = json.loads(line.strip().replace("= ", "").replace(";", ""))
+				self.old_marlin = True
+				self.makergear = True
+				self._bedlevelvisualizer_logger.debug(self.mesh)
+
 			if self.old_marlin and self.regex_eqn_coefficients.match(line.strip()):
 				self.old_marlin_offset = self.regex_eqn_coefficients.sub(r"\2", line.strip())
 				self._bedlevelvisualizer_logger.debug("using old marlin offset")
@@ -240,7 +245,10 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			self._bedlevelvisualizer_logger.debug(bed)
 
 			if self.old_marlin or self.repetier_firmware:
-				a = np.swapaxes(self.mesh, 1, 0)
+				if not self.makergear:
+					a = np.swapaxes(self.mesh, 1, 0)
+				else:
+					a = np.array(self.mesh)
 				x = np.unique(a[0]).astype(np.float)
 				y = np.unique(a[1]).astype(np.float)
 				z = a[2].reshape((len(x), len(y)))
