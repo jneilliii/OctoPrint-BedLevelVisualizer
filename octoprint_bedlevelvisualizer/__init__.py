@@ -46,6 +46,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 		self.regex_catmull = re.compile(r"^Subdivided with CATMULL ROM Leveling Grid:.*$")
 		self.regex_extracted_box = re.compile(r"\(\s*(\d+),\s*(\d+)\)")
 		self.regex_eqn_coefficients = re.compile(r"^Eqn coefficients:.+$")
+		self.regex_unknown_command = re.compile(r"echo:Unknown command: \"@BEDLEVELVISUALIZER\"")
 
 	# SettingsPlugin
 
@@ -202,6 +203,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self.old_marlin = True
 				self.makergear = True
 				self._bedlevelvisualizer_logger.debug(self.mesh)
+				line = "ok"
 
 			if self.old_marlin and self.regex_eqn_coefficients.match(line.strip()):
 				self.old_marlin_offset = self.regex_eqn_coefficients.sub(r"\2", line.strip())
@@ -283,12 +285,33 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self.mesh = np.array(self.mesh)
 				self.mesh = np.rot90(self.mesh, self._settings.get_int(["rotation"]) / 90).tolist()
 
+			if bed_type == "circular":
+				n = len(self.mesh[0])
+				m = len(self.mesh)
+				circle_mask = self.create_circular_mask(n, m)
+				self.mesh = np.array(self.mesh)
+				self.mesh[~circle_mask] = None
+				self.mesh = self.mesh.tolist()
+				self._bedlevelvisualizer_logger.debug(self.mesh)
+
 			self.processing = False
 			self._bedlevelvisualizer_logger.debug(self.mesh)
 			self._plugin_manager.send_plugin_message(self._identifier, dict(mesh=self.mesh, bed=bed))
 			self.send_mesh_data_collected_event(self.mesh, bed)
 
 		return line
+
+	def create_circular_mask(self, h, w, center=None, radius=None):
+		if center is None:  # use the middle of the image
+			center = (int(w / 2), int(h / 2))
+		if radius is None:  # use the smallest distance between the center and image walls
+			radius = min(center[0], center[1], w - center[0], h - center[1])
+
+		Y, X = np.ogrid[:h, :w]
+		dist_from_center = np.sqrt((X - center[0]) ** 2 + (Y - center[1]) ** 2)
+
+		mask = dist_from_center <= radius
+		return mask
 
 	# SimpleApiPlugin
 
