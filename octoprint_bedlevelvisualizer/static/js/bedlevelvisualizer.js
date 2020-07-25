@@ -27,7 +27,7 @@ $(function () {
 			if(self.processing() && self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_webcam() && (self.settingsViewModel.webcam_streamUrl() !== "")) {
 				return self.settingsViewModel.webcam_streamUrl();
 			} else {
-				return "";
+				return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==";
 			}
 		});
 		self.mesh_status = ko.computed(function(){
@@ -106,6 +106,7 @@ $(function () {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial(self.imperial());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x(self.descending_x());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y(self.descending_y());
+			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale().length === 0) self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale('[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]');
 		};
 
 		self.onSettingsHidden = function() {
@@ -184,6 +185,7 @@ $(function () {
 
 			try {
 				var graphcolorscale = (self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale().charAt(0) === "[") ? JSON.parse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale()) : self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale();
+				if (graphcolorscale.length === 0) graphcolorscale = [[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]];
 				var data = [{
 						z: mesh_data_z,
 						x: mesh_data_x,

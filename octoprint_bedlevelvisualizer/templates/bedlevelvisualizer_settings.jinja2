@@ -61,7 +61,8 @@
                     <div class="control-group">
                         <label for="bedlevelvisualizer_colorscale"><i class="icon icon-info-sign" title="Either an array of percentage and color pairs or a Plotly named colorscale" data-toggle="tooltip"></i> Colorscale</label>
                         <div class="controls">
-                            <input type="text" id="bedlevelvisualizer_colorscale" class="input-block-level" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale">
+                            <input type="text" id="bedlevelvisualizer_colorscale" class="input-block-level" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale" placeholder='[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]'>
+                            <small class="help-block">Array of percentage/color pairs, ie <code>[[0, "blue"],[1, "red"]]</code> will create a gradient between blue to red. Percentage values are in deccimal format and colors can be HTML hex values or color names surrounded by double quotes. You can also use a named color scale from <a href="https://plotly.com/javascript/colorscales/">here</a>. Clear this setting to load the default option and click Save below.</small>
                         </div>
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 <div id="bedlevelvisualizer_webcam_container" data-bind="visible: processing() && settingsViewModel.settings.plugins.bedlevelvisualizer.show_webcam() && settingsViewModel.webcam_streamUrl() != ''">
 	<div id="bedlevelvisualizer_webcam_rotator" data-bind="css: { webcam_rotated: settingsViewModel.webcam_rotate90(), webcam_unrotated: !settingsViewModel.webcam_rotate90() }">
 		<div class="webcam_fixed_ratio ratio43" data-bind="css: controlViewModel.webcamRatioClass">
-			<div class="webcam_fixed_ratio_inner" data-bind="if: webcam_streamUrl() !== ''">
+			<div class="webcam_fixed_ratio_inner">
 				<img data-bind="css: { flipH: settingsViewModel.webcam_flipH(), flipV: settingsViewModel.webcam_flipV() }, attr: { src: webcam_streamUrl() }" />
 			</div>
 		</div>
