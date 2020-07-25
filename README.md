@@ -72,14 +72,14 @@ For more info, see the [wiki](wiki/index.md)
 **[0.1.14](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/0.1.14)** (07/26/2020)
 
 **Added**
-* add edit in chart studio button in modebar lost in recent plotly updates
-* added configurable z limits to graph
-* added configurable colorscale option
-* added custom event hook to allow other plugins to receive mesh data
-* add first stab at old marlin makergear support, still needs work
+* chart studio button in modebar lost in recent plotly updates
+* configurable z limits to graph
+* configurable colorscale option
+* custom event hook to allow other plugins to receive mesh data
+* old marlin makergear support, still needs work
 
 **Updated**
-* update plotly library to version 1.54.0
+* plotly library to version 1.54.0
 * gcode processing optimization thanks to @kantlivelong
 * change to `octoprint.comm.protocol.atcommand.sending` hook from `octoprint.comm.protocol.gcode.sending`
 * convert to compiled regex objects for better performance
