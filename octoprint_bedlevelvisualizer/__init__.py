@@ -77,7 +77,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 					commands=[],
 					show_labels=True,
 					show_webcam=False,
-					graph_z_limits="-2,2")
+					graph_z_limits="-2,2",
+					colorscale="[[0, \"rebeccapurple\"],[0.4, \"rebeccapurple\"],[0.45, \"blue\"],[0.5, \"green\"],[0.55, \"yellow\"],[0.6, \"red\"],[1, \"red\"]]")
 
 	def get_settings_version(self):
 		return 1

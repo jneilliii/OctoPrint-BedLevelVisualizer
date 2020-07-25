@@ -183,6 +183,7 @@ $(function () {
 			}
 
 			try {
+				var graphcolorscale = (self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale().charAt(0) === "[") ? JSON.parse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale()) : self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale();
 				var data = [{
 						z: mesh_data_z,
 						x: mesh_data_x,
@@ -194,7 +195,7 @@ $(function () {
 							}
 						},
 						autocolorscale: false,
-						colorscale: [[0, 'rebeccapurple'],[0.4, 'rebeccapurple'],[0.45, 'blue'],[0.5, 'green'],[0.55, 'yellow'],[0.6, 'red'],[1, 'red']],
+						colorscale: graphcolorscale,
 						cmin: self.graph_z_limits().split(",")[0],
 						cmax: self.graph_z_limits().split(",")[1]
 					}
