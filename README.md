@@ -8,6 +8,7 @@ This plugin visualises the output from various firmware that support bed mesh le
 - Prusa i3 MK2 to MK3S version 3.2.3 to 3.8.1
 - Klipper
 - Older Marlin and Repetier firmware.
+- Smoothieware
 
 ## Example
 
@@ -61,38 +62,38 @@ For more info, see the [wiki](wiki/index.md)
 
 - Install will fail silently in Python 3 due to missing system dependencies. You may have to SSH to your pi and run the command `sudo apt install libgfortran5 libatlas3-base` to get the plugin to load.
 - Since version 0.1.3 there is a python dependency on numpy. As a result; if you don't already have numpy the install can take in excess of 30 minutes to complete on a pi. Just be patient and let it run and eventually the plugin install will finish.
-- If your device have less than 512MB of ram your numpy installation would most likely fail. See [#141](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/141#issuecomment-542227338) for solution.
+- If your device have less than 512MB of ram your numpy installation will most likely fail. See [#141](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/141#issuecomment-542227338) for solution.
 - If you have Marlin's Auto Temperature Reporting Feature enabled you will want to have M155 S30 and M155 S3 surrounding your G29 command, see settings screenshot, otherwise the collected data will be tainted.
 - ~~Currently there is a conflict with the TempsGraph plugin. If you have this plugin installed you will receive an error that Plotyle.react is not a function. There is a version update pending on that plugin to resolve this issue, just waiting on the author to release.~~ Resolved with TempsGraph release [0.3.3](https://github.com/1r0b1n0/OctoPrint-Tempsgraph/releases/tag/0.3.3).
 
 ---
 
 ## Most recent changelog
-**[0.1.13](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/0.1.13)** (03/28/2020)
+**[0.1.14](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/0.1.14)** (07/26/2020)
 
 **Added**
-
-- Screw adjustment angle calculations in degrees based on screw size
+* add edit in chart studio button in modebar lost in recent plotly updates
+* added configurable z limits to graph
+* added configurable colorscale option
+* added custom event hook to allow other plugins to receive mesh data
+* add first stab at old marlin makergear support, still needs work
 
 **Updated**
-
-- Default timeout value increased to 30 minutes to hopefully resolve confusion
-- Timeout notification to hopefully make it more clear what needs to be fixed
-
-**Fixed**
-
-- New webcam feature consuming network bandiwdth while idle or not visible
-
-**Thanks**
-Thanks to [@LMS0815](https://github.com/LMS0815) for screw adjustment angle changes mentioned above
+* update plotly library to version 1.54.0
+* gcode processing optimization thanks to @kantlivelong
+* change to `octoprint.comm.protocol.atcommand.sending` hook from `octoprint.comm.protocol.gcode.sending`
+* convert to compiled regex objects for better performance
+* convert correction text colors to use css class names to allow Themeify customizations
+* adjust rectangular mesh for circular beds, still needs work
 
 ## [All releases](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases)
 
 ---
 
 ## To-Do
-
-- [ ] Pause standard OctoPrint temperature polling or squash the responses until processing is completed.
+- [ ] improve old marlin makergear support
+- [ ] improve rectangular mesh for circular bed calculations
+- [x] ~~Pause standard OctoPrint temperature polling or squash the responses until processing is completed.~~ won't be possible, utilize M155 gcode if possible
 - [x] ~~Orientation testing to verify axes are in correct direction.~~ added settings to allow controlling the orientation.
 - [x] ~~Calculate bed dimensions and apply to probe points for display on graph, #28.~~
 
