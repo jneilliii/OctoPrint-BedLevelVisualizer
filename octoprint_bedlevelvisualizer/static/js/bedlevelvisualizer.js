@@ -22,11 +22,12 @@ $(function () {
 		self.mesh_data_z_height = ko.observable();
 		self.save_mesh = ko.observable();
 		self.selected_command = ko.observable();
+		self.settings_active = ko.observable(false);
 		self.webcam_streamUrl = ko.computed(function(){
 			if(self.processing() && self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_webcam() && (self.settingsViewModel.webcam_streamUrl() !== "")) {
 				return self.settingsViewModel.webcam_streamUrl();
 			} else {
-				return "";
+				return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==";
 			}
 		});
 		self.mesh_status = ko.computed(function(){
@@ -65,6 +66,7 @@ $(function () {
 				},
 			self);
 		self.turn = ko.observable(0);
+		self.graph_z_limits = ko.observable();
 
 		self.onBeforeBinding = function() {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
@@ -80,10 +82,20 @@ $(function () {
 			self.imperial(self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial());
 			self.descending_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x());
 			self.descending_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y());
+			self.graph_z_limits(self.settingsViewModel.settings.plugins.bedlevelvisualizer.graph_z_limits());
 		};
 
 		self.onAfterBinding = function() {
 			$('div#settings_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#tab_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#wizard_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#settings_plugin_bedlevelvisualizer pre[data-toggle="tooltip"]').tooltip();
+			$('#bedlevelvisualizer_tabs a').on('show.bs.tab', function(event){
+				if($(event.target).text() === 'Current Mesh Data'){
+					self.settings_active(true);
+					return
+				}
+				if ($(event.relatedTarget).text() === 'Current Mesh Data'){
+					self.settings_active(false);
+				}
+			});
 		};
 
 		self.onSettingsBeforeSave = function() {
@@ -94,11 +106,17 @@ $(function () {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial(self.imperial());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x(self.descending_x());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y(self.descending_y());
-};
+			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale().length === 0) self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale('[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]');
+		};
+
+		self.onSettingsHidden = function() {
+			self.settings_active(false);
+		};
 
 		self.onEventSettingsUpdated = function () {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
+			self.graph_z_limits(self.settingsViewModel.settings.plugins.bedlevelvisualizer.graph_z_limits());
 		};
 
 		self.onDataUpdaterPluginMessage = function (plugin, mesh_data) {
@@ -144,6 +162,9 @@ $(function () {
 				});
 				return;
 			}
+			if (mesh_data.processing) {
+				self.processing(true);
+			}
 			return;
 		};
 
@@ -163,6 +184,8 @@ $(function () {
 			}
 
 			try {
+				var graphcolorscale = (self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale().charAt(0) === "[") ? JSON.parse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale()) : self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale();
+				if (graphcolorscale.length === 0) graphcolorscale = [[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]];
 				var data = [{
 						z: mesh_data_z,
 						x: mesh_data_x,
@@ -172,7 +195,11 @@ $(function () {
 							tickfont: {
 								color: $('#tabs_content').css('color')
 							}
-						}
+						},
+						autocolorscale: false,
+						colorscale: graphcolorscale,
+						cmin: self.graph_z_limits().split(",")[0],
+						cmax: self.graph_z_limits().split(",")[1]
 					}
 				];
 
@@ -206,14 +233,16 @@ $(function () {
 						},
 						zaxis: {
 							color: foreground_color,
-							range: [-2,2]
+							range: self.graph_z_limits().split(',')
 						}
 					}
 				};
 
 				var config_options = {
 					displaylogo: false,
-					modeBarButtonsToRemove: ['resetCameraLastSave3d', 'resetCameraDefault3d'], // https://plot.ly/javascript/configuration-options/#remove-modebar-buttons , 'sendDataToCloud'
+					showEditInChartStudio: true,
+					plotlyServerURL: "https://chart-studio.plotly.com",
+					modeBarButtonsToRemove: ['resetCameraLastSave3d', 'resetCameraDefault3d'],
 					modeBarButtonsToAdd: [{
 					name: 'Move Nozzle',
 					icon: Plotly.Icons.autoscale,
@@ -247,7 +276,7 @@ $(function () {
 			} catch(err) {
 				new PNotify({
 						title: 'Bed Visualizer Error',
-						text: '<div class="row-fluid">Looks like your settings are not correct or there was an error.  Please see the <a href="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/#octoprint-bedlevelvisualizer" target="_blank">Readme</a> for configuration hints.</div><pre style="padding-top: 5px;">'+err+'</pre>',
+						text: '<div class="row-fluid">Errors while attempting render of mesh data.</div><div class="row-fluid">Error:</div><div class="row-fluid"><pre style="padding-top: 5px;">'+err+'</pre></div><div class="row-fluid">Received Data:</div><div class="row-fluid"><pre style="padding-top: 5px;">'+data+'</pre></div>',
 						type: 'error',
 						hide: false
 						});

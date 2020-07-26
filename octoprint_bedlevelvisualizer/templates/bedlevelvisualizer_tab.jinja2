@@ -1,7 +1,7 @@
 <div id="bedlevelvisualizer_webcam_container" data-bind="visible: processing() && settingsViewModel.settings.plugins.bedlevelvisualizer.show_webcam() && settingsViewModel.webcam_streamUrl() != ''">
 	<div id="bedlevelvisualizer_webcam_rotator" data-bind="css: { webcam_rotated: settingsViewModel.webcam_rotate90(), webcam_unrotated: !settingsViewModel.webcam_rotate90() }">
 		<div class="webcam_fixed_ratio ratio43" data-bind="css: controlViewModel.webcamRatioClass">
-			<div class="webcam_fixed_ratio_inner" data-bind="if: webcam_streamUrl() !== ''">
+			<div class="webcam_fixed_ratio_inner">
 				<img data-bind="css: { flipH: settingsViewModel.webcam_flipH(), flipV: settingsViewModel.webcam_flipV() }, attr: { src: webcam_streamUrl() }" />
 			</div>
 		</div>
@@ -15,19 +15,7 @@
 <div class="row-fluid" id="bedlevelvisualizerwarning" style="text-align: center;font-size: 25px;vertical-align: middle;" data-bind="visible: !loginStateViewModel.isUser()"><i class="icon-warning-sign icon-3" style="color:red"></i> <b>You must be logged in.</b></div>
 <div class="row_fluid" id="bedlevelvisualizercommandmissing" data-bind="visible: settingsViewModel.settings.plugins.bedlevelvisualizer.command() == ''">
 	<div class="row_fluid">
-		<p>In order for this plugin to work properly, you must configure the GCODE commands necessary to send back a Bed Topography Report. Common examples are listed below.</p>
-		<ul>
-			<li>G29 T</li>
-			<li>G81</li>
-			<li>M420 V</li>
-		</ul>
-		<p>If you run into any problems please check the <a href="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues?utf8=%E2%9C%93&q=is%3Aissue" target="_blank">Issues</a> for possible fixes or report a bug.</p>
-	</div>
-	<div class="row_fluid">
-		<div class="control-group">
-			<label for="bedlevelvisualizer_command"><i class="icon icon-info-sign" title="GCODE commands to send to printer to retrieve grid data" data-toggle="tooltip"></i> GCODE Commands</label>
-			<textarea class="input-block-level" id="bedlevelvisualizer_command" rows="4" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.command"></textarea>
-		</div>
+		<p>In order for this plugin to work properly, you must configure the GCODE commands necessary to send back a Bed Topography Report in <a href="#" data-bind="click: function(){ settingsViewModel.show('#settings_plugin_bedlevelvisualizer'); }">Settings</a>.</p>
 	</div>
 </div>
 <div class="row-fluid" data-bind="visible: loginStateViewModel.isUser() && settingsViewModel.settings.plugins.bedlevelvisualizer.command() !== ''">
@@ -48,10 +36,11 @@
 
 <!-- Template for mesh degrees -->
 <script type="text/html" id="bedlevelvisualize_meshtable">
-	<table data-bind="if: $data.mesh.length">
-		<tr>
-			<th style="text-align: right; background-color:silver;">y</th>
-			<th style="text-align: center; background-color:silver; color: normal;" data-bind="attr: { 'colspan': $root.mesh_data_x().length }">
+<div class="meshtable">
+	<table data-bind="if: $data.mesh.length" class="table table-bordered table-condensed">
+		<thead>
+		<tr class="info">
+			<th data-bind="attr: { 'colspan': $root.mesh_data_x().length + 1}" class="text-center">
 				<!-- ko if: $data.len -->
 					Mesh z Height in:
 					<select style="width: 5em;"
@@ -70,13 +59,18 @@
 					<div title="Click to clear adjustment. Click on meshpoint to normalize adjustment to that point." data-toggle="tooltip" data-bind="click: function(){$root.mesh_zero(0);}">Adjustment Angle (degrees)</div>
 				<!-- /ko -->
 			</th>
+            <!-- ko if: !$root.settings_active() -->
+			<th class="text-center" style="width: 150px;" ><span data-bind="visible: $root.turn(), text: $root.turn()<0?'{{ _('RAISE') }}':'{{ _('LOWER') }}', css: {'raise': $root.turn()<0, 'lower': $root.turn()>0}"></span></th>
+            <!-- /ko -->
 		</tr>
+		</thead>
+		<tbody>
 		<!-- ko foreach:  { data: $root.mesh_data_y(), noChildContext: true }-->
 			<tr>
-				<th style="text-align: right; background-color:silver;" data-bind="text: $root.mesh_data_y()[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()]"></th>
+				<td class="text-center info x-axis-label" data-bind="text: $root.mesh_data_y()[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()]"></td>
 				<!-- ko foreach:  { data: $parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()], as: 'Zvalue', noChildContext: true }-->
 				<!-- {# angle math #} -->
-					<td style="text-align: right; padding-left: 0.5em;"
+					<td class="text-center" style="padding-left: 0.5em;"
 						data-bind="
 							text: (!$parentContext.$parent.len?
 								Math.abs(parseFloat(	$parentContext.$parent.mesh[$root.descending_y()?
@@ -95,10 +89,16 @@
 										$root.mesh_data_x().length-1-$index():
 										$index()]);},
 							event: { mouseover: function(item){$root.turn(item);},mouseout: function(){$root.turn(0);}},
-							style: {'color' : ['blue','black','red'][1+Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y()?
-								$root.mesh_data_y().length-1-$parentContext.$index():$parentContext.$index()][$root.descending_x()?
-									$root.mesh_data_x().length-1-$index():
-									$index()]))]},
+							css: {
+                                'raise': (Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y() ?
+                                            $root.mesh_data_y().length - 1 - $parentContext.$index() : $parentContext.$index()][$root.descending_x() ?
+                                            $root.mesh_data_x().length - 1 - $index() :
+                                            $index()]))) < 0,
+                                'lower': (Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y() ?
+                                            $root.mesh_data_y().length - 1 - $parentContext.$index() : $parentContext.$index()][$root.descending_x() ?
+                                            $root.mesh_data_x().length - 1 - $index() :
+                                            $index()]))) > 0
+                            },
 							attr: {'title' : $parentContext.$parent.len ?
 								'Z height' :
 								!parseFloat($parentContext.$parent.mesh[$root.descending_y()?
@@ -115,62 +115,76 @@
 								)
 							}">
 					</td>
+					<input type="hidden" data-bind="value: $parentContext.$index()"/>
+					<input type="hidden" data-bind="value: $root.mesh_data_y().length"/>
+					<input type="hidden" data-bind="value: $index()"/>
+					<!-- ko if: $parentContext.$index() == 0 && $root.mesh_data_y().length-$index() == 1 && !$root.settings_active() -->
+					<td class="text-center info" style="width: 150px; min-height: 200px; height: 200px;vertical-align: top;" data-bind="attr: {rowspan: $root.mesh_data_x().length + 1}">
+						<div data-bind="if: !$data.len">
+							<div data-bind="style: {'color': $root.turn()<0?'blue':'red'}">
+								<div	style="	width: 120px;
+												height: 120px;
+												display: block;
+												border-radius: 50%;
+												border: 2px solid black;
+												margin: 1em;"
+										data-bind="style: {	'background-color': $root.turn()<0?'blue':'red',
+															'background-image': $root.turn()<0 ^ $root.reverse() ?
+																	'linear-gradient(' + (Math.abs($root.turn()%360)<180?(Math.abs($root.turn()%360)+ 90):(Math.abs($root.turn()%360)- 90)) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(90deg, silver 50%, transparent 50%)':
+																	'linear-gradient(' + (360-Math.abs($root.turn()%360)<180?(450-Math.abs($root.turn()%360)):(270-Math.abs($root.turn()%360))) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(270deg, silver 50%, transparent 50%)'}">
+								</div>
+							</div>
+							<div class="text-center" style="text-align: center;font-weight: bold;" data-bind="visible: $root.turn(), style: {'color': $root.turn()<0?'blue':'red'}">
+								<div>{{ _('turn') }}&nbsp;<span data-bind="text: $root.turn()<0 ^ $root.reverse() ?'{{ _('right') }}':'{{ _('left') }}'"></span></div>
+								<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&uarr;' : '&darr;'"></span>
+								<span data-bind="text: (Math.abs($root.turn()/360)).toFixed(2)"></span>
+								<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&darr;' : '&uarr;'"></span>
+							</div>
+						</div>
+					</td>
+					<!-- /ko -->
+					<!-- /ko -->
 				<!-- /ko -->
 			</tr>
 		<!-- /ko -->
-		<tr>
-			<th style="text-align: right; background-color:silver; color: green;" >x</th>
+		</tbody>
+		<tfoot>
+		<tr class="info">
+			<th class="text-center" ></th>
 			<!-- ko foreach:  { data: ko.utils.range(0,$root.mesh_data_x().length-1), as: 'Xindex', noChildContext: true }-->
-				<th style="text-align: right; background-color:silver; color: green;" data-bind="text: $root.mesh_data_x()[$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]"></th>
+				<th class="text-center  y-axis-label" data-bind="text: $root.mesh_data_x()[$root.descending_x()?$root.mesh_data_x().length-1-$index():$index()]"></th>
 			<!-- /ko -->
+            <!-- ko if: !$root.settings_active() -->
+			<th style="width: 150px;"></th>
+            <!-- /ko -->
 		</tr>
 		<tr>
-			<td data-bind="attr: {colspan: ($root.mesh_data_x().length+1)/2}"><div class="row-fluid" style="font-weight: bold; color: green;text-align: center;">x - Position</div></td>
-			<td data-bind="attr: {colspan: ($root.mesh_data_x().length+1)/2}"><div class="row-fluid" style="font-weight: bold; color: black;text-align: center;">y - Position</div></td>
+			<td data-bind="attr: {colspan: !$root.settings_active() ? $root.mesh_data_x().length+2 : $root.mesh_data_x().length+1}" style="text-align: center">
+				<div class="span5 offset1 x-axis-label" style="font-weight: bold; text-align: center;">x - Position</div>
+				<div class="span5 y-axis-label" style="font-weight: bold; text-align: center;">y - Position</div>
+			</td>
 		</tr>
 		<tr>
-			<td data-bind="attr: {colspan: $root.mesh_data_x().length+1}" style="text-align: center">
+			<td data-bind="attr: {colspan: !$root.settings_active() ? $root.mesh_data_x().length+2 : $root.mesh_data_x().length+1}" style="text-align: center">
 				<div class="control-group" title="Printer bed leveling screws turn direction." data-toggle="tooltip">
 					<!-- ko if: $data.len -->
-						<span style="color: normal;">Z Height: </span>
-						<span style="color: blue;">below offset</span>
-						<span style="color: normal;"> / </span>
-						<span style="color: red;">above offset</span>
+						<span>Z Height: </span>
+						<span class="raise">below offset</span>
+						<span> / </span>
+						<span class="lower">above offset</span>
 					<!-- /ko -->
 					<!-- ko ifnot: $data.len -->
-						<span style="color: normal;">Turn direction - </span>
-						<span style="color: blue;" data-bind="text: $root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
-						<span style="color: normal;"> / </span>
-						<span style="color: red;"  data-bind="text: !$root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
+						<span>Turn direction - </span>
+						<span data-bind="css: {'raise': !$root.reverse(), 'lower': $root.reverse()}, text: $root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
+						<span> / </span>
+						<span data-bind="css: {'raise': $root.reverse(), 'lower': !$root.reverse()}, text: !$root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
 					<!-- /ko -->
 				</div>
 			</td>
 		</tr>
-		<tr data-bind="if: !$data.len && $root.turn && false">
-			<th data-bind="attr: {'colspan': ($root.mesh_data_x().length + 1)/3}"></th>
-			<th data-bind="attr: {'colspan': (($root.mesh_data_x().length + 1)/3) * 2 }, style: {'color': $root.turn()<0?'blue':'red'}">
-				<div	style="	width: 5em;
-								height: 5em;
-								display: block;
-								border-radius: 50%;
-								border: 2px solid black;
-								float: left;
-								margin: 1em;"
-						data-bind="style: {	'background-color': $root.turn()<0?'blue':'red',
-											'background-image': $root.turn()<0 ^ $root.reverse() ?
-													'linear-gradient(' + (Math.abs($root.turn()%360)<180?(Math.abs($root.turn()%360)+ 90):(Math.abs($root.turn()%360)- 90)) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(90deg, silver 50%, transparent 50%)':
-													'linear-gradient(' + (360-Math.abs($root.turn()%360)<180?(450-Math.abs($root.turn()%360)):(270-Math.abs($root.turn()%360))) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(270deg, silver 50%, transparent 50%)'}">
-				</div>
-				<div style="text-align: left;padding-top: 20px;">
-					<span data-bind="text: $root.turn()<0?'{{ _('raise') }}':'{{ _('lower') }}'"></span>
-					<div>{{ _('turn') }}&nbsp;<span data-bind="text: $root.turn()<0 ^ $root.reverse() ?'{{ _('right') }}':'{{ _('left') }}'"></span></div>
-					<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&uarr;' : '&darr;'"></span>
-					<span data-bind="text: (Math.abs($root.turn()/360)).toFixed(2)"></span>
-					<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&darr;' : '&uarr;'"></span>
-				</div>
-			</th>
-		</tr>
+		</tfoot>
 	</table>
+</div>
 </script>
 
 <!-- Template for custom controls -->
