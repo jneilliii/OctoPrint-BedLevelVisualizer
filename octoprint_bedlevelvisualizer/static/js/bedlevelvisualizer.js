@@ -244,6 +244,7 @@ $(function () {
 				var config_options = {
 					displaylogo: false,
 					showEditInChartStudio: true,
+					responsive: true,
 					plotlyServerURL: "https://chart-studio.plotly.com",
 					modeBarButtonsToRemove: ['resetCameraLastSave3d', 'resetCameraDefault3d'],
 					modeBarButtonsToAdd: [{
