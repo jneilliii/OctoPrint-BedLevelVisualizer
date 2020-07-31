@@ -3,6 +3,10 @@ div#bedlevelvisualizergraph div.modebar {
 	transform: translateX(-50%);
 }
 
+div#bedlevelvisualizergraph {
+	min-height: 450px;
+}
+
 #bedlevelvisualizer_webcam_container{
 	width:100%;
 	overflow: hidden;
