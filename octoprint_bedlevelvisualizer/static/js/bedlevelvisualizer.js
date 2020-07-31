@@ -197,11 +197,14 @@ $(function () {
 							}
 						},
 						autocolorscale: false,
-						colorscale: graphcolorscale,
-						cmin: self.graph_z_limits().split(",")[0],
-						cmax: self.graph_z_limits().split(",")[1]
+						colorscale: graphcolorscale
 					}
 				];
+
+				if(self.graph_z_limits().split(",")[0] !== 'auto'){
+					data[0]['cmin'] = self.graph_z_limits().split(",")[0];
+					data[0]['cmax'] = self.graph_z_limits().split(",")[1];
+				}
 
 				var background_color = $('#tabs_content').css('background-color');
 				var foreground_color = $('#tabs_content').css('color');
@@ -233,7 +236,7 @@ $(function () {
 						},
 						zaxis: {
 							color: foreground_color,
-							range: self.graph_z_limits().split(',')
+							range: (self.graph_z_limits().split(",")[0] !== 'auto') ? self.graph_z_limits().split(',') : [-2,2]
 						}
 					}
 				};
