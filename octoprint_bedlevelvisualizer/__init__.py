@@ -1,6 +1,8 @@
 # coding=utf-8
 from __future__ import absolute_import
 
+import threading
+
 import octoprint.plugin
 from octoprint.events import Events
 import re
@@ -15,12 +17,14 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 						 octoprint.plugin.AssetPlugin,
 						 octoprint.plugin.SettingsPlugin,
 						 octoprint.plugin.WizardPlugin,
-						 octoprint.plugin.SimpleApiPlugin):
+						 octoprint.plugin.SimpleApiPlugin,
+						 octoprint.plugin.EventHandlerPlugin):
 	INTERVAL = 2.0
 	MAX_HISTORY = 10
 
 	def __init__(self):
 		self.processing = False
+		self.printing = False
 		self.mesh_collection_canceled = False
 		self.old_marlin = False
 		self.makergear = False
@@ -135,18 +139,41 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				 "css/bedlevelvisualizer.css"]
 		)
 
+	# EventHandlePlugin
+
+	def on_event(self, event, payload):
+		# Cancelled Print Interpreted Event
+		if event == Events.PRINT_FAILED and not self._printer.is_closed_or_error():
+			self.printing = False
+		# Print Started Event
+		if event == Events.PRINT_STARTED:
+			self.printing = True
+		# Print Done Event
+		if event == Events.PRINT_DONE:
+			self.printing = False
+
 	# atcommand hook
+
+	def enable_mesh_collection(self):
+		self.mesh = []
+		self.box = []
+		self._bedlevelvisualizer_logger.debug("mesh collection started")
+		self.processing = True
+		self._plugin_manager.send_plugin_message(self._identifier, dict(processing=True))
 
 	def flag_mesh_collection(self, comm_instance, phase, command, parameters, tags=None, *args, **kwargs):
 		if command == 'BEDLEVELVISUALIZER':
-			self.mesh = []
-			self.box = []
-			self._bedlevelvisualizer_logger.debug("mesh collection started")
-			self.processing = True
-			self._plugin_manager.send_plugin_message(self._identifier, dict(processing=True))
-			return
+			thread = threading.Thread(target=self.enable_mesh_collection)
+			thread.daemon = True
+			thread.start()
+		return
 
 	def process_gcode(self, comm, line, *args, **kwargs):
+		if self.printing and line.strip() == "echo:BEDLEVELVISUALIZER":
+			thread = threading.Thread(target=self.enable_mesh_collection)
+			thread.daemon = True
+			thread.start()
+			return line
 		if not self.processing:
 			return line
 
