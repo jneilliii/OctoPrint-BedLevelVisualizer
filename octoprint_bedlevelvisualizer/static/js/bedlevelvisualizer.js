@@ -21,6 +21,7 @@ $(function () {
 		self.mesh_data_y = ko.observableArray([]);
 		self.mesh_data_z_height = ko.observable();
 		self.save_mesh = ko.observable();
+		self.save_snapshots = ko.observable(false);
 		self.selected_command = ko.observable();
 		self.settings_active = ko.observable(false);
 		self.webcam_streamUrl = ko.computed(function(){
@@ -74,7 +75,7 @@ $(function () {
 			self.mesh_data_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y());
 			self.mesh_data_z_height(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
 			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
-
+			self.save_snapshots(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_snapshots());
 			self.screw_hub(self.settingsViewModel.settings.plugins.bedlevelvisualizer.screw_hub());
 			self.mesh_unit(self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit());
 			self.reverse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse());
@@ -116,6 +117,7 @@ $(function () {
 		self.onEventSettingsUpdated = function () {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
+			self.save_snapshots(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_snapshots());
 			self.graph_z_limits(self.settingsViewModel.settings.plugins.bedlevelvisualizer.graph_z_limits());
 		};
 
@@ -246,37 +248,28 @@ $(function () {
 					showEditInChartStudio: true,
 					responsive: true,
 					plotlyServerURL: "https://chart-studio.plotly.com",
-					modeBarButtonsToRemove: ['resetCameraLastSave3d', 'resetCameraDefault3d'],
+					modeBarButtonsToRemove: ['resetCameraDefault3d'],
 					modeBarButtonsToAdd: [{
-					name: 'Move Nozzle',
-					icon: Plotly.Icons.autoscale,
-					toggle: true,
-					click: function(gd, ev) {
-						var button = ev.currentTarget;
-						var button_enabled = button._previousVal || false;
-						if (!button_enabled) {
-							gd.on('plotly_click', function(data) {
-									var gcode_command = 'G0 X' + data.points[0].x + ' Y' + data.points[0].y + ' F4000';
-									OctoPrint.control.sendGcode([gcode_command]);
-								});
-							button._previousVal = true;
-						} else {
-							gd.removeAllListeners('plotly_click');
-							button._previousVal = null;
-						}
-					}
-					},
-					{
-					name: 'Home',
-					icon: Plotly.Icons.home,
-					toggle: true,
-					click: function() {
-						//self.drawMesh(mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height);
-						Plotly.relayout('bedlevelvisualizergraph', {scene: {camera: {eye: {x: -1.25, y: -1.25, z: 0.25}}}});
-					}]
-				};
+						name: 'Move Nozzle',
+						icon: Plotly.Icons.autoscale,
+						toggle: true,
+						click: function(gd, ev) {
+								var button = ev.currentTarget;
+								var button_enabled = button._previousVal || false;
+								if (!button_enabled) {
+									gd.on('plotly_click', function(data) {
+											var gcode_command = 'G0 X' + data.points[0].x + ' Y' + data.points[0].y + ' F4000';
+											OctoPrint.control.sendGcode([gcode_command]);
+										});
+									button._previousVal = true;
+								} else {
+									gd.removeAllListeners('plotly_click');
+									button._previousVal = null;
+								}
+							}
+						}]};
 
-				Plotly.react('bedlevelvisualizergraph', data, layout, config_options);
+				Plotly.react('bedlevelvisualizergraph', data, layout, config_options).then(self.postPlotHandler);
 			} catch(err) {
 				new PNotify({
 						title: 'Bed Visualizer Error',
@@ -285,6 +278,12 @@ $(function () {
 						hide: false
 						});
 			}
+		};
+
+		self.postPlotHandler = function () {
+				if(self.save_snapshots()){
+					Plotly.downloadImage('bedlevelvisualizergraph',{filename:moment().format('YYYY-MM-DD_HH-mm-ss')});
+				}
 		};
 
 		self.onAfterTabChange = function (current, previous) {
@@ -296,7 +295,6 @@ $(function () {
 				} else if (self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0) {
 					self.drawMesh(self.mesh_data(),false,self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
 				}
-				return;
 			}
 		};
 
