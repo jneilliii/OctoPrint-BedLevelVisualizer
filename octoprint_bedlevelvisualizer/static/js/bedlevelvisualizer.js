@@ -271,8 +271,8 @@ $(function () {
 					icon: Plotly.Icons.home,
 					toggle: true,
 					click: function() {
-						self.drawMesh(mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height);
-						}
+						//self.drawMesh(mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height);
+						Plotly.relayout('bedlevelvisualizergraph', {scene: {camera: {eye: {x: -1.25, y: -1.25, z: 0.25}}}});
 					}]
 				};
 
