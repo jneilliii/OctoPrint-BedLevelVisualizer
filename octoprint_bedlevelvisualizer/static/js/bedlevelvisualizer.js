@@ -172,6 +172,7 @@ $(function () {
 
 		self.drawMesh = function (mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height) {
 			// console.log(mesh_data_z+'\n'+store_data+'\n'+mesh_data_x+'\n'+mesh_data_y+'\n'+mesh_data_z_height);
+			console.log(mesh_data_z);
 			clearTimeout(self.timeout);
 			self.processing(false);
 			if ( self.save_mesh()) {
@@ -268,7 +269,44 @@ $(function () {
 								}
 							}
 						}]};
+				// Prusa Bed Level Correction
+				let back_half = temp1.slice(0, temp1.length/2).join().split(',');
+				let front_half = temp1.slice(temp1.length/2).join().split(',');
+				let left_half = (back_half.slice(0,back_half.length/2) + front_half.slice(0,front_half.length/2)).split(',');
+				let right_half = (back_half.slice(back_half.length/2) + front_half.slice(front_half.length/2)).split(',');
 
+				let back_half_total = 0;
+				let front_half_total = 0;
+				let left_half_total = 0;
+				let right_half_total = 0;
+
+				for(let i=0;i<back_half.length;i++){
+					back_half_total += parseFloat(back_half[i]);
+				}
+
+				for(let i=0;i<front_half.length;i++){
+					front_half_total += parseFloat(front_half[i]);
+				}
+
+				for(let i=0;i<left_half.length;i++){
+					left_half_total += parseFloat(left_half[i]);
+				}
+
+				for(let i=0;i<right_half.length;i++){
+					right_half_total += parseFloat(right_half[i]);
+				}
+
+				let back_half_um = Math.round((back_half_total/back_half.length)*1000);
+				let front_half_um = Math.round((front_half_total/front_half.length)*1000);
+				let left_half_um = Math.round((left_half_total/left_half.length)*1000);
+				let right_half_um = Math.round((right_half_total/right_half.length)*1000);
+
+				console.log('Back [um]:' + back_half_um);
+				console.log('Front [um]:' + front_half_um);
+				console.log('Left [um]:' + left_half_um);
+				console.log('Right [um]:' + right_half_um);
+
+				// graph surface
 				Plotly.react('bedlevelvisualizergraph', data, layout, config_options).then(self.postPlotHandler);
 			} catch(err) {
 				new PNotify({
