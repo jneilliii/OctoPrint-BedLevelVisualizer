@@ -270,8 +270,8 @@ $(function () {
 							}
 						}]};
 				// Prusa Bed Level Correction
-				let back_half = temp1.slice(0, temp1.length/2).join().split(',');
-				let front_half = temp1.slice(temp1.length/2).join().split(',');
+				let back_half = mesh_data_z.slice(0, mesh_data_z.length/2).join().split(',');
+				let front_half = mesh_data_z.slice(mesh_data_z.length/2).join().split(',');
 				let left_half = (back_half.slice(0,back_half.length/2) + front_half.slice(0,front_half.length/2)).split(',');
 				let right_half = (back_half.slice(back_half.length/2) + front_half.slice(front_half.length/2)).split(',');
 
