@@ -174,8 +174,6 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 					self.repetier_firmware = True
 					self._bedlevelvisualizer_logger.debug("using repetier flag")
 
-					new_line = self.regex_nan.findall(line)
-
 				if self._settings.get_boolean(["stripFirst"]):
 					new_line.pop(0)
 				if len(new_line) > 0:
