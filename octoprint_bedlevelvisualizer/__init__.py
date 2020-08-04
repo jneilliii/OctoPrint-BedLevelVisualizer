@@ -186,7 +186,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			if self.regex_mesh_data.match(line.strip()):
 				if self.regex_nans.match(line.strip()):
 					self._bedlevelvisualizer_logger.debug("stupid smoothieware issue...")
-					line = self.regex_nans.sub("0.0", line)
+					line = self.regex_nan.sub("0.0", line)
 				if self.regex_equal_signs.match(line.strip()):
 					self._bedlevelvisualizer_logger.debug("stupid equal signs...")
 					line = self.regex_equal_signs.sub("0.0", line)
@@ -201,8 +201,6 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				if self.regex_repetier.match(line.strip()):
 					self.repetier_firmware = True
 					self._bedlevelvisualizer_logger.debug("using repetier flag")
-
-					new_line = self.regex_nan.findall(line)
 
 				if self._settings.get_boolean(["stripFirst"]):
 					new_line.pop(0)
