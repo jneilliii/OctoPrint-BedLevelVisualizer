@@ -206,7 +206,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 					new_line.pop(0)
 				if len(new_line) > 0:
 					if bool(self.flip_x) != self._settings.get_boolean(["flipX"]):
-						new_line = [new_line[1], new_line[0], new_line[2]]
+						new_line.reverse()
 					self.mesh.append(new_line)
 
 			elif self.regex_catmull.match(line.strip()):
