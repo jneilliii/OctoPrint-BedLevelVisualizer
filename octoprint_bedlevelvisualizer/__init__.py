@@ -205,8 +205,6 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				if self._settings.get_boolean(["stripFirst"]):
 					new_line.pop(0)
 				if len(new_line) > 0:
-					if bool(self.flip_x) != self._settings.get_boolean(["flipX"]):
-						new_line.reverse()
 					self.mesh.append(new_line)
 
 			elif self.regex_catmull.match(line.strip()):
@@ -293,6 +291,11 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self._bedlevelvisualizer_logger.debug(self.mesh)
 
 			self._bedlevelvisualizer_logger.debug("stopping mesh collection")
+
+			if bool(self.flip_x) != bool(self._settings.get(["flipX"])):
+				self._bedlevelvisualizer_logger.debug("flipping x axis")
+				self.mesh = np.flip(np.array(self.mesh), 1).tolist()
+
 			if bool(self.flip_y) != bool(self._settings.get(["flipY"])):
 				self._bedlevelvisualizer_logger.debug("flipping y axis")
 				self.mesh.reverse()
