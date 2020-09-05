@@ -60,6 +60,7 @@ For more info, see the [wiki](wiki/index.md)
 
 ## Known Issues
 
+- Ender Pro 3 may report an error requesting that you have ```echo:Home XYZ first```. To fix this find the part in the Marlin example code where it has ```G29 T``` and above it on a new line enter ```G28```. This will then enable it to work on the Ender Pro 3.
 - Install will fail silently in Python 3 due to missing system dependencies. You may have to SSH to your pi and run the command `sudo apt install libgfortran5 libatlas3-base libatlas-base-dev` to get the plugin to load.
 - Since version 0.1.3 there is a python dependency on numpy. As a result; if you don't already have numpy the install can take in excess of 30 minutes to complete on a pi. Just be patient and let it run and eventually the plugin install will finish.
 - If your device have less than 512MB of ram your numpy installation will most likely fail. See [#141](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/141#issuecomment-542227338) for solution.
