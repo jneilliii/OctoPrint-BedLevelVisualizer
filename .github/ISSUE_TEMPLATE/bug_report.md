@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Please make sure to review the [Known Issues](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer#known-issues) section of the readme prior to submitting a bug report.
+about: Please make sure to review the Known Issues section of the readme prior to submitting a bug report. There is a Python3 hint there.
 title: "[BUG]: "
 labels: ''
 assignees: ''
