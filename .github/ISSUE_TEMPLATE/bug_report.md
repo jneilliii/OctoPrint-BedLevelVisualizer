@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a bug report for a problem with unexpected results. Please make sure to review the [Known Issues](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer#known-issues) section of the readme prior to submitting a bug report.
+about: Please make sure to review the [Known Issues](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer#known-issues) section of the readme prior to submitting a bug report.
 title: "[BUG]: "
 labels: ''
 assignees: ''
