@@ -232,14 +232,20 @@ $(function () {
 							}
 						},
 						xaxis: {
-							color: foreground_color
+							color: foreground_color,
+							zerolinecolor: '#00FF00',
+							zerolinewidth: 4
 						},
 						yaxis: {
-							color: foreground_color
+							color: foreground_color,
+							zerolinecolor: '#FF0000',
+							zerolinewidth: 4
 						},
 						zaxis: {
 							color: foreground_color,
-							range: (self.graph_z_limits().split(",")[0] !== 'auto') ? self.graph_z_limits().split(',') : [-2,2]
+							range: (self.graph_z_limits().split(",")[0] !== 'auto') ? self.graph_z_limits().split(',') : [-2,2],
+							zerolinecolor: '#0000FF',
+							zerolinewidth: 4
 						}
 					}
 				};

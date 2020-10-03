@@ -14,7 +14,7 @@ plugin_package = "octoprint_bedlevelvisualizer"
 plugin_name = "Bed Visualizer"
 
 # The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
-plugin_version = "0.1.15-rc1"
+plugin_version = "0.1.15"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module
@@ -33,7 +33,7 @@ plugin_url = "https://github.com/jneilliii/OctoPrint-BedLevelVisualizer"
 plugin_license = "AGPLv3"
 
 # Any additional requirements besides OctoPrint should be listed here
-plugin_requires = ["numpy>=1.16.0,<=1.19.0"]
+plugin_requires = ["numpy>=1.16.0,<=1.19.2"]
 
 ### --------------------------------------------------------------------------------------------------------------------
 ### More advanced options that you usually shouldn't have to touch follow after this point

@@ -10,5 +10,5 @@
 
 setuptools
 OctoPrint
-numpy>=1.16.0,<=1.19.0
+numpy>=1.16.0,<=1.19.2
 Flask
