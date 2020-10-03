@@ -21,6 +21,7 @@ $(function () {
 		self.mesh_data_y = ko.observableArray([]);
 		self.mesh_data_z_height = ko.observable();
 		self.save_mesh = ko.observable();
+		self.save_snapshots = ko.observable(false);
 		self.selected_command = ko.observable();
 		self.settings_active = ko.observable(false);
 		self.webcam_streamUrl = ko.computed(function(){
@@ -74,7 +75,7 @@ $(function () {
 			self.mesh_data_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y());
 			self.mesh_data_z_height(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
 			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
-
+			self.save_snapshots(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_snapshots());
 			self.screw_hub(self.settingsViewModel.settings.plugins.bedlevelvisualizer.screw_hub());
 			self.mesh_unit(self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit());
 			self.reverse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse());
@@ -116,6 +117,7 @@ $(function () {
 		self.onEventSettingsUpdated = function () {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
+			self.save_snapshots(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_snapshots());
 			self.graph_z_limits(self.settingsViewModel.settings.plugins.bedlevelvisualizer.graph_z_limits());
 		};
 
@@ -170,6 +172,7 @@ $(function () {
 
 		self.drawMesh = function (mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height) {
 			// console.log(mesh_data_z+'\n'+store_data+'\n'+mesh_data_x+'\n'+mesh_data_y+'\n'+mesh_data_z_height);
+			console.log(mesh_data_z);
 			clearTimeout(self.timeout);
 			self.processing(false);
 			if ( self.save_mesh()) {
@@ -197,11 +200,14 @@ $(function () {
 							}
 						},
 						autocolorscale: false,
-						colorscale: graphcolorscale,
-						cmin: self.graph_z_limits().split(",")[0],
-						cmax: self.graph_z_limits().split(",")[1]
+						colorscale: graphcolorscale
 					}
 				];
+
+				if(self.graph_z_limits().split(",")[0] !== 'auto'){
+					data[0]['cmin'] = self.graph_z_limits().split(",")[0];
+					data[0]['cmax'] = self.graph_z_limits().split(",")[1];
+				}
 
 				var background_color = $('#tabs_content').css('background-color');
 				var foreground_color = $('#tabs_content').css('color');
@@ -226,14 +232,20 @@ $(function () {
 							}
 						},
 						xaxis: {
-							color: foreground_color
+							color: foreground_color,
+							zerolinecolor: '#00FF00',
+							zerolinewidth: 4
 						},
 						yaxis: {
-							color: foreground_color
+							color: foreground_color,
+							zerolinecolor: '#FF0000',
+							zerolinewidth: 4
 						},
 						zaxis: {
 							color: foreground_color,
-							range: self.graph_z_limits().split(',')
+							range: (self.graph_z_limits().split(",")[0] !== 'auto') ? self.graph_z_limits().split(',') : [-2,2],
+							zerolinecolor: '#0000FF',
+							zerolinewidth: 4
 						}
 					}
 				};
@@ -241,38 +253,67 @@ $(function () {
 				var config_options = {
 					displaylogo: false,
 					showEditInChartStudio: true,
+					responsive: true,
 					plotlyServerURL: "https://chart-studio.plotly.com",
-					modeBarButtonsToRemove: ['resetCameraLastSave3d', 'resetCameraDefault3d'],
+					modeBarButtonsToRemove: ['resetCameraDefault3d'],
 					modeBarButtonsToAdd: [{
-					name: 'Move Nozzle',
-					icon: Plotly.Icons.autoscale,
-					toggle: true,
-					click: function(gd, ev) {
-						var button = ev.currentTarget;
-						var button_enabled = button._previousVal || false;
-						if (!button_enabled) {
-							gd.on('plotly_click', function(data) {
-									var gcode_command = 'G0 X' + data.points[0].x + ' Y' + data.points[0].y + ' F4000';
-									OctoPrint.control.sendGcode([gcode_command]);
-								});
-							button._previousVal = true;
-						} else {
-							gd.removeAllListeners('plotly_click');
-							button._previousVal = null;
-						}
-					}
-					},
-					{
-					name: 'Home',
-					icon: Plotly.Icons.home,
-					toggle: true,
-					click: function() {
-						self.drawMesh(mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height);
-						}
-					}]
-				};
+						name: 'Move Nozzle',
+						icon: Plotly.Icons.autoscale,
+						toggle: true,
+						click: function(gd, ev) {
+								var button = ev.currentTarget;
+								var button_enabled = button._previousVal || false;
+								if (!button_enabled) {
+									gd.on('plotly_click', function(data) {
+											var gcode_command = 'G0 X' + data.points[0].x + ' Y' + data.points[0].y + ' F4000';
+											OctoPrint.control.sendGcode([gcode_command]);
+										});
+									button._previousVal = true;
+								} else {
+									gd.removeAllListeners('plotly_click');
+									button._previousVal = null;
+								}
+							}
+						}]};
+				// Prusa Bed Level Correction
+				let back_half = mesh_data_z.slice(0, mesh_data_z.length/2).join().split(',');
+				let front_half = mesh_data_z.slice(mesh_data_z.length/2).join().split(',');
+				let left_half = (back_half.slice(0,back_half.length/2) + front_half.slice(0,front_half.length/2)).split(',');
+				let right_half = (back_half.slice(back_half.length/2) + front_half.slice(front_half.length/2)).split(',');
 
-				Plotly.react('bedlevelvisualizergraph', data, layout, config_options);
+				let back_half_total = 0;
+				let front_half_total = 0;
+				let left_half_total = 0;
+				let right_half_total = 0;
+
+				for(let i=0;i<back_half.length;i++){
+					back_half_total += parseFloat(back_half[i]);
+				}
+
+				for(let i=0;i<front_half.length;i++){
+					front_half_total += parseFloat(front_half[i]);
+				}
+
+				for(let i=0;i<left_half.length;i++){
+					left_half_total += parseFloat(left_half[i]);
+				}
+
+				for(let i=0;i<right_half.length;i++){
+					right_half_total += parseFloat(right_half[i]);
+				}
+
+				let back_half_um = Math.round((back_half_total/back_half.length)*1000);
+				let front_half_um = Math.round((front_half_total/front_half.length)*1000);
+				let left_half_um = Math.round((left_half_total/left_half.length)*1000);
+				let right_half_um = Math.round((right_half_total/right_half.length)*1000);
+
+				console.log('Back [um]:' + back_half_um);
+				console.log('Front [um]:' + front_half_um);
+				console.log('Left [um]:' + left_half_um);
+				console.log('Right [um]:' + right_half_um);
+
+				// graph surface
+				Plotly.react('bedlevelvisualizergraph', data, layout, config_options).then(self.postPlotHandler);
 			} catch(err) {
 				new PNotify({
 						title: 'Bed Visualizer Error',
@@ -281,6 +322,12 @@ $(function () {
 						hide: false
 						});
 			}
+		};
+
+		self.postPlotHandler = function () {
+				if(self.save_snapshots()){
+					Plotly.downloadImage('bedlevelvisualizergraph',{filename:moment().format('YYYY-MM-DD_HH-mm-ss')});
+				}
 		};
 
 		self.onAfterTabChange = function (current, previous) {
@@ -292,7 +339,6 @@ $(function () {
 				} else if (self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0) {
 					self.drawMesh(self.mesh_data(),false,self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
 				}
-				return;
 			}
 		};
 
