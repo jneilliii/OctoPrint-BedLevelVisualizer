@@ -3,6 +3,10 @@ div#bedlevelvisualizergraph div.modebar {
 	transform: translateX(-50%);
 }
 
+div#bedlevelvisualizergraph {
+	min-height: 450px;
+}
+
 #bedlevelvisualizer_webcam_container{
 	width:100%;
 	overflow: hidden;
@@ -79,10 +83,10 @@ div#bedlevelvisualizergraph div.modebar {
     color: red;
 }
 
-.table thead tr.info .x-axis-label, .table tbody tr .x-axis-label, .table tfoot tr.info .x-axis-label, .table tfoot tr .x-axis-label {
+.table thead tr.info .x-axis-label, .table tbody tr .x-axis-label, .table tfoot tr.info .x-axis-label, .table tfoot tr .y-axis-label {
     color: black;
 }
 
-.table thead tr.info .y-axis-label, .table tbody tr .y-axis-label, .table tfoot tr.info .y-axis-label, .table tfoot tr .y-axis-label {
+.table thead tr.info .y-axis-label, .table tbody tr .y-axis-label, .table tfoot tr.info .y-axis-label, .table tfoot tr .x-axis-label {
     color: green;
 }

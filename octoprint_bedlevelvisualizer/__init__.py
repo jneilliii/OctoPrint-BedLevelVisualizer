@@ -1,6 +1,8 @@
 # coding=utf-8
 from __future__ import absolute_import
 
+import threading
+
 import octoprint.plugin
 from octoprint.events import Events
 import re
@@ -15,12 +17,14 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 						 octoprint.plugin.AssetPlugin,
 						 octoprint.plugin.SettingsPlugin,
 						 octoprint.plugin.WizardPlugin,
-						 octoprint.plugin.SimpleApiPlugin):
+						 octoprint.plugin.SimpleApiPlugin,
+						 octoprint.plugin.EventHandlerPlugin):
 	INTERVAL = 2.0
 	MAX_HISTORY = 10
 
 	def __init__(self):
 		self.processing = False
+		self.printing = False
 		self.mesh_collection_canceled = False
 		self.old_marlin = False
 		self.makergear = False
@@ -78,7 +82,8 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 					show_labels=True,
 					show_webcam=False,
 					graph_z_limits="-2,2",
-					colorscale="[[0, \"rebeccapurple\"],[0.4, \"rebeccapurple\"],[0.45, \"blue\"],[0.5, \"green\"],[0.55, \"yellow\"],[0.6, \"red\"],[1, \"red\"]]")
+					colorscale="[[0, \"rebeccapurple\"],[0.4, \"rebeccapurple\"],[0.45, \"blue\"],[0.5, \"green\"],[0.55, \"yellow\"],[0.6, \"red\"],[1, \"red\"]]",
+					save_snapshots=False)
 
 	def get_settings_version(self):
 		return 1
@@ -135,18 +140,41 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				 "css/bedlevelvisualizer.css"]
 		)
 
+	# EventHandlePlugin
+
+	def on_event(self, event, payload):
+		# Cancelled Print Interpreted Event
+		if event == Events.PRINT_FAILED and not self._printer.is_closed_or_error():
+			self.printing = False
+		# Print Started Event
+		if event == Events.PRINT_STARTED:
+			self.printing = True
+		# Print Done Event
+		if event == Events.PRINT_DONE:
+			self.printing = False
+
 	# atcommand hook
+
+	def enable_mesh_collection(self):
+		self.mesh = []
+		self.box = []
+		self._bedlevelvisualizer_logger.debug("mesh collection started")
+		self.processing = True
+		self._plugin_manager.send_plugin_message(self._identifier, dict(processing=True))
 
 	def flag_mesh_collection(self, comm_instance, phase, command, parameters, tags=None, *args, **kwargs):
 		if command == 'BEDLEVELVISUALIZER':
-			self.mesh = []
-			self.box = []
-			self._bedlevelvisualizer_logger.debug("mesh collection started")
-			self.processing = True
-			self._plugin_manager.send_plugin_message(self._identifier, dict(processing=True))
-			return
+			thread = threading.Thread(target=self.enable_mesh_collection)
+			thread.daemon = True
+			thread.start()
+		return
 
 	def process_gcode(self, comm, line, *args, **kwargs):
+		if self.printing and line.strip() == "echo:BEDLEVELVISUALIZER":
+			thread = threading.Thread(target=self.enable_mesh_collection)
+			thread.daemon = True
+			thread.start()
+			return line
 		if not self.processing:
 			return line
 
@@ -158,7 +186,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 			if self.regex_mesh_data.match(line.strip()):
 				if self.regex_nans.match(line.strip()):
 					self._bedlevelvisualizer_logger.debug("stupid smoothieware issue...")
-					line = self.regex_nans.sub("0.0", line)
+					line = self.regex_nan.sub("0.0", line)
 				if self.regex_equal_signs.match(line.strip()):
 					self._bedlevelvisualizer_logger.debug("stupid equal signs...")
 					line = self.regex_equal_signs.sub("0.0", line)
@@ -174,13 +202,9 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 					self.repetier_firmware = True
 					self._bedlevelvisualizer_logger.debug("using repetier flag")
 
-					new_line = self.regex_nan.findall(line)
-
 				if self._settings.get_boolean(["stripFirst"]):
 					new_line.pop(0)
 				if len(new_line) > 0:
-					if bool(self.flip_x) != self._settings.get_boolean(["flipX"]):
-						new_line.reverse()
 					self.mesh.append(new_line)
 
 			elif self.regex_catmull.match(line.strip()):
@@ -267,6 +291,11 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self._bedlevelvisualizer_logger.debug(self.mesh)
 
 			self._bedlevelvisualizer_logger.debug("stopping mesh collection")
+
+			if bool(self.flip_x) != bool(self._settings.get(["flipX"])):
+				self._bedlevelvisualizer_logger.debug("flipping x axis")
+				self.mesh = np.flip(np.array(self.mesh), 1).tolist()
+
 			if bool(self.flip_y) != bool(self._settings.get(["flipY"])):
 				self._bedlevelvisualizer_logger.debug("flipping y axis")
 				self.mesh.reverse()
