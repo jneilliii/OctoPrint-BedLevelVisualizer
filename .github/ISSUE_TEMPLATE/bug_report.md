@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a bug report for a problem with unexpected results.
+about: Please make sure to review the Known Issues section of the readme prior to submitting a bug report. There is a Python 3 hint there.
 title: "[BUG]: "
 labels: ''
 assignees: ''
