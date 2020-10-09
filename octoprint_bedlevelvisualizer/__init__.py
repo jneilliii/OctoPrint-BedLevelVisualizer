@@ -305,7 +305,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self.mesh = np.array(self.mesh)
 				if self._settings.get_boolean(["use_center_origin"]):
 					self._bedlevelvisualizer_logger.debug("using center origin")
-					self.mesh = np.subtract(self.mesh, self.mesh[len(self.mesh[0]) / 2, len(self.mesh) / 2],
+					self.mesh = np.subtract(self.mesh, self.mesh[len(self.mesh[0]) // 2, len(self.mesh) // 2],
 											dtype=np.float, casting='unsafe').tolist()
 				else:
 					self.mesh = np.subtract(self.mesh, self.mesh[0, 0], dtype=np.float, casting='unsafe').tolist()
