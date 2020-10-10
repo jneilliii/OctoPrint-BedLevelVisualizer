@@ -184,6 +184,10 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 
 		if "ok" not in line:
 			if self.regex_mesh_data.match(line.strip()):
+				if self.regex_bed_level_correction.match(line.strip()) and not self._settings.get_boolean(["ignore_correction_matrix"]):
+					self._bedlevelvisualizer_logger.debug("resetting mesh to blank because of correction matrix")
+					self.mesh = []
+					return line
 				if self.regex_nans.match(line.strip()):
 					self._bedlevelvisualizer_logger.debug("stupid smoothieware issue...")
 					line = self.regex_nan.sub("0.0", line)
@@ -305,7 +309,7 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				self.mesh = np.array(self.mesh)
 				if self._settings.get_boolean(["use_center_origin"]):
 					self._bedlevelvisualizer_logger.debug("using center origin")
-					self.mesh = np.subtract(self.mesh, self.mesh[len(self.mesh[0]) / 2, len(self.mesh) / 2],
+					self.mesh = np.subtract(self.mesh, self.mesh[len(self.mesh[0]) // 2, len(self.mesh) // 2],
 											dtype=np.float, casting='unsafe').tolist()
 				else:
 					self.mesh = np.subtract(self.mesh, self.mesh[0, 0], dtype=np.float, casting='unsafe').tolist()
@@ -387,6 +391,18 @@ class bedlevelvisualizer(octoprint.plugin.StartupPlugin,
 				user="jneilliii",
 				repo="OctoPrint-BedLevelVisualizer",
 				current=self._plugin_version,
+				stable_branch=dict(
+					name="Stable",
+					branch="master",
+					comittish=["master"]
+				),
+				prerelease_branches=[
+					dict(
+						name="Release Candidate",
+						branch="rc",
+						comittish=["rc", "master"]
+					)
+				],
 
 				# update method: pip
 				pip="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/{target_version}.zip"
