@@ -160,7 +160,7 @@ class bedlevelvisualizer(
         return dict(
             js=[
                 "js/jquery-ui.min.js",
-                "js/knockout-sortable.js",
+                "js/knockout-sortable.1.2.0.js",
                 "js/fontawesome-iconpicker.js",
                 "js/ko.iconpicker.js",
                 "js/plotly.min.js",
