@@ -173,9 +173,9 @@
 					<!-- /ko -->
 					<!-- ko ifnot: $data.len -->
 						<span>Turn direction - </span>
-						<span data-bind="css: {'raise': !$root.reverse(), 'lower': $root.reverse()}, text: $root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
+						<span data-bind="css: {'raise': !$root.reverse(), 'lower': $root.reverse()}">clockwise (right)</span>
 						<span> / </span>
-						<span data-bind="css: {'raise': $root.reverse(), 'lower': !$root.reverse()}, text: !$root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
+						<span data-bind="css: {'raise': $root.reverse(), 'lower': !$root.reverse()}">anticlockwise (left)</span>
 					<!-- /ko -->
 				</div>
 			</td>
