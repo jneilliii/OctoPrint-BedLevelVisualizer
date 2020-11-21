@@ -68,17 +68,21 @@ For more info, see the [wiki](wiki/index.md)
 ---
 
 ## Most recent changelog
-**[1.0.0](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/1.0.0)** (10/10/2020)
+**[1.0.0](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/1.0.0)** (11/20/2020)
 
 **Added**
 * release channels for OctoPrint 1.5.0+ for future rc testing, similar to OctoPrint as described [here](https://community.octoprint.org/t/how-to-use-the-release-channels-to-help-test-release-candidates/402)
 
 **Updated**
 * think it's time to go to major version 1.0.0 now with over 19K known installs
+* knockout sortable library for OctoPrint 1.5.0 compatibility
 
 **Fixed**
+* knockout binding issue due to knockout version update to 3.5.1 in OctoPrint 1.5.0
 * issue relative to using center origins and odd numbered mesh grid
 * issue with misinterpretation of bed level correction matrix
+* typos in reverse direction hover text
+* turn direction label coloring when direction is reversed
 
 ## [All releases](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases)
 
