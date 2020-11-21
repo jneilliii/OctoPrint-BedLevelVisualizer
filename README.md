@@ -68,24 +68,21 @@ For more info, see the [wiki](wiki/index.md)
 ---
 
 ## Most recent changelog
-**[0.1.15](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/0.1.15)** (10/2/2020)
+**[1.0.0](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/1.0.0)** (11/20/2020)
 
 **Added**
-* automatic snapshot saving of graph on graph rendering
-* initial SD card support to trigger mesh colletion
-* auto option for colorscale that will work the same as prior to version 0.1.14
-* axis zeroline color
+* release channels for OctoPrint 1.5.0+ for future rc testing, similar to OctoPrint as described [here](https://community.octoprint.org/t/how-to-use-the-release-channels-to-help-test-release-candidates/402)
 
 **Updated**
-* plotly js library to version 1.54.7
-* numpy version requirement to improve installation speed in python 3
+* think it's time to go to major version 1.0.0 now with over 19K known installs
+* knockout sortable library for OctoPrint 1.5.0 compatibility
 
 **Fixed**
-* axis labels colors were reversed
-* graph not rerendering on window resize, made responsive
-* home button not working properly
-* repetier issues introduced in version 0.1.14
-* fix x axis flip issue
+* knockout binding issue due to knockout version update to 3.5.1 in OctoPrint 1.5.0
+* issue relative to using center origins and odd numbered mesh grid
+* issue with misinterpretation of bed level correction matrix
+* typos in reverse direction hover text
+* turn direction label coloring when direction is reversed
 
 ## [All releases](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases)
 
@@ -118,6 +115,8 @@ Check out my other plugins [here](https://plugins.octoprint.org/by_author/#jneil
 - [@TheTuxKeeper](https://github.com/thetuxkeeper)
 - @tideline3d
 - [SimplyPrint](https://simplyprint.dk/)
+- [Andrew Beeman](https://github.com/Kiendeleo)
+- [Calanish](https://github.com/calanish)
 
 ## Support My Efforts
 I, jneilliii, programmed this plugin for fun and do my best effort to support those that have issues with it, please return the favor and leave me a tip or become a Patron if you find this plugin helpful and want me to continue future development.

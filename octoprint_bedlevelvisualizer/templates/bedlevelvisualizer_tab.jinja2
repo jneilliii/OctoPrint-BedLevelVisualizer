@@ -68,8 +68,7 @@
 		<!-- ko foreach:  { data: $root.mesh_data_y(), noChildContext: true }-->
 			<tr>
 				<td class="text-center info x-axis-label" data-bind="text: $root.mesh_data_y()[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()]"></td>
-				<!-- ko foreach:  { data: $parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()], as: 'Zvalue', noChildContext: true }-->
-				<!-- {# angle math #} -->
+				<!-- ko foreach:  { data: $parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()], as: 'Zvalue', noChildContext: false }-->
 					<td class="text-center" style="padding-left: 0.5em;"
 						data-bind="
 							text: (!$parentContext.$parent.len?
@@ -143,7 +142,6 @@
 						</div>
 					</td>
 					<!-- /ko -->
-					<!-- /ko -->
 				<!-- /ko -->
 			</tr>
 		<!-- /ko -->
@@ -175,9 +173,9 @@
 					<!-- /ko -->
 					<!-- ko ifnot: $data.len -->
 						<span>Turn direction - </span>
-						<span data-bind="css: {'raise': !$root.reverse(), 'lower': $root.reverse()}, text: $root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
+						<span data-bind="css: {'raise': !$root.reverse(), 'lower': $root.reverse()}">clockwise (right)</span>
 						<span> / </span>
-						<span data-bind="css: {'raise': $root.reverse(), 'lower': !$root.reverse()}, text: !$root.reverse()?'anticlockwise (left)':'clockwise (right)'"></span>
+						<span data-bind="css: {'raise': $root.reverse(), 'lower': !$root.reverse()}">anticlockwise (left)</span>
 					<!-- /ko -->
 				</div>
 			</td>
