@@ -36,6 +36,7 @@ class bedlevelvisualizer(
         self.box = []
         self.flip_x = False
         self.flip_y = False
+        self.timeout_override = False
         self._logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer")
         self._bedlevelvisualizer_logger = logging.getLogger(
             "octoprint.plugins.bedlevelvisualizer.debug"
@@ -198,10 +199,11 @@ class bedlevelvisualizer(
             self._identifier, dict(processing=True)
         )
 
-    def flag_mesh_collection(
-        self, comm_instance, phase, command, parameters, tags=None, *args, **kwargs
-    ):
+    def flag_mesh_collection(self, comm_instance, phase, command, parameters, tags=None, *args, **kwargs):
         if command == "BEDLEVELVISUALIZER":
+            if parameters:
+                self._bedlevelvisualizer_logger.debug("Timeout override: {}".format(parameters))
+                self._plugin_manager.send_plugin_message(self._identifier, {"timeout_override": parameters})
             thread = threading.Thread(target=self.enable_mesh_collection)
             thread.daemon = True
             thread.start()

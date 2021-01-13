@@ -1,6 +1,6 @@
 # OctoPrint-BedLevelVisualizer
 
-This plugin visualises the output from various firmware that support bed mesh leveling, noteably the Prusa `G81` mesh leveling report and the Marlin `G29 T` bed topography report. The plugin utilizes [Plotly](https://plot.ly/plotly-js-scientific-d3-charting-library/) js library to render a 3D surface of the bed's reported mesh on a tab within OctoPrint.
+This plugin visualises the output from various firmware that support bed mesh leveling, noteably the Prusa `G81` mesh leveling report and the Marlin `G29 T` bed topography report. Please note that in order to use this plugin your 3D printer needs to support bed mesh leveling in software or come equipped with an auto level sensor supported by the printer's firmware (some entry-level printers do not provide such support per default). The plugin utilizes [Plotly](https://plot.ly/plotly-js-scientific-d3-charting-library/) js library to render a 3D surface of the bed's reported mesh on a tab within OctoPrint.
 
 ## Supported Firmware:
 
