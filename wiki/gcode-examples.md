@@ -29,15 +29,19 @@ M117 Bed mesh levels completed ; send message to printer display
 See [G29 - Bed Leveling (Unified)](https://marlinfw.org/docs/gcode/G029-ubl.html)
 
 ```
-G28       ; home all axes
 M155 S30  ; reduce temperature reporting rate to reduce output pollution
-M190 S65  ; (optional) wait for the bed to get up to temperature
-G29 P1    ; automatically populate mesh with all reachable points
-G29 P3    ; infer the rest of the mesh values
+M190 S60  ; (optional) Start by heating the bed for nominal mesh accuracy. 60C. 
+G28       ; home all axes
+G29       ; Automatically populate mesh with all reachable points - Detailed in Configuration.h of Firmware. 
 @BEDLEVELVISUALIZER	; tell the plugin to watch for reported mesh
 M420 S1 V ; enabled leveling and report the new mesh
 M500      ; save the new mesh to EEPROM
 M155 S3   ; reset temperature reporting
+M140 S0 ; cooling down the bed
+M300 S440 P200 ; make calibration completed tones
+M300 S660 P250
+M300 S880 P300
+M117 Bed mesh levels completed ; send message to printer display
 ```
 
 ## Prusa Firmware
