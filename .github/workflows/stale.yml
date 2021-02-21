@@ -1,0 +1,21 @@
+name: Mark Stale Issues
+on:
+  workflow_dispatch:
+  schedule:
+  - cron: "0 0 * * *"
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/stale@v3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        stale-issue-message: 'This issue has been automatically marked as stale because it has not had activity in 14 days. It will be closed if no further activity occurs in 7 days'
+        days-before-stale: 14
+        days-before-close: 7
+        stale-issue-label: 'stale'
+        days-before-issue-stale: 14
+        days-before-pr-stale: -1
+        days-before-issue-close: 7
+        days-before-pr-close: -1
+        exempt-issue-labels: 'bug,enhancement'
