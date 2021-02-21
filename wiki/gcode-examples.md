@@ -23,6 +23,7 @@ M155 S30  ; reduce temperature reporting rate to reduce output pollution
 M190 S65  ; (optional) wait for the bed to get up to temperature
 G29 P1    ; automatically populate mesh with all reachable points
 G29 P3    ; infer the rest of the mesh values
+G29 P3    ; infer the rest of the mesh values again
 @BEDLEVELVISUALIZER	; tell the plugin to watch for reported mesh
 M420 S1 V ; enabled leveling and report the new mesh
 M500      ; save the new mesh to EEPROM
