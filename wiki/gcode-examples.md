@@ -7,7 +7,7 @@ For both methods, if your firmware has `AUTO_REPORT_TEMPERATURES` enabled, set t
 See [G29 - Bed Leveling (Bilinear)](https://marlinfw.org/docs/gcode/G029-abl-bilinear.html)
 
 ```
-G28      ; aome all axes
+G28      ; home all axes
 M155 S30 ; reduce temperature reporting rate to reduce output pollution
 @BEDLEVELVISUALIZER	; tell the plugin to watch for reported mesh
 G29 T	   ; run bilinear probing
