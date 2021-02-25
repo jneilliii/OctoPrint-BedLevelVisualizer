@@ -399,7 +399,7 @@ class bedlevelvisualizer(
             if bed_type == "circular":
                 n = len(self.mesh[0])
                 m = len(self.mesh)
-                circle_mask = self.create_circular_mask(n, m)
+                circle_mask = self.create_circular_mask(m, n)
                 self.mesh = np.array(self.mesh)
                 self.mesh[~circle_mask] = None
                 self.mesh = self.mesh.tolist()
