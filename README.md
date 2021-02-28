@@ -69,21 +69,18 @@ For more info, see the [wiki](wiki/index.md)
 ---
 
 ## Most recent changelog
-**[1.0.0](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/1.0.0)** (11/20/2020)
+**[1.0.1](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/1.0.1)** (02/28/2021)
 
 **Added**
-* release channels for OctoPrint 1.5.0+ for future rc testing, similar to OctoPrint as described [here](https://community.octoprint.org/t/how-to-use-the-release-channels-to-help-test-release-candidates/402)
+* optional timeout override to @BEDLEVELVISUALIZER command
+* settings button on tab for quick access
 
 **Updated**
-* think it's time to go to major version 1.0.0 now with over 19K known installs
-* knockout sortable library for OctoPrint 1.5.0 compatibility
+* README.md adding note that auto bed leveling must be possible on printer
 
 **Fixed**
-* knockout binding issue due to knockout version update to 3.5.1 in OctoPrint 1.5.0
-* issue relative to using center origins and odd numbered mesh grid
-* issue with misinterpretation of bed level correction matrix
-* typos in reverse direction hover text
-* turn direction label coloring when direction is reversed
+* allow for probe points that contain more than single digits
+* resolve issues with circular beds
 
 ## [All releases](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases)
 
@@ -91,7 +88,7 @@ For more info, see the [wiki](wiki/index.md)
 
 ## To-Do
 - [ ] improve old marlin makergear support
-- [ ] improve rectangular mesh for circular bed calculations
+- [x] improve rectangular mesh for circular bed calculations
 - [x] ~~Pause standard OctoPrint temperature polling or squash the responses until processing is completed.~~ won't be possible, utilize M155 gcode if possible
 - [x] ~~Orientation testing to verify axes are in correct direction.~~ added settings to allow controlling the orientation.
 - [x] ~~Calculate bed dimensions and apply to probe points for display on graph, #28.~~
