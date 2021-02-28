@@ -1,6 +1,6 @@
 # OctoPrint-BedLevelVisualizer
 
-This plugin visualises the output from various firmware that support bed mesh leveling, noteably the Prusa `G81` mesh leveling report and the Marlin `G29 T` bed topography report. The plugin utilizes [Plotly](https://plot.ly/plotly-js-scientific-d3-charting-library/) js library to render a 3D surface of the bed's reported mesh on a tab within OctoPrint.
+This plugin visualises the output from various firmware that support bed mesh leveling, noteably the Prusa `G81` mesh leveling report and the Marlin `G29 T` bed topography report. Please note that in order to use this plugin your 3D printer needs to support bed mesh leveling in software or come equipped with an auto level sensor supported by the printer's firmware (some entry-level printers do not provide such support per default). The plugin utilizes [Plotly](https://plot.ly/plotly-js-scientific-d3-charting-library/) js library to render a 3D surface of the bed's reported mesh on a tab within OctoPrint.
 
 ## Supported Firmware:
 
@@ -60,6 +60,7 @@ For more info, see the [wiki](wiki/index.md)
 ## Known Issues
 
 - Install will fail silently in Python 3 due to missing system dependencies. You may have to SSH to your pi and run the command `sudo apt install libatlas3-base` to get the plugin to load.
+- If installing on lower memory machines like the Orange Pi Zero or Raspberry Pi A numpy will have issues compiling. Check the instructions [here](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/141#issuecomment-542227338) for a potential solution.
 - System Command Editor and Custom Control Editor plugins have a known issue [here](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/228) and [here](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/244) where your customizations for those plugins get wiped when used in conjunction with Bed Level Visualizer and a few other plugins. To avoid this from happening to you disable Bed Level Visualizer and after restarting OctoPrint configure your customizations in those plugins and save. Immediately disable those plugins and re-enable Bed Level Visualizer restart OctoPrint and Reload. Your customizations to controls and the system menu will still remain and the bug that exists in those plugins will be prevented from clearing your customizations. I highly recommend you take regular backups as well.
 - Since version 0.1.3 there is a python dependency on numpy. As a result; if you don't already have numpy the install can take in excess of 30 minutes to complete on a pi. Just be patient and let it run and eventually the plugin install will finish.
 - If your device have less than 512MB of ram your numpy installation will most likely fail. See [#141](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/141#issuecomment-542227338) for solution.
@@ -68,21 +69,18 @@ For more info, see the [wiki](wiki/index.md)
 ---
 
 ## Most recent changelog
-**[1.0.0](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/1.0.0)** (11/20/2020)
+**[1.0.1](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/1.0.1)** (02/28/2021)
 
 **Added**
-* release channels for OctoPrint 1.5.0+ for future rc testing, similar to OctoPrint as described [here](https://community.octoprint.org/t/how-to-use-the-release-channels-to-help-test-release-candidates/402)
+* optional timeout override to @BEDLEVELVISUALIZER command
+* settings button on tab for quick access
 
 **Updated**
-* think it's time to go to major version 1.0.0 now with over 19K known installs
-* knockout sortable library for OctoPrint 1.5.0 compatibility
+* README.md adding note that auto bed leveling must be possible on printer
 
 **Fixed**
-* knockout binding issue due to knockout version update to 3.5.1 in OctoPrint 1.5.0
-* issue relative to using center origins and odd numbered mesh grid
-* issue with misinterpretation of bed level correction matrix
-* typos in reverse direction hover text
-* turn direction label coloring when direction is reversed
+* allow for probe points that contain more than single digits
+* resolve issues with circular beds
 
 ## [All releases](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases)
 
@@ -90,7 +88,7 @@ For more info, see the [wiki](wiki/index.md)
 
 ## To-Do
 - [ ] improve old marlin makergear support
-- [ ] improve rectangular mesh for circular bed calculations
+- [x] improve rectangular mesh for circular bed calculations
 - [x] ~~Pause standard OctoPrint temperature polling or squash the responses until processing is completed.~~ won't be possible, utilize M155 gcode if possible
 - [x] ~~Orientation testing to verify axes are in correct direction.~~ added settings to allow controlling the orientation.
 - [x] ~~Calculate bed dimensions and apply to probe points for display on graph, #28.~~
@@ -117,6 +115,7 @@ Check out my other plugins [here](https://plugins.octoprint.org/by_author/#jneil
 - [SimplyPrint](https://simplyprint.dk/)
 - [Andrew Beeman](https://github.com/Kiendeleo)
 - [Calanish](https://github.com/calanish)
+- [Will O](https://github.com/4wrxb)
 
 ## Support My Efforts
 I, jneilliii, programmed this plugin for fun and do my best effort to support those that have issues with it, please return the favor and leave me a tip or become a Patron if you find this plugin helpful and want me to continue future development.

@@ -36,12 +36,13 @@ class bedlevelvisualizer(
         self.box = []
         self.flip_x = False
         self.flip_y = False
+        self.timeout_override = False
         self._logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer")
         self._bedlevelvisualizer_logger = logging.getLogger(
             "octoprint.plugins.bedlevelvisualizer.debug"
         )
         self.regex_mesh_data = re.compile(
-            r"^((G33.+)|(Bed.+)|(Llit.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?-?\d?\.\d+\]?\s*,?)|(\s?\.\s*)|(NAN,"
+            r"^((G33.+)|(Bed.+)|(Llit.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?-?\d+?\.\d+\]?\s*,?)|(\s?\.\s*)|(NAN,"
             r"?)|(nan\s?,?)|(=======\s?,?))+(\s+\],?)?$"
         )
         self.regex_bed_level_correction = re.compile(
@@ -198,10 +199,11 @@ class bedlevelvisualizer(
             self._identifier, dict(processing=True)
         )
 
-    def flag_mesh_collection(
-        self, comm_instance, phase, command, parameters, tags=None, *args, **kwargs
-    ):
+    def flag_mesh_collection(self, comm_instance, phase, command, parameters, tags=None, *args, **kwargs):
         if command == "BEDLEVELVISUALIZER":
+            if parameters:
+                self._bedlevelvisualizer_logger.debug("Timeout override: {}".format(parameters))
+                self._plugin_manager.send_plugin_message(self._identifier, {"timeout_override": parameters})
             thread = threading.Thread(target=self.enable_mesh_collection)
             thread.daemon = True
             thread.start()
@@ -397,7 +399,7 @@ class bedlevelvisualizer(
             if bed_type == "circular":
                 n = len(self.mesh[0])
                 m = len(self.mesh)
-                circle_mask = self.create_circular_mask(n, m)
+                circle_mask = self.create_circular_mask(m, n)
                 self.mesh = np.array(self.mesh)
                 self.mesh[~circle_mask] = None
                 self.mesh = self.mesh.tolist()
