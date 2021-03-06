@@ -33,7 +33,7 @@ plugin_url = "https://github.com/jneilliii/OctoPrint-BedLevelVisualizer"
 plugin_license = "AGPLv3"
 
 # Any additional requirements besides OctoPrint should be listed here
-plugin_requires = ["numpy>=1.16.0,<=1.19.2"]
+plugin_requires = ["numpy"]
 
 ### --------------------------------------------------------------------------------------------------------------------
 ### More advanced options that you usually shouldn't have to touch follow after this point
