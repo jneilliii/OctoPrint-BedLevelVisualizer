@@ -6,10 +6,10 @@ import threading
 import octoprint.plugin
 from octoprint.events import Events
 import re
-import numpy as np
 import logging
 import flask
 import json
+import math
 
 
 class bedlevelvisualizer(
@@ -37,7 +37,8 @@ class bedlevelvisualizer(
         self.flip_x = False
         self.flip_y = False
         self.timeout_override = False
-        self._logger = logging.getLogger("octoprint.plugins.bedlevelvisualizer")
+        self._logger = logging.getLogger(
+            "octoprint.plugins.bedlevelvisualizer")
         self._bedlevelvisualizer_logger = logging.getLogger(
             "octoprint.plugins.bedlevelvisualizer.debug"
         )
@@ -144,7 +145,8 @@ class bedlevelvisualizer(
         )
         bedlevelvisualizer_logging_handler.setLevel(logging.DEBUG)
 
-        self._bedlevelvisualizer_logger.addHandler(bedlevelvisualizer_logging_handler)
+        self._bedlevelvisualizer_logger.addHandler(
+            bedlevelvisualizer_logging_handler)
         self._bedlevelvisualizer_logger.setLevel(
             logging.DEBUG
             if self._settings.get_boolean(["debug_logging"])
@@ -202,8 +204,10 @@ class bedlevelvisualizer(
     def flag_mesh_collection(self, comm_instance, phase, command, parameters, tags=None, *args, **kwargs):
         if command == "BEDLEVELVISUALIZER":
             if parameters:
-                self._bedlevelvisualizer_logger.debug("Timeout override: {}".format(parameters))
-                self._plugin_manager.send_plugin_message(self._identifier, {"timeout_override": parameters})
+                self._bedlevelvisualizer_logger.debug(
+                    "Timeout override: {}".format(parameters))
+                self._plugin_manager.send_plugin_message(
+                    self._identifier, {"timeout_override": parameters})
             thread = threading.Thread(target=self.enable_mesh_collection)
             thread.daemon = True
             thread.start()
@@ -239,7 +243,8 @@ class bedlevelvisualizer(
                     )
                     line = self.regex_nan.sub("0.0", line)
                 if self.regex_equal_signs.match(line.strip()):
-                    self._bedlevelvisualizer_logger.debug("stupid equal signs...")
+                    self._bedlevelvisualizer_logger.debug(
+                        "stupid equal signs...")
                     line = self.regex_equal_signs.sub("0.0", line)
 
                 new_line = self.regex_mesh_data_extraction.findall(line)
@@ -247,11 +252,13 @@ class bedlevelvisualizer(
 
                 if self.regex_old_marlin.match(line.strip()):
                     self.old_marlin = True
-                    self._bedlevelvisualizer_logger.debug("using old marlin flag")
+                    self._bedlevelvisualizer_logger.debug(
+                        "using old marlin flag")
 
                 if self.regex_repetier.match(line.strip()):
                     self.repetier_firmware = True
-                    self._bedlevelvisualizer_logger.debug("using repetier flag")
+                    self._bedlevelvisualizer_logger.debug(
+                        "using repetier flag")
 
                 if self._settings.get_boolean(["stripFirst"]):
                     new_line.pop(0)
@@ -276,8 +283,10 @@ class bedlevelvisualizer(
                         self.flip_y = True
 
             if self.regex_makergear.match(line) is not None:
-                self._bedlevelvisualizer_logger.debug("using makergear format report")
-                self.mesh = json.loads(line.strip().replace("= ", "").replace(";", ""))
+                self._bedlevelvisualizer_logger.debug(
+                    "using makergear format report")
+                self.mesh = json.loads(
+                    line.strip().replace("= ", "").replace(";", ""))
                 self.old_marlin = True
                 self.makergear = True
                 self._bedlevelvisualizer_logger.debug(self.mesh)
@@ -287,7 +296,8 @@ class bedlevelvisualizer(
                 self.old_marlin_offset = self.regex_eqn_coefficients.sub(
                     r"\2", line.strip()
                 )
-                self._bedlevelvisualizer_logger.debug("using old marlin offset")
+                self._bedlevelvisualizer_logger.debug(
+                    "using old marlin offset")
 
             if "Home XYZ first" in line or "Invalid mesh" in line:
                 reason = "data is invalid" if "Invalid" in line else "homing required"
@@ -341,69 +351,89 @@ class bedlevelvisualizer(
             self._bedlevelvisualizer_logger.debug(bed)
 
             if self.old_marlin or self.repetier_firmware:
-                if not self.makergear:
-                    a = np.swapaxes(self.mesh, 1, 0)
+                self._bedlevelvisualizer_logger.debug(
+                    "initial mesh data: " + str(self.mesh))
+                if self.makergear:
+                    a = self.mesh
                 else:
-                    a = np.array(self.mesh)
-                x = np.unique(a[0]).astype(np.float)
-                y = np.unique(a[1]).astype(np.float)
-                z = a[2].reshape((len(x), len(y)))
-                self._bedlevelvisualizer_logger.debug(a)
-                self._bedlevelvisualizer_logger.debug(x)
-                self._bedlevelvisualizer_logger.debug(y)
-                self._bedlevelvisualizer_logger.debug(z)
+                    # rearrange matrix from point lists to coordinate lists
+                    a = list(zip(*self.mesh))
+                    self._bedlevelvisualizer_logger.debug(
+                        "mesh after swapaxes: " + str(a))
+
+                # filter coordinate values
+                self._bedlevelvisualizer_logger.debug("a = " + str(a))
+                x = self.unique_floats(a[0])
+                self._bedlevelvisualizer_logger.debug("x = " + str(x))
+                y = self.unique_floats(a[1])
+                self._bedlevelvisualizer_logger.debug("y = " + str(y))
+                rows, cols, vals = (len(y), len(x), len(list(a[2])))
+                z = [[0 for i in range(cols)]
+                     for j in range(rows)]  # init empty matrix
+                k = 0
+                # filling array
+                for i in range(rows):
+                    for j in range(cols):
+                        z[i][j] = a[2][k]
+                        k += 1
+                self._bedlevelvisualizer_logger.debug("z = " + str(z))
+
+                # dealing with offset
                 offset = 0
                 if self.old_marlin:
                     offset = self.old_marlin_offset
-                self._bedlevelvisualizer_logger.debug(offset)
-                self.mesh = np.subtract(
-                    z, [offset], dtype=np.float, casting="unsafe"
-                ).tolist()
-                self._bedlevelvisualizer_logger.debug(self.mesh)
+                self._bedlevelvisualizer_logger.debug(
+                    "mesh offset = " + str(offset))
+                self.mesh = list(
+                    map(lambda y: list(map(lambda x: round(float(x) - offset, 4), y)), z))
+                self._bedlevelvisualizer_logger.debug(
+                    "mesh after offset: " + str(self.mesh))
 
             self._bedlevelvisualizer_logger.debug("stopping mesh collection")
 
             if bool(self.flip_x) != bool(self._settings.get(["flipX"])):
-                self._bedlevelvisualizer_logger.debug("flipping x axis")
-                self.mesh = np.flip(np.array(self.mesh), 1).tolist()
+                self.mesh = list(map(lambda x: list(reversed(x)), self.mesh))
+                self._bedlevelvisualizer_logger.debug(
+                    "flipped x axis: " + str(self.mesh))
 
             if bool(self.flip_y) != bool(self._settings.get(["flipY"])):
-                self._bedlevelvisualizer_logger.debug("flipping y axis")
                 self.mesh.reverse()
+                self._bedlevelvisualizer_logger.debug(
+                    "flipped y axis: " + str(self.mesh))
 
             if self._settings.get_boolean(["use_relative_offsets"]):
                 self._bedlevelvisualizer_logger.debug("using relative offsets")
-                self.mesh = np.array(self.mesh)
+                # shifting mesh down by origin point height
                 if self._settings.get_boolean(["use_center_origin"]):
-                    self._bedlevelvisualizer_logger.debug("using center origin")
-                    self.mesh = np.subtract(
-                        self.mesh,
-                        self.mesh[len(self.mesh[0]) // 2, len(self.mesh) // 2],
-                        dtype=np.float,
-                        casting="unsafe",
-                    ).tolist()
+                    self._bedlevelvisualizer_logger.debug(
+                        "using center origin")
+                    # finding origin point in center
+                    offset = self.mesh[len(self.mesh[0]) //
+                                       2][len(self.mesh) // 2]
+                    self.mesh = list(
+                        map(lambda y: list(map(lambda x: round(float(x) - offset, 4), y)), self.mesh))
                 else:
-                    self.mesh = np.subtract(
-                        self.mesh, self.mesh[0, 0], dtype=np.float, casting="unsafe"
-                    ).tolist()
+                    offset = self.mesh[0][0]
+                    self.mesh = list(
+                        map(lambda y: list(map(lambda x: round(float(x) - offset, 4), y)), self.mesh))
 
             if int(self._settings.get_int(["rotation"])) > 0:
                 self._bedlevelvisualizer_logger.debug(
-                    "rotating mesh by %s" % self._settings.get(["rotation"])
-                )
-                self.mesh = np.array(self.mesh)
-                self.mesh = np.rot90(
-                    self.mesh, self._settings.get_int(["rotation"]) / 90
-                ).tolist()
+                    "rotating mesh by %s degrees" % self._settings.get(["rotation"]))
+
+                for i in range(int(self._settings.get_int(["rotation"]) / 90)):
+                    self.mesh = list(zip(*self.mesh))[::-1]
 
             if bed_type == "circular":
-                n = len(self.mesh[0])
                 m = len(self.mesh)
+                n = len(self.mesh[0])
                 circle_mask = self.create_circular_mask(m, n)
-                self.mesh = np.array(self.mesh)
-                self.mesh[~circle_mask] = None
-                self.mesh = self.mesh.tolist()
-                self._bedlevelvisualizer_logger.debug(self.mesh)
+                for i in range(m):
+                    for j in range(n):
+                        if circle_mask[i][j] == False:
+                            self.mesh[i][j] = None
+                self._bedlevelvisualizer_logger.debug(
+                    "masked mesh = " + str(self.mesh))
 
             self.processing = False
             self._bedlevelvisualizer_logger.debug(self.mesh)
@@ -415,18 +445,26 @@ class bedlevelvisualizer(
         return line
 
     def create_circular_mask(self, h, w, center=None, radius=None):
-        if center is None:  # use the middle of the image
-            center = (int(w / 2), int(h / 2))
-        if (
-            radius is None
-        ):  # use the smallest distance between the center and image walls
-            radius = min(center[0], center[1], w - center[0], h - center[1])
+        # cw = int(w / 2)
+        # ch = int(h / 2)
+        center = (int(w / 2), int(h / 2))
+        radius = int(min(center[0], center[1], w - center[0], h - center[1]))
+        self._bedlevelvisualizer_logger.debug("center = " + str(center))
+        self._bedlevelvisualizer_logger.debug("radius = " + str(radius))
 
-        Y, X = np.ogrid[:h, :w]
-        dist_from_center = np.sqrt((X - center[0]) ** 2 + (Y - center[1]) ** 2)
-
-        mask = dist_from_center <= radius
+        mask = [[False for i in range(w)]
+                for j in range(h)]  # init emply matrix
+        for i in range(h):
+            for j in range(w):
+                mask[i][j] = math.sqrt(
+                    (j - center[0]) ** 2 + (i - center[1]) ** 2) <= radius
+        self._bedlevelvisualizer_logger.debug("mask = " + str(mask))
         return mask
+
+    def unique_floats(self, list1):
+        s_list = set(list1)
+        u_list = (list(s_list))
+        return list(map(float, u_list))
 
     # SimpleApiPlugin
 
