@@ -34,6 +34,11 @@ For Marlin, Klipper and Prusa mesh update GCODE, please see [here](gcode-example
 
 ---
 
+## [Camera Positions]{camera-positions.md}
+
+### Screenshot of example Camera Posisions
+For a couple of examples of different camera positions and how they look, please see [here](camera-positions.md)
+
 ## Custom commands
 ### Parameters
 For inserting a custom code paremeter GCODE command, the plus button beside the parameter can be used, or the following syntax can be used:
