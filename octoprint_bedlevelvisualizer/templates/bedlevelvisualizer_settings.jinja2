@@ -58,6 +58,14 @@
 					</div>
 				</div>
 				<div class="row-fluid">
+					<div class="control-group span4">
+						<label for="bedlevelvisualizer_camera_position"><i class="icon icon-info-sign" title="Comma separated list of integers for controlling the position of the camera in the format of <x>,<y>,<z>. For example the default value is -1.25,-1.25,0.25." data-toggle="tooltip"></i> Camera Position</label>
+						<div class="controls">
+							<input type="text" id="bedlevelvisualizer_camera_position" class="input-medium" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.camera_position">
+						</div>
+					</div>
+				</div>
+				<div class="row-fluid">
                     <div class="control-group">
                         <label for="bedlevelvisualizer_colorscale"><i class="icon icon-info-sign" title="Either an array of percentage and color pairs or a Plotly named colorscale" data-toggle="tooltip"></i> Colorscale</label>
                         <div class="controls">

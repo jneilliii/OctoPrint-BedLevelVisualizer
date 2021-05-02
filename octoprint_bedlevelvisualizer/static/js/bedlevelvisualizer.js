@@ -218,6 +218,7 @@ $(function () {
 
 				var background_color = $('#tabs_content').css('background-color');
 				var foreground_color = $('#tabs_content').css('color');
+				var camera_position = self.settingsViewModel.settings.plugins.bedlevelvisualizer.camera_position().split(",");
 
 				var layout = {
 					//title: 'Bed Leveling Mesh',
@@ -233,9 +234,9 @@ $(function () {
 					scene: {
 						camera: {
 							eye: {
-								x: -1.25,
-								y: -1.25,
-								z: 0.25
+								x: (camera_position.length === 3) ? camera_position[0] : -1.25,
+								y: (camera_position.length === 3) ? camera_position[1] : -1.25,
+								z: (camera_position.length === 3) ? camera_position[2] : 0.25
 							}
 						},
 						xaxis: {
