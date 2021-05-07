@@ -9,8 +9,7 @@ import re
 import logging
 import flask
 import json
-import math
-
+from copy import deepcopy
 
 class bedlevelvisualizer(
 	octoprint.plugin.StartupPlugin,
@@ -33,6 +32,7 @@ class bedlevelvisualizer(
 		self.old_marlin_offset = 0
 		self.repetier_firmware = False
 		self.mesh = []
+		self.bed_type = None
 		self.box = []
 		self.flip_x = False
 		self.flip_y = False
@@ -317,7 +317,7 @@ class bedlevelvisualizer(
 		) > 0:
 			octoprint_printer_profile = self._printer_profile_manager.get_current()
 			volume = octoprint_printer_profile["volume"]
-			bed_type = volume["formFactor"]
+			self.bed_type = volume["formFactor"]
 			custom_box = volume["custom_box"]
 			# see if we have a custom bounding box
 			if custom_box:
@@ -341,7 +341,7 @@ class bedlevelvisualizer(
 				max_y = max([y for x, y in self.box])
 
 			bed = dict(
-				type=bed_type,
+				type=self.bed_type,
 				x_min=min_x,
 				x_max=max_x,
 				y_min=min_y,
@@ -352,22 +352,20 @@ class bedlevelvisualizer(
 			self._bedlevelvisualizer_logger.debug(bed)
 
 			if self.old_marlin or self.repetier_firmware:
-				self._bedlevelvisualizer_logger.debug(
-					"initial mesh data: " + str(self.mesh))
+				self.print_mesh_debug("initial mesh data: ", self.mesh)
 				if self.makergear:
 					a = self.mesh
 				else:
 					# rearrange matrix from point lists to coordinate lists
 					a = list(zip(*self.mesh))
-					self._bedlevelvisualizer_logger.debug(
-						"mesh after swapaxes: " + str(a))
+					self.print_mesh_debug("mesh after swapaxes: ", a)
 
 				# filter coordinate values
-				self._bedlevelvisualizer_logger.debug("a = " + str(a))
+				self.print_mesh_debug("a = ", a)
 				x = self.unique_floats(a[0])
-				self._bedlevelvisualizer_logger.debug("x = " + str(x))
+				self.print_mesh_debug("x = ", x)
 				y = self.unique_floats(a[1])
-				self._bedlevelvisualizer_logger.debug("y = " + str(y))
+				self.print_mesh_debug("y = ", y)
 				rows, cols, vals = (len(y), len(x), len(list(a[2])))
 				z = [[0 for i in range(cols)]
 					 for j in range(rows)]  # init empty matrix
@@ -377,7 +375,7 @@ class bedlevelvisualizer(
 					for j in range(cols):
 						z[i][j] = a[2][k]
 						k += 1
-				self._bedlevelvisualizer_logger.debug("z = " + str(z))
+				self.print_mesh_debug("z = ", z)
 
 				# dealing with offset
 				offset = 0
@@ -387,20 +385,17 @@ class bedlevelvisualizer(
 					"mesh offset = " + str(offset))
 				self.mesh = list(
 					map(lambda y: list(map(lambda x: round(float(x) - offset, 4), y)), z))
-				self._bedlevelvisualizer_logger.debug(
-					"mesh after offset: " + str(self.mesh))
+				self.print_mesh_debug("mesh after offset: ", self.mesh)
 
 			self._bedlevelvisualizer_logger.debug("stopping mesh collection")
 
 			if bool(self.flip_x) != bool(self._settings.get(["flipX"])):
 				self.mesh = list(map(lambda x: list(reversed(x)), self.mesh))
-				self._bedlevelvisualizer_logger.debug(
-					"flipped x axis: " + str(self.mesh))
+				self.print_mesh_debug("flipped x axis: ", self.mesh)
 
 			if bool(self.flip_y) != bool(self._settings.get(["flipY"])):
 				self.mesh.reverse()
-				self._bedlevelvisualizer_logger.debug(
-					"flipped y axis: " + str(self.mesh))
+				self.print_mesh_debug("flipped y axis: ", self.mesh)
 
 			if self._settings.get_boolean(["use_relative_offsets"]):
 				self._bedlevelvisualizer_logger.debug("using relative offsets")
@@ -409,8 +404,7 @@ class bedlevelvisualizer(
 					self._bedlevelvisualizer_logger.debug(
 						"using center origin")
 					# finding origin point in center
-					offset = self.mesh[len(self.mesh[0]) //
-									   2][len(self.mesh) // 2]
+					offset = self.mesh[len(self.mesh[0]) // 2][len(self.mesh) // 2]
 					self.mesh = list(
 						map(lambda y: list(map(lambda x: round(float(x) - offset, 4), y)), self.mesh))
 				else:
@@ -425,19 +419,18 @@ class bedlevelvisualizer(
 				for i in range(int(self._settings.get_int(["rotation"]) / 90)):
 					self.mesh = list(zip(*self.mesh))[::-1]
 
-			if bed_type == "circular":
-				m = len(self.mesh)
-				n = len(self.mesh[0])
-				circle_mask = self.create_circular_mask(m, n)
-				for i in range(m):
-					for j in range(n):
-						if circle_mask[i][j] == False:
+			if self.bed_type == "circular":
+				y = len(self.mesh)
+				x = len(self.mesh[0])
+				circle_mask = self.create_circular_mask(y, x)
+				for i in range(y):
+					for j in range(x):
+						if not circle_mask[i][j]:
 							self.mesh[i][j] = None
-				self._bedlevelvisualizer_logger.debug(
-					"masked mesh = " + str(self.mesh))
 
 			self.processing = False
-			self._bedlevelvisualizer_logger.debug(self.mesh)
+			self.print_mesh_debug("Final mesh:", self.mesh)
+
 			self._plugin_manager.send_plugin_message(
 				self._identifier, dict(mesh=self.mesh, bed=bed)
 			)
@@ -445,27 +438,47 @@ class bedlevelvisualizer(
 
 		return line
 
-	def create_circular_mask(self, h, w, center=None, radius=None):
-		# cw = int(w / 2)
-		# ch = int(h / 2)
-		center = (int(w / 2), int(h / 2))
-		radius = int(min(center[0], center[1], w - center[0], h - center[1]))
-		self._bedlevelvisualizer_logger.debug("center = " + str(center))
-		self._bedlevelvisualizer_logger.debug("radius = " + str(radius))
+	def create_circular_mask(self, y, x):
+		center = y/2-0.5, x/2-0.5
+		radius = min(center[0], center[1], y - center[0], x - center[1])
+		self._bedlevelvisualizer_logger.debug("Center = " + str(center) + ", Radius = " + str(radius))
+		
+		# init emply matrix
+		mask = [[False for j in range(x)]
+				for i in range(y)]
+		# creating rough circular mask with wiggle room to surely include all points
+		for i in range(y):
+			for j in range(x):
+				mask[i][j] = abs((i-center[0])**2 + (j-center[1])**2) - radius**2 < 1.5**2
 
-		mask = [[False for i in range(w)]
-				for j in range(h)]  # init emply matrix
-		for i in range(h):
-			for j in range(w):
-				mask[i][j] = math.sqrt(
-					(j - center[0]) ** 2 + (i - center[1]) ** 2) <= radius
-		self._bedlevelvisualizer_logger.debug("mask = " + str(mask))
+		self.print_mesh_debug("mask:", mask)
 		return mask
 
+	# find all unique values in a list
 	def unique_floats(self, list1):
 		s_list = set(list1)
 		u_list = (list(s_list))
 		return list(map(float, u_list))
+
+	# output mesh line by line, with right coordinate directions
+	def print_mesh_debug(self, message, mesh):
+		self._bedlevelvisualizer_logger.debug(message)
+		l = len(mesh)   
+		# print mask data
+		for i in range(l):
+			self._bedlevelvisualizer_logger.debug(mesh[l-i-1])
+		# print graphical representation
+		if self.bed_type == "circular":
+			pic = deepcopy(mesh)
+			for i in range(l):
+				for j in range(len(pic[0])):
+					if pic[i][j] in [False, None, "."]:
+						pic[i][j] = "·"
+					else:
+						pic[i][j] = "Ꚛ"
+			for i in range(l):
+				self._bedlevelvisualizer_logger.debug(pic[l-i-1])
+		return
 
 	# SimpleApiPlugin
 
