@@ -406,11 +406,11 @@ class bedlevelvisualizer(
 					# finding origin point in center
 					offset = self.mesh[len(self.mesh[0]) // 2][len(self.mesh) // 2]
 					self.mesh = list(
-						map(lambda y: list(map(lambda x: round(float(x) - offset, 4), y)), self.mesh))
+						map(lambda y: list(map(lambda x: round(float(x) - float(offset), 4), y)), self.mesh))
 				else:
 					offset = self.mesh[0][0]
 					self.mesh = list(
-						map(lambda y: list(map(lambda x: round(float(x) - offset, 4), y)), self.mesh))
+						map(lambda y: list(map(lambda x: round(float(x) - float(offset), 4), y)), self.mesh))
 
 			if int(self._settings.get_int(["rotation"])) > 0:
 				self._bedlevelvisualizer_logger.debug(
@@ -442,7 +442,7 @@ class bedlevelvisualizer(
 		center = y/2-0.5, x/2-0.5
 		radius = min(center[0], center[1], y - center[0], x - center[1])
 		self._bedlevelvisualizer_logger.debug("Center = " + str(center) + ", Radius = " + str(radius))
-		
+
 		# init emply matrix
 		mask = [[False for j in range(x)]
 				for i in range(y)]
@@ -463,7 +463,7 @@ class bedlevelvisualizer(
 	# output mesh line by line, with right coordinate directions
 	def print_mesh_debug(self, message, mesh):
 		self._bedlevelvisualizer_logger.debug(message)
-		l = len(mesh)   
+		l = len(mesh)
 		# print mask data
 		for i in range(l):
 			self._bedlevelvisualizer_logger.debug(mesh[l-i-1])
