@@ -100,7 +100,8 @@ class bedlevelvisualizer(
 			graph_z_limits="-2,2",
 			colorscale='[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]',
 			save_snapshots=False,
-			camera_position="-1.25,-1.25,0.25"
+			camera_position="-1.25,-1.25,0.25",
+			date_locale_format=""
 		)
 
 	def get_settings_version(self):
@@ -177,6 +178,11 @@ class bedlevelvisualizer(
 				"css/bedlevelvisualizer.css",
 			],
 		)
+
+	# TemplatePlugin
+
+	def get_template_vars(self):
+		return {"plugin_version": self._plugin_version}
 
 	# EventHandlePlugin
 

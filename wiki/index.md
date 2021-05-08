@@ -1,52 +1,106 @@
-# Welcome to the OctoPrint-BedLevelVisualizer wiki!
+# Tab
 
+---
 
-## Settings
+Sometimes after installing depending on how many other plugin tabs you have, the Bed Visualizer tab may be hidden in the tab drop-down located in the upper-right of the tab navigation. This is where you will initiate the mesh [Collection](#Collection) process and have access to custom defined [Commands](#Commands).
 
-![screenshot](settings_general.png)
+![screenshot](screenshot_tab.png)
 
-![screenshot](settings_stored_mesh.png)
+* **Graph:** This is where you will find the rendered graph generated using mesh [Collection](#Collection) data and configured [Visualization](#Visualization) options. The graph will be replaced by the webcam during the mesh collection process if the show webcam option is enabled in settings.
+* **Corrections:** (not enabled in screenshot above) This is where you will see the adjustment correction table as described in [Corrections](#Corrections).
+* **Settings Button:** Click this button to go directly to the Bed Visualizer [Settings](#Settings).
+* **Commands:** This is where custom defined [Commands](#Commands) will be displayed.
 
-## Tips
+# Settings
+
+---
+
+## Collection
+On this tab you will find all the settings related to collecting mesh data from your printer. Adjust these settings as necessary to get the correct orientation of your bed relative to the returned mesh data from your firmware.
+
+![screenshot](settings_tab_collection.png)
+
+* **GCODE Commands for Mesh Update Process:** For a collection of example GCODE commands see [here](gcode-examples.md). These examples are not exact requirements, but guidance on what are some of the more common commands based on firmware/leveling type combinations.
+* **Save Mesh:** Enabling this option will cache the last collected mesh data in order to visualize without the need for probing. If you disable this option, the GCODE commands above will be run every time you switch to the Bed Visualizer tab. This can be convenient for firmware that allows for storing mesh data, ie UBL, and using the command `M420 V` for the GCODE commands. This option does not store your mesh data to EEPROM of your firmware, if you'd like to do that it's recommended to include `M500` in your collection command described above or as a custom [Command](#Commands).
+* **Flip X-Axis:** If enabled the mesh data returned by your firmware will be reversed in the x direction.
+
+---
+
+## Visualization
+On this tab you will find all the settings related to the graphical aspects of the plotly graph. Use these settings to tweak the visual display.
+
+![screenshot](settings_tab_visualization.png)
+
+* **Graph Z Limits:** Comma separated list of integers for controlling the z offset of the visualized graph in the format of <z-min>,<z-max>. For example the default value is -2,2. This also affects the color map.
+* **Camera Positions:** For a couple of examples of different camera positions and how they look, please see [here](camera-positions.md)
+* **Colorscale:** Array of percentage/color pairs, ie <code>[[0, "blue"],[1, "red"]]</code> will create a gradient between blue to red. Percentage values are in decimal format and colors can be HTML hex values or color names surrounded by double quotes. You can also use a named color scale from <a href="https://plotly.com/javascript/colorscales/">here</a>. Clear this setting to load the default option and click Save below.
+* **Enable Local Snapshots of Rendered Graphs:** When enabled every time the graph is rendered a png snapshot will be downloaded by the browser.
+* **Date Locale:** Enter the js locale string for date display format for last stored mesh message, if left blank this will default to your browser's date locale settings. See [here](https://www.w3schools.com/jsref/jsref_tolocalestring.asp) for additional information and possible values.
+
+---
+
+## Data
+On this tab you will find a simple table display of the reported mesh data from the firmware. This is the source data of what is graphed in the tab.
+
+![screenshot](settings_tab_data.png)
+
+* **Descending y-axis:** When enabled 0 will be on the bottom, and the highest y value will be at the top of the table.
+* **Descending x-axis:** When enabled 0 will be on the far left, and the highest x value will be at the far right of the table.
+
+---
+
+## Corrections
+On this tab you will find settings specific to screw adjustment corrections.
+
+![screenshot](settings_tab_corrections.png)
+
+* **Display on tab screen:** When enabled the adjustment table shown above will be displayed below the rendered mesh graph on the Bed Visualizer tab.
+* **Reverse turn direction:** When enabled the direction for turning the screw will be reversed.
+* **Imperial screws:** Enable this options to use Imperials screw definitions instead of metric.
+* **Adjustment screw details:** This is the value equivalent to number of turns
+---
+
+## Commands
+On this tab you can add custom commands that will render as buttons below the `Update Mesh Now` button. This is helpful if you want to manually control specific processes, ie sending UBL commands individually instead of as part of the overall Collection script.
+
+![screenshot](settings_tab_commands.png)
+
+* **Parameters:** For inserting a custom code parameter GCODE command, the plus button beside the parameter can be used, or the following syntax can be used:
+```
+%(parameter_name)s
+```
+#### Examples
+Create a preheating command by adding a parameter called `bed_temp` with a default value of 60, the custom command including parameter would look like this:
+```
+M140 S%(bed_temp)s
+```
+
+Create a store mesh command by adding a parameter called `mesh_slot` with a default value of 1, the custom command including the parameter would look like this:
+```
+M420 S%(mesh_slot)s V
+```
+
+Create a load mesh command by adding a parameter called `mesh_slot` with a default value of 1, the custom command including the parameter would look like this:
+```
+M420 L%(mesh_slot)s V
+```
+
+---
+
+## Support
+On this tab you'll find information relevant to getting support.
+
+![screenshot](settings_tab_support.png)
+
+* **Enable Debug Logging:** Enable this option to log additional information in OctoPrint's logging section to allow for additional troubleshooting when opening an issue.
+* **Bug Report:** Use this button to initiate a bug report on GitHub repo.
+* **Feature Request:** Use this button to initial a feature request on GitHub repo.
+
+# Tips
+
+---
   - If your leveling method requires homing first make sure to enter that as well in the GCODE Commands setting.
   - If you have Marlin's Auto Temperature Reporting feature enabled you will want to have M155 S30 and M155 S3 surrounding your reporting GCODE command, otherwise the collected data will be tainted with temperature information.
   - If you end up requiring multiple commands it is recommended to enter `@BEDLEVELVISUALIZER` just prior to the reporting command.
 
-## Setup
 
-Install via the bundled [Plugin Manager](https://github.com/foosel/OctoPrint/wiki/Plugin:-Plugin-Manager)
-or manually using this URL:
-
-```
-https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/master.zip
-```
-OctoPi users can user this command for manually terminal isntall
-```
-~/oprint/bin/pip install -U "https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/master.zip"
-
-```
-
-## [Mesh Update Process GCODE](gcode-examples.md)
-
-### Example GCODE
-For Marlin, Klipper and Prusa mesh update GCODE, please see [here](gcode-examples.md)
-
-
----
-
-## [Camera Positions]{camera-positions.md}
-
-### Screenshot of example Camera Posisions
-For a couple of examples of different camera positions and how they look, please see [here](camera-positions.md)
-
-## Custom commands
-### Parameters
-For inserting a custom code paremeter GCODE command, the plus button beside the parameter can be used, or the following syntax can be used:
-```
-%(parameter_name)s
-```
-#### Example
-For creating a preheating command, after creating a parameter called `bed_temp` with a default value of 60, the custom command including parameter would look like this:
-```
-M140 S%(bed_temp)s
-```
