@@ -188,7 +188,11 @@ $(function () {
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x(mesh_data_x);
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y(mesh_data_y);
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height(mesh_data_z_height);
-					self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp(new Date().toLocaleString(self.settingsViewModel.settings.plugins.bedlevelvisualizer.date_locale_format()));
+					if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.date_locale_format().length > 0) {
+						self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp(new Date().toLocaleString(self.settingsViewModel.settings.plugins.bedlevelvisualizer.date_locale_format()));
+					} else {
+						self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp(new Date().toLocaleString());
+					}
 					self.settingsViewModel.saveData();
 				}
 			}
