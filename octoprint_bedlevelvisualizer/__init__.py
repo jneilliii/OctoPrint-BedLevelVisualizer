@@ -508,6 +508,15 @@ class bedlevelvisualizer(
 			response = dict(stopped=True)
 			return flask.jsonify(response)
 
+	# Custom Action Hook
+
+	def custom_action_handler(self, comm, line, action, *args, **kwargs):
+		if not action == "BEDLEVELVISUALIZER_LEVELBED":
+			return
+		self._bedlevelvisualizer_logger.debug("Received BEDLEVELVISUALIZER_LEVELBED command.")
+		self._printer.commands(self._settings.get(["command"]).split("\n"))
+		return
+
 	# Custom Event Hook
 
 	def send_mesh_data_collected_event(self, mesh_data, bed_data):
@@ -556,6 +565,7 @@ def __plugin_load__():
 
 	global __plugin_hooks__
 	__plugin_hooks__ = {
+		"octoprint.comm.protocol.action": __plugin_implementation__.custom_action_handler,
 		"octoprint.comm.protocol.atcommand.sending": __plugin_implementation__.flag_mesh_collection,
 		"octoprint.comm.protocol.gcode.received": __plugin_implementation__.process_gcode,
 		"octoprint.events.register_custom_events": __plugin_implementation__.register_custom_events,
