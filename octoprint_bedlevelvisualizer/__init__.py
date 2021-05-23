@@ -218,6 +218,9 @@ class bedlevelvisualizer(
 			thread = threading.Thread(target=self.enable_mesh_collection)
 			thread.daemon = True
 			thread.start()
+        if command == "BEDLEVELVISUALIZER_LEVELBED":
+            self._bedlevelvisualizer_logger.debug("Recieved BEDLEVELVISUALIZER_LEVELBED command.")
+            self._printer.commands(self._settings.get(["command"]).split("\n"))
 		return
 
 	def process_gcode(self, comm, line, *args, **kwargs):
@@ -226,6 +229,9 @@ class bedlevelvisualizer(
 			thread.daemon = True
 			thread.start()
 			return line
+        if not self.printing and line.strip() == "echo:BEDLEVELVISUALIZER_LEVELBED":
+            self._bedlevelvisualizer_logger.debug("Recieved BEDLEVELVISUALIZER_LEVELBED command")
+            self._printer.commands(self._settings.get(["command"]).split("\n"))
 		if not self.processing:
 			return line
 
