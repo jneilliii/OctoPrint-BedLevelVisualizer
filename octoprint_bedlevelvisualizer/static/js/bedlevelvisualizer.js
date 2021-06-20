@@ -8,8 +8,6 @@
  *
 */
 
-var ko = window.ko;
-
 $(function () {
 	function bedlevelvisualizerViewModel(parameters) {
 		var self = this;
