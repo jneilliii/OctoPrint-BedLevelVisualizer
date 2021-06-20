@@ -226,6 +226,9 @@ class bedlevelvisualizer(
 			thread.daemon = True
 			thread.start()
 			return line
+		if line.startswith("BLV"):
+			self._plugin_manager.send_plugin_message(self._identifier, {"BLV": line.strip()})
+			return line
 		if not self.processing:
 			return line
 

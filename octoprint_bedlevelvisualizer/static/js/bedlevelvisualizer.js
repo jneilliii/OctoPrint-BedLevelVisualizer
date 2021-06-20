@@ -7,6 +7,9 @@
  * http://beautifytools.com/javascript-validator.php
  *
 */
+
+var ko = window.ko;
+
 $(function () {
 	function bedlevelvisualizerViewModel(parameters) {
 		var self = this;
@@ -91,7 +94,7 @@ $(function () {
 			$('#bedlevelvisualizer_tabs a').on('show.bs.tab', function(event){
 				if($(event.target).text() === 'Current Mesh Data'){
 					self.settings_active(true);
-					return
+					return;
 				}
 				if ($(event.relatedTarget).text() === 'Current Mesh Data'){
 					self.settings_active(false);
@@ -127,6 +130,20 @@ $(function () {
 			if (plugin !== "bedlevelvisualizer") {
 				return;
 			}
+
+			if (mesh_data.BLV) {
+				switch(mesh_data.BLV) {
+					case "BLVPROCESSINGON":
+						self.processing(true);
+						break;
+					case "BLVPROCESSINGOFF":
+						self.processing(false);
+						break;
+					default:
+						console.log("Unknown BLV Command: " + mesh_data.BLV);
+				}
+			}
+
 			var i;
 			if (mesh_data.mesh) {
 				if (mesh_data.mesh.length > 0) {
@@ -134,7 +151,7 @@ $(function () {
 					var y_data = [];
 
 					for( i = 0;i <= (mesh_data.mesh[0].length - 1);i++) {
-						if ((mesh_data.bed.type == "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()) {
+						if ((mesh_data.bed.type === "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()) {
 							x_data.push(Math.round(mesh_data.bed.x_min - (mesh_data.bed.x_max/2)+i/(mesh_data.mesh[0].length - 1)*(mesh_data.bed.x_max - mesh_data.bed.x_min)));
 						} else {
 							x_data.push(Math.round(mesh_data.bed.x_min+i/(mesh_data.mesh[0].length - 1)*(mesh_data.bed.x_max - mesh_data.bed.x_min)));
@@ -142,7 +159,7 @@ $(function () {
 					}
 
 					for( i = 0;i <= (mesh_data.mesh.length - 1);i++) {
-						if ((mesh_data.bed.type == "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()) {
+						if ((mesh_data.bed.type === "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()) {
 							y_data.push(Math.round(mesh_data.bed.y_min - (mesh_data.bed.y_max/2)+i/(mesh_data.mesh.length - 1)*(mesh_data.bed.y_max - mesh_data.bed.y_min)));
 						} else {
 							y_data.push(Math.round(mesh_data.bed.y_min+i/(mesh_data.mesh.length - 1)*(mesh_data.bed.y_max - mesh_data.bed.y_min)));
@@ -170,7 +187,7 @@ $(function () {
 				self.processing(true);
 			}
 			if (mesh_data.timeout_override) {
-				console.log('Resetting timeout to ' + mesh_data.timeout_override + ' seconds.')
+				console.log('Resetting timeout to ' + mesh_data.timeout_override + ' seconds.');
 				clearTimeout(self.timeout);
 				self.timeout = setTimeout(function() {self.cancelMeshUpdate();new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before processing completed. Processing may still be running or there may be a configuration error. Consider increasing the Processing Timeout value in settings and restart OctoPrint.</div>',type: 'error',hide: false});}, (mesh_data.timeout_override*1000));
 			}
