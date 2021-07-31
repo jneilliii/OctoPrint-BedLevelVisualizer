@@ -7,6 +7,7 @@
  * http://beautifytools.com/javascript-validator.php
  *
 */
+
 $(function () {
 	function bedlevelvisualizerViewModel(parameters) {
 		var self = this;
@@ -87,11 +88,11 @@ $(function () {
 		};
 
 		self.onAfterBinding = function() {
-			$('div#settings_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#tab_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#wizard_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#settings_plugin_bedlevelvisualizer pre[data-toggle="tooltip"]').tooltip();
+			$('div#settings_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#tab_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#wizard_plugin_bedlevelvisualizer i[data-toggle="tooltip"],div#settings_plugin_bedlevelvisualizer pre[data-toggle="tooltip"],div#settings_plugin_bedlevelvisualizer input[data-toggle="tooltip"],div#settings_plugin_bedlevelvisualizer div.input-append[data-toggle="tooltip"]').tooltip();
 			$('#bedlevelvisualizer_tabs a').on('show.bs.tab', function(event){
 				if($(event.target).text() === 'Current Mesh Data'){
 					self.settings_active(true);
-					return
+					return;
 				}
 				if ($(event.relatedTarget).text() === 'Current Mesh Data'){
 					self.settings_active(false);
@@ -127,6 +128,20 @@ $(function () {
 			if (plugin !== "bedlevelvisualizer") {
 				return;
 			}
+
+			if (mesh_data.BLV) {
+				switch(mesh_data.BLV) {
+					case "BLVPROCESSINGON":
+						self.processing(true);
+						break;
+					case "BLVPROCESSINGOFF":
+						self.processing(false);
+						break;
+					default:
+						console.log("Unknown BLV Command: " + mesh_data.BLV);
+				}
+			}
+
 			var i;
 			if (mesh_data.mesh) {
 				if (mesh_data.mesh.length > 0) {
@@ -134,7 +149,7 @@ $(function () {
 					var y_data = [];
 
 					for( i = 0;i <= (mesh_data.mesh[0].length - 1);i++) {
-						if ((mesh_data.bed.type == "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()) {
+						if ((mesh_data.bed.type === "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()) {
 							x_data.push(Math.round(mesh_data.bed.x_min - (mesh_data.bed.x_max/2)+i/(mesh_data.mesh[0].length - 1)*(mesh_data.bed.x_max - mesh_data.bed.x_min)));
 						} else {
 							x_data.push(Math.round(mesh_data.bed.x_min+i/(mesh_data.mesh[0].length - 1)*(mesh_data.bed.x_max - mesh_data.bed.x_min)));
@@ -142,7 +157,7 @@ $(function () {
 					}
 
 					for( i = 0;i <= (mesh_data.mesh.length - 1);i++) {
-						if ((mesh_data.bed.type == "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()) {
+						if ((mesh_data.bed.type === "circular") || self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin()) {
 							y_data.push(Math.round(mesh_data.bed.y_min - (mesh_data.bed.y_max/2)+i/(mesh_data.mesh.length - 1)*(mesh_data.bed.y_max - mesh_data.bed.y_min)));
 						} else {
 							y_data.push(Math.round(mesh_data.bed.y_min+i/(mesh_data.mesh.length - 1)*(mesh_data.bed.y_max - mesh_data.bed.y_min)));
@@ -170,7 +185,7 @@ $(function () {
 				self.processing(true);
 			}
 			if (mesh_data.timeout_override) {
-				console.log('Resetting timeout to ' + mesh_data.timeout_override + ' seconds.')
+				console.log('Resetting timeout to ' + mesh_data.timeout_override + ' seconds.');
 				clearTimeout(self.timeout);
 				self.timeout = setTimeout(function() {self.cancelMeshUpdate();new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before processing completed. Processing may still be running or there may be a configuration error. Consider increasing the Processing Timeout value in settings and restart OctoPrint.</div>',type: 'error',hide: false});}, (mesh_data.timeout_override*1000));
 			}
@@ -188,7 +203,11 @@ $(function () {
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x(mesh_data_x);
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y(mesh_data_y);
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height(mesh_data_z_height);
-					self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp(new Date().toLocaleString());
+					if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.date_locale_format().length > 0) {
+						self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp(new Date().toLocaleString(self.settingsViewModel.settings.plugins.bedlevelvisualizer.date_locale_format()));
+					} else {
+						self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp(new Date().toLocaleString());
+					}
 					self.settingsViewModel.saveData();
 				}
 			}
@@ -218,6 +237,7 @@ $(function () {
 
 				var background_color = $('#tabs_content').css('background-color');
 				var foreground_color = $('#tabs_content').css('color');
+				var camera_position = self.settingsViewModel.settings.plugins.bedlevelvisualizer.camera_position().split(",");
 
 				var layout = {
 					//title: 'Bed Leveling Mesh',
@@ -233,9 +253,9 @@ $(function () {
 					scene: {
 						camera: {
 							eye: {
-								x: -1.25,
-								y: -1.25,
-								z: 0.25
+								x: (camera_position.length === 3) ? camera_position[0] : -1.25,
+								y: (camera_position.length === 3) ? camera_position[1] : -1.25,
+								z: (camera_position.length === 3) ? camera_position[2] : 0.25
 							}
 						},
 						xaxis: {
