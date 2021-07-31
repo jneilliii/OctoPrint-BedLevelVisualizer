@@ -68,18 +68,31 @@ For more info, see the [wiki](wiki/index.md)
 ---
 
 ## Most recent changelog
-**[1.0.1](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/1.0.1)** (02/28/2021)
+**[1.1.0](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases/tag/1.1.0)** (07/31/2021)
 
 **Added**
-* optional timeout override to @BEDLEVELVISUALIZER command
-* settings button on tab for quick access
+* added BLVPROCESSINGON/BLVPROCESSINGOFF received gcode commands via M118, #447. 
+
+The following example custom command button would change to "processing" mode, heat the hot end until it reaches 200 degrees and then turn "processing" mode off. If webcam is enabled while processing the webcam will be shown while in "processing" mode.
+```
+M118 BLVPROCESSINGON
+M109 S200
+M118 BLVPROCESSINGOFF
+```
+* add custom action command `BEDLEVELVISUALIZER_LEVELBED` to allow use with various custom config input options in Marlin (Configurationa_adv.h), ie `CUSTOM_MENU_MAIN`. Will initiate the command contained within the Update Mesh gcode script when received. Requires HOST_ACTION_COMMANDS to be enabled as well. Example menu item.
+
+```
+#define MAIN_MENU_ITEM_1_DESC "Bed Visualize"
+#define MAIN_MENU_ITEM_1_GCODE "M118 A1 action:BEDLEVELVISUALIZER_LEVELBED"
+```
+* camera position option
 
 **Updated**
-* README.md adding note that auto bed leveling must be possible on printer
+* Plotly js library to version 2.3.1 gl3d bundle
 
 **Fixed**
-* allow for probe points that contain more than single digits
-* resolve issues with circular beds
+* resolve issues related to blank date locale string
+
 
 ## [All releases](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/releases)
 
