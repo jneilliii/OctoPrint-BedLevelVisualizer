@@ -101,7 +101,8 @@ class bedlevelvisualizer(
 			colorscale='[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]',
 			save_snapshots=False,
 			camera_position="-1.25,-1.25,0.25",
-			date_locale_format=""
+			date_locale_format="",
+			graph_height="450px"
 		)
 
 	def get_settings_version(self):
