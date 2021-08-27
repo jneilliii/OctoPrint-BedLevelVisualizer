@@ -54,19 +54,25 @@
 
 			<div id="bedlevelvisualizer_mesh_visualization" class="tab-pane">
 				<div class="row-fluid">
-					<div class="control-group span4">
+					<div class="control-group span3">
+						<label for="bedlevelvisualizer_z_offset">Graph Height</label>
+						<div class="controls">
+							<input type="text" id="bedlevelvisualizer_graph_height" title="How tall the graph area should be. Any acceptable min-height css attribute should work here." data-toggle="tooltip" class="input-small" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.graph_height" placeholder="450px">
+						</div>
+					</div>
+					<div class="control-group span3">
 						<label for="bedlevelvisualizer_z_offset">Z Limits</label>
 						<div class="controls">
 							<input type="text" id="bedlevelvisualizer_z_offset" title="Comma separated list of integers for controlling the z cutoff of the visualized graph in the format of <z-min>,<z-max>. For example the default value is -2,2. This also affects the color map. " data-toggle="tooltip" class="input-small" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.graph_z_limits">
 						</div>
 					</div>
-					<div class="control-group span4">
+					<div class="control-group span3">
 						<label for="bedlevelvisualizer_camera_position">Camera Position</label>
 						<div class="controls">
 							<input type="text" id="bedlevelvisualizer_camera_position" title="Comma separated list of integers for controlling the position of the camera in the format of <x>,<y>,<z>. For example the default value is -1.25,-1.25,0.25." data-toggle="tooltip" class="input-small" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.camera_position">
 						</div>
 					</div>
-					<div class="control-group span4">
+					<div class="control-group span3">
 						<label for="bedlevelvisualizer_date_locale_format">Date Locale</label>
 						<div class="controls">
 							<input type="text" id="bedlevelvisualizer_date_locale_format" title="Enter the js locale string for date display format for last stored mesh message. If left blank this will default to your browser's date locale settings." data-toggle="tooltip" class="input-small" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.date_locale_format">
