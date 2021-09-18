@@ -339,6 +339,23 @@ $(function () {
 				console.log('Left [um]:' + left_half_um);
 				console.log('Right [um]:' + right_half_um);
 
+				// calculate min/max value.
+				let s_min = Math.min(...mesh_data_z.flat());
+				let s_max = Math.max(...mesh_data_z.flat());
+				let s_var = s_max - s_min;
+
+				layout.annotations = [{
+					xref: 'paper',
+					yref: 'paper',
+					x: 1,
+					xanchor: 'right',
+					y: 0,
+					yanchor: 'bottom',
+					text: 'Min: ' + s_min + '<br>Max: ' + s_max + '<br>Var: ' + s_var,
+					showarrow: false
+				}];
+				console.log(background_color);
+
 				// graph surface
 				Plotly.react('bedlevelvisualizergraph', data, layout, config_options).then(self.postPlotHandler);
 			} catch(err) {
