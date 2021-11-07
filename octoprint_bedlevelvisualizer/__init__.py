@@ -19,6 +19,7 @@ class bedlevelvisualizer(
 	octoprint.plugin.WizardPlugin,
 	octoprint.plugin.SimpleApiPlugin,
 	octoprint.plugin.EventHandlerPlugin,
+	octoprint.plugin.BlueprintPlugin,
 ):
 	INTERVAL = 2.0
 	MAX_HISTORY = 10
@@ -32,6 +33,7 @@ class bedlevelvisualizer(
 		self.old_marlin_offset = 0
 		self.repetier_firmware = False
 		self.mesh = []
+		self.bed = {}
 		self.bed_type = None
 		self.box = []
 		self.flip_x = False
@@ -169,7 +171,7 @@ class bedlevelvisualizer(
 				"js/knockout-sortable.1.2.0.js",
 				"js/fontawesome-iconpicker.js",
 				"js/ko.iconpicker.js",
-				"js/plotly-gl3d.min.js",
+				"js/plotly-2.4.2.min.js",
 				"js/bedlevelvisualizer.js",
 			],
 			css=[
@@ -350,7 +352,7 @@ class bedlevelvisualizer(
 				min_y = min([y for x, y in self.box])
 				max_y = max([y for x, y in self.box])
 
-			bed = dict(
+			self.bed = dict(
 				type=self.bed_type,
 				x_min=min_x,
 				x_max=max_x,
@@ -359,7 +361,7 @@ class bedlevelvisualizer(
 				z_min=min_z,
 				z_max=max_z,
 			)
-			self._bedlevelvisualizer_logger.debug(bed)
+			self._bedlevelvisualizer_logger.debug(self.bed)
 
 			if self.old_marlin or self.repetier_firmware:
 				self.print_mesh_debug("initial mesh data: ", self.mesh)
@@ -442,9 +444,9 @@ class bedlevelvisualizer(
 			self.print_mesh_debug("Final mesh:", self.mesh)
 
 			self._plugin_manager.send_plugin_message(
-				self._identifier, dict(mesh=self.mesh, bed=bed)
+				self._identifier, dict(mesh=self.mesh, bed=self.bed)
 			)
-			self.send_mesh_data_collected_event(self.mesh, bed)
+			self.send_mesh_data_collected_event(self.mesh, self.bed)
 
 		return line
 
@@ -530,6 +532,30 @@ class bedlevelvisualizer(
 
 	def register_custom_events(*args, **kwargs):
 		return ["mesh_data_collected"]
+
+	# BluePrint routes
+
+	@octoprint.plugin.BlueprintPlugin.route("bedlevelvisualizer")
+	def bedlevelvisualizer_route(self):
+		try:
+			if len(self.mesh) > 0:
+				mesh = self.mesh
+				self._bedlevelvisualizer_logger.debug("using internal mesh for octodash view: {}".format(mesh))
+			elif len(self._settings.get(["stored_mesh"])) > 0:
+				mesh = self._settings.get(["stored_mesh"])
+				self._bedlevelvisualizer_logger.debug("using stored mesh for octodash view: {}".format(mesh))
+			bed = self.bed_type
+			commands = self._settings.get(["command"]).split("\n")
+			render_kwargs = {"mesh": mesh, "bed": bed, "commands": commands}
+		except Exception as e:
+			self._logger.debug("Bed Visualizer error: {}".format(e))
+			render_kwargs = {"error": "{}".format(e)}
+		response = flask.make_response(flask.render_template("bedlevelvisualizer_octodash.jinja2", **render_kwargs))
+		response.headers["X-Frame-Options"] = ""
+		return response
+
+	def is_blueprint_protected(self):
+		return False
 
 	# Software Update Hook
 

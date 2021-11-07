@@ -61,14 +61,14 @@ div#bedlevelvisualizergraph {
 	height:100%;
 	object-fit:contain;
 }
-#tab_plugin_bedlevelvisualizer.fullscreen{
+/*#tab_plugin_bedlevelvisualizer.fullscreen{
     z-index: 9999;
     width: 100%;
     height: 100%;
     position: fixed;
     top: 0;
     left: 0;
- }
+ }*/
 
 .table thead tr.info > th, .table tbody tr td.info, .table tfoot tr.info > th {
     background-color: #d9edf7;

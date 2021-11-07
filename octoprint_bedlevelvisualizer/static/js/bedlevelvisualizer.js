@@ -384,11 +384,11 @@ $(function () {
 					self.drawMesh(self.mesh_data(),false,self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
 				}
 
-				if(window.location.href.indexOf('blvfullscreen')>0 && !$('#tab_plugin_bedlevelvisualizer').hasClass('fullscreen')){
+/*				if(window.location.href.indexOf('blvfullscreen')>0 && !$('#tab_plugin_bedlevelvisualizer').hasClass('fullscreen')){
 					$('#tab_plugin_bedlevelvisualizer').addClass('fullscreen');
 					let background_color = ($('#tabs_content').css('background-color') == 'rgba(0, 0, 0, 0)') ? '#FFFFFF' : $('#tabs_content').css('background-color');
 					$('#tab_plugin_bedlevelvisualizer').css('background-color', background_color);
-				}
+				}*/
 			}
 		};
 
