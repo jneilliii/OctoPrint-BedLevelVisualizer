@@ -52,7 +52,7 @@
     <div class="container">
     {% if not error %}
         {% if mesh %}
-        <script src="{{ url_for("plugin.bedlevelvisualizer.static", filename="js/plotly-2.4.2.min.js") }}"></script>
+        <script src="{{ url_for("plugin.bedlevelvisualizer.static", filename="js/plotly.min.js") }}"></script>
         <div id="bedlevelvisualizer_graph"></div>
         <script type="application/javascript">
             let None = '';

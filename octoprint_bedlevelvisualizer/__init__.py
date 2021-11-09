@@ -171,7 +171,7 @@ class bedlevelvisualizer(
 				"js/knockout-sortable.1.2.0.js",
 				"js/fontawesome-iconpicker.js",
 				"js/ko.iconpicker.js",
-				"js/plotly-2.4.2.min.js",
+				"js/plotly.min.js",
 				"js/bedlevelvisualizer.js",
 			],
 			css=[
