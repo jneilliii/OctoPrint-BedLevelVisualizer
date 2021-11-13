@@ -7,7 +7,7 @@
             margin: 0;
             padding: 0;
         }
-        body {
+        body.bedlevelvisualizer {
             display: flex;
             align-items: center;
             align-content: center;
@@ -16,16 +16,20 @@
             width: 100vw;
             height: 100vh;
         }
+        body.bedlevelvisualizer > div.container {
+            width: unset;
+            height: unset;
+        }
     </style>
     {% if commands %}
     <script src="{{ url_for("static", filename="js/lib/jquery/jquery.min.js") }}"></script>
     <script src="{{ url_for("static", filename="js/lib/lodash.min.js") }}"></script>
     {% assets "js_client" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
-
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/bootstrap.min.css") }}">
     <script type="application/javascript">
         updateMesh = function () {
 			let gcode_commands = {{ commands }};
-			if (gcode_commands.indexOf("@BEDLEVELVISUALIZER") == -1) {
+			if (gcode_commands.indexOf("@BEDLEVELVISUALIZER") === -1) {
 				gcode_commands = ["@BEDLEVELVISUALIZER"].concat(gcode_commands);
 			}
 			// clean extraneous code
@@ -48,7 +52,7 @@
     </script>
     {% endif %}
 </head>
-<body>
+<body class="bedlevelvisualizer">
     <div class="container">
     {% if not error %}
         {% if mesh %}
@@ -74,7 +78,7 @@
         {% endif %}
         {% if commands %}
         <div class="bedlevelvisualizer_buttons">
-            <button class="btn btn-primary" onclick="updateMesh()">Update Mesh</button>
+            <button class="btn btn-primary btn-large" onclick="updateMesh()">Update Mesh</button>
         </div>
         {% endif %}
     {% endif %}
