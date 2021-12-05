@@ -39,6 +39,7 @@ G29 P3    ; infer the rest of the mesh values again
 M420 S1 V ; enabled leveling and report the new mesh
 M500      ; save the new mesh to EEPROM
 M155 S3   ; reset temperature reporting
+M140 S0   ; cooling down the bed
 ```
 
 ## Prusa Firmware
