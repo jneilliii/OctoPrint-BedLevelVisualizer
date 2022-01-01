@@ -82,7 +82,7 @@
 									$parentContext.$index()][$root.descending_x()?
 										$root.mesh_data_x().length - 1 - $index():
 										$index()]);},
-							event: { mouseover: function(item){if(!$parentContext.$parent.len){$root.turn(item);} else {$root.turn(0);}}, mouseout: function(){$root.turn(0);}},
+							event: { mouseover: function(item){if(!$parentContext.$parent.len){$root.turn(item);} else {$root.turn(0);} $('.meshtable > table > tbody > tr > td:not(:first-child):not(:last-child)').removeClass('info'); $($element).addClass('info');}, mouseout: function(){$root.turn(0); $($element).removeClass('info');}},
 							css: {
                                 'raise': (Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y() ?
                                             $root.mesh_data_y().length - 1 - $parentContext.$index() : $parentContext.$index()][$root.descending_x() ?
@@ -108,8 +108,8 @@
 												border: 2px solid black;
 												margin: 1em;"
 										data-bind="style: {'background-image': $root.turn()<0 ^ $root.reverse() ?
-																	'linear-gradient(' + (Math.abs($root.turn()%360)<180?(Math.abs($root.turn()%360)+ 90):(Math.abs($root.turn()%360)- 90)) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': $(this).css('background-color')) + ' 50%), linear-gradient(90deg, silver 50%, transparent 50%)':
-																	'linear-gradient(' + (360-Math.abs($root.turn()%360)<180?(450-Math.abs($root.turn()%360)):(270-Math.abs($root.turn()%360))) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': $(this).css('background-color')) + ' 50%), linear-gradient(270deg, silver 50%, transparent 50%)'}">
+																	'linear-gradient(' + (Math.abs($root.turn()%360)<180?(Math.abs($root.turn()%360)+ 90):(Math.abs($root.turn()%360)- 90)) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': $($element).css('background-color')) + ' 50%), linear-gradient(90deg, silver 50%, transparent 50%)':
+																	'linear-gradient(' + (360-Math.abs($root.turn()%360)<180?(450-Math.abs($root.turn()%360)):(270-Math.abs($root.turn()%360))) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': $($element).css('background-color')) + ' 50%), linear-gradient(270deg, silver 50%, transparent 50%)'}">
 								</div>
 							</div>
 							<div class="text-center" style="text-align: center;font-weight: bold;" data-bind="visible: $root.turn(), 'css': {'lower': $root.turn()>0, 'raise': $root.turn()<0}">
