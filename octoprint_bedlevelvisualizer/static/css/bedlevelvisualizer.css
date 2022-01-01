@@ -91,6 +91,14 @@ div#bedlevelvisualizergraph {
     color: red;
 }
 
+div.raise > div.turn_circle {
+    background-color: blue;
+}
+
+div.lower > div.turn_circle {
+    background-color: red;
+}
+
 .table thead tr.info .x-axis-label, .table tbody tr .x-axis-label, .table tfoot tr.info .x-axis-label, .table tfoot tr .y-axis-label {
     color: black;
 }

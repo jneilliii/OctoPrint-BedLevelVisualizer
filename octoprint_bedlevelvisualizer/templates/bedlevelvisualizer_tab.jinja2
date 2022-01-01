@@ -34,6 +34,12 @@
 	<span data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_adjustment(), len: 0}}"></span>
 </div>
 
+<!-- Container for stored mesh -->
+<div data-bind="if: $root.show_stored_mesh_on_tab() && $root.mesh_data().length" class="row-fluid" align="center">
+	<hr/>
+	<span data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_data(), len: 3}}"></span>
+</div>
+
 <!-- Template for mesh degrees -->
 <script type="text/html" id="bedlevelvisualize_meshtable">
 <div class="meshtable">
@@ -60,7 +66,7 @@
 				<!-- /ko -->
 			</th>
             <!-- ko if: !$root.settings_active() -->
-			<th class="text-center" style="width: 150px;" ><span data-bind="visible: $root.turn(), text: $root.turn()<0?'{{ _('RAISE') }}':'{{ _('LOWER') }}', css: {'raise': $root.turn()<0, 'lower': $root.turn()>0}"></span></th>
+			<th class="text-center" style="width: 150px;" ><span data-bind="visible: ($root.turn() && $data.len===0), text: $root.turn()<0?'{{ _('RAISE') }}':'{{ _('LOWER') }}', css: {'raise': $root.turn()<0, 'lower': $root.turn()>0}"></span></th>
             <!-- /ko -->
 		</tr>
 		</thead>
@@ -70,24 +76,13 @@
 				<td class="text-center info x-axis-label" data-bind="text: $root.mesh_data_y()[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()]"></td>
 				<!-- ko foreach:  { data: $parent.mesh[$root.descending_y()?$root.mesh_data_y().length-1-$index():$index()], as: 'Zvalue', noChildContext: false }-->
 					<td class="text-center" style="padding-left: 0.5em;"
-						data-bind="
-							text: (!$parentContext.$parent.len?
-								Math.abs(parseFloat(	$parentContext.$parent.mesh[$root.descending_y()?
-									$root.mesh_data_y().length-1-$parentContext.$index():
-									$parentContext.$index()][$root.descending_x()?
-										$root.mesh_data_x().length-1-$index():
-										$index()])):
-									parseFloat($parentContext.$parent.mesh[$root.descending_y()?
-										$root.mesh_data_y().length-1-$parentContext.$index():
-										$parentContext.$index()][$root.descending_x()?
-											$root.mesh_data_x().length-1-$index():
-											$index()])).toFixed($parentContext.$parent.len),
+						data-bind="text: $root.get_cell_text($context),
 							click: function(){$root.mesh_zero($root.mesh_data()[$root.descending_y()?
 								$root.mesh_data_y().length-1-$parentContext.$index():
 									$parentContext.$index()][$root.descending_x()?
-										$root.mesh_data_x().length-1-$index():
+										$root.mesh_data_x().length - 1 - $index():
 										$index()]);},
-							event: { mouseover: function(item){$root.turn(item);},mouseout: function(){$root.turn(0);}},
+							event: { mouseover: function(item){if(!$parentContext.$parent.len){$root.turn(item);} else {$root.turn(0);}}, mouseout: function(){$root.turn(0);}},
 							css: {
                                 'raise': (Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y() ?
                                             $root.mesh_data_y().length - 1 - $parentContext.$index() : $parentContext.$index()][$root.descending_x() ?
@@ -97,47 +92,31 @@
                                             $root.mesh_data_y().length - 1 - $parentContext.$index() : $parentContext.$index()][$root.descending_x() ?
                                             $root.mesh_data_x().length - 1 - $index() :
                                             $index()]))) > 0
-                            },
-							attr: {'title' : $parentContext.$parent.len ?
-								'Z height' :
-								!parseFloat($parentContext.$parent.mesh[$root.descending_y()?
-									$root.mesh_data_y().length-1-$parentContext.$index():
-									$parentContext.$index()][$root.descending_x()?
-										$root.mesh_data_x().length-1-$index():
-										$index()]) ?
-											'-' : (
-											(parseFloat($parentContext.$parent.mesh[$root.descending_y()?
-												$root.mesh_data_y().length-1-$parentContext.$index():
-												$parentContext.$index()][$root.descending_x()?
-													$root.mesh_data_x().length-1-$index():
-													$index()])<0? '&uarr;' : '&darr;')
-								)
-							}">
+                            }">
 					</td>
 					<input type="hidden" data-bind="value: $parentContext.$index()"/>
 					<input type="hidden" data-bind="value: $root.mesh_data_y().length"/>
 					<input type="hidden" data-bind="value: $index()"/>
 					<!-- ko if: $parentContext.$index() == 0 && $root.mesh_data_y().length-$index() == 1 && !$root.settings_active() -->
 					<td class="text-center info" style="width: 150px; min-height: 200px; height: 200px;vertical-align: top;" data-bind="attr: {rowspan: $root.mesh_data_x().length + 1}">
-						<div data-bind="if: !$data.len">
-							<div data-bind="style: {'color': $root.turn()<0?'blue':'red'}">
-								<div	style="	width: 120px;
+						<div data-bind="if: !$parentContext.$parent.len">
+							<div data-bind="css: {'raise': $root.turn()<0, 'lower':$root.turn()>0}">
+								<div class="turn_circle" style="width: 120px;
 												height: 120px;
 												display: block;
 												border-radius: 50%;
 												border: 2px solid black;
 												margin: 1em;"
-										data-bind="style: {	'background-color': $root.turn()<0?'blue':'red',
-															'background-image': $root.turn()<0 ^ $root.reverse() ?
-																	'linear-gradient(' + (Math.abs($root.turn()%360)<180?(Math.abs($root.turn()%360)+ 90):(Math.abs($root.turn()%360)- 90)) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(90deg, silver 50%, transparent 50%)':
-																	'linear-gradient(' + (360-Math.abs($root.turn()%360)<180?(450-Math.abs($root.turn()%360)):(270-Math.abs($root.turn()%360))) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': ($root.turn()<0?'blue':'red')) + ' 50%), linear-gradient(270deg, silver 50%, transparent 50%)'}">
+										data-bind="style: {'background-image': $root.turn()<0 ^ $root.reverse() ?
+																	'linear-gradient(' + (Math.abs($root.turn()%360)<180?(Math.abs($root.turn()%360)+ 90):(Math.abs($root.turn()%360)- 90)) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': $(this).css('background-color')) + ' 50%), linear-gradient(90deg, silver 50%, transparent 50%)':
+																	'linear-gradient(' + (360-Math.abs($root.turn()%360)<180?(450-Math.abs($root.turn()%360)):(270-Math.abs($root.turn()%360))) + 'deg, transparent 50%, ' + (Math.abs($root.turn()%360)<180?'silver': $(this).css('background-color')) + ' 50%), linear-gradient(270deg, silver 50%, transparent 50%)'}">
 								</div>
 							</div>
-							<div class="text-center" style="text-align: center;font-weight: bold;" data-bind="visible: $root.turn(), style: {'color': $root.turn()<0?'blue':'red'}">
+							<div class="text-center" style="text-align: center;font-weight: bold;" data-bind="visible: $root.turn(), 'css': {'lower': $root.turn()>0, 'raise': $root.turn()<0}">
 								<div>{{ _('turn') }}&nbsp;<span data-bind="text: $root.turn()<0 ^ $root.reverse() ?'{{ _('right') }}':'{{ _('left') }}'"></span></div>
-								<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&uarr;' : '&darr;'"></span>
+								<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&uarr;' : '&darr;'" style="font-weight: bolder"></span>
 								<span data-bind="text: (Math.abs($root.turn()/360)).toFixed(2)"></span>
-								<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&darr;' : '&uarr;'"></span>
+								<span data-bind="text: $root.turn()<0 ^ $root.reverse() ? '&darr;' : '&uarr;'" style="font-weight: bolder"></span>
 							</div>
 						</div>
 					</td>

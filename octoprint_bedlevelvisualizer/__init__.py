@@ -92,6 +92,7 @@ class bedlevelvisualizer(
 			mesh_unit=1,
 			reverse=False,
 			showdegree=False,
+			show_stored_mesh_on_tab=False,
 			imperial=False,
 			descending_y=False,
 			descending_x=False,

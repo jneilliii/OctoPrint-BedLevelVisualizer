@@ -47,6 +47,7 @@ $(function () {
 		self.mesh_unit = ko.observable();
 		self.reverse = ko.observable();
 		self.showdegree = ko.observable();
+		self.show_stored_mesh_on_tab = ko.observable();
 		self.imperial = ko.observable();
 		self.descending_x = ko.observable();
 		self.descending_y = ko.observable();
@@ -70,6 +71,11 @@ $(function () {
 		self.turn = ko.observable(0);
 		self.graph_z_limits = ko.observable();
 
+		self.get_cell_text = function(item) {
+			console.log(item);
+			return (!item.$parentContext.$parent.len?Math.abs(parseFloat(item.$parentContext.$parent.mesh[item.$root.descending_y()?item.$root.mesh_data_y().length-1-item.$parentContext.$index():item.$parentContext.$index()][item.$root.descending_x()?item.$root.mesh_data_x().length-1-item.$index():item.$index()])):parseFloat(item.$parentContext.$parent.mesh[item.$root.descending_y()?item.$root.mesh_data_y().length-1-item.$parentContext.$index():item.$parentContext.$index()][item.$root.descending_x()?item.$root.mesh_data_x().length-1-item.$index():item.$index()])).toFixed(item.$parentContext.$parent.len);
+		};
+
 		self.onBeforeBinding = function() {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 			self.mesh_data_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x());
@@ -81,6 +87,7 @@ $(function () {
 			self.mesh_unit(self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit());
 			self.reverse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse());
 			self.showdegree(self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree());
+			self.show_stored_mesh_on_tab(self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_stored_mesh_on_tab());
 			self.imperial(self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial());
 			self.descending_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x());
 			self.descending_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y());
@@ -105,6 +112,7 @@ $(function () {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit(self.mesh_unit());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse(self.reverse());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree(self.showdegree());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_stored_mesh_on_tab(self.show_stored_mesh_on_tab());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial(self.imperial());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x(self.descending_x());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y(self.descending_y());
@@ -352,7 +360,10 @@ $(function () {
 					y: 0,
 					yanchor: 'bottom',
 					text: 'Min: ' + s_min + '<br>Max: ' + s_max + '<br>Var: ' + s_var,
-					showarrow: false
+					showarrow: false,
+					font: {
+						color: foreground_color
+					}
 				}];
 				console.log(background_color);
 

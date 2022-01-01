@@ -17,14 +17,32 @@
 				</div>
 				<div class="row-fluid">
 					<div class="control-group span4">
-						<input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_flipX" title="Flip the mesh data in the X direction." data-toggle="tooltip" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.flipX" style="display: inline-block;margin-bottom: 5px;"></input> Flip X-Axis <br/>
-						<input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_flipY" title="Flip the mesh data in the Y direction." data-toggle="tooltip" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.flipY" style="display: inline-block;margin-bottom: 5px;"></input> Flip Y-Axis <br/>
-                        <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_stripFirst" title="Remove row labeling from mesh data." data-toggle="tooltip" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.stripFirst" style="display: inline-block;margin-bottom: 5px;"></input> Remove Row Labels
+                        <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_flipX"
+                               title="Flip the mesh data in the X direction." data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.flipX"
+                               style="display: inline-block;margin-bottom: 5px;"/> Flip X-Axis <br/>
+                        <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_flipY"
+                               title="Flip the mesh data in the Y direction." data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.flipY"
+                               style="display: inline-block;margin-bottom: 5px;"/> Flip Y-Axis <br/>
+                        <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_stripFirst"
+                               title="Remove row labeling from mesh data." data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.stripFirst"
+                               style="display: inline-block;margin-bottom: 5px;"/> Remove Row Labels
 					</div>
 					<div class="control-group span4">
-						<input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_use_center_origin" title="Make origin point center of bed." data-toggle="tooltip" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin" style="display: inline-block;margin-bottom: 5px;"></input> Use Center Origin<br/>
-						<input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_use_relative_offsets" title="Make all z offsets relative to origin point." data-toggle="tooltip" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.use_relative_offsets" style="display: inline-block;margin-bottom: 5px;"></input> Use Relative Z Offsets<br/>
-                        <input class="input-checkbox" type="checkbox" id="ignore_correction_matrix" title="Ignore Bed Level Correction Matrix by enabling this option." data-toggle="tooltip" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.ignore_correction_matrix" style="display: inline-block;margin-bottom: 5px;"></input> Ignore Correction Matrix
+                        <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_use_center_origin"
+                               title="Make origin point center of bed." data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin"
+                               style="display: inline-block;margin-bottom: 5px;"/> Use Center Origin<br/>
+                        <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_use_relative_offsets"
+                               title="Make all z offsets relative to origin point." data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.use_relative_offsets"
+                               style="display: inline-block;margin-bottom: 5px;"/> Use Relative Z Offsets<br/>
+                        <input class="input-checkbox" type="checkbox" id="ignore_correction_matrix"
+                               title="Ignore Bed Level Correction Matrix by enabling this option." data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.ignore_correction_matrix"
+                               style="display: inline-block;margin-bottom: 5px;"/> Ignore Correction Matrix
 					</div>
 					<div class="control-group span4">
 						<label for="bedlevelvisualizer_rotate">Clockwise Rotation</label>
@@ -37,10 +55,17 @@
                 <hr/>
 				<div class="row-fluid">
 					<div class="control-group span4">
-						<input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_save_mesh" title="Save/Load mesh data to/from config.yaml. This does not store your mesh after the collection process to your firmware. Include M500 in your GCODE commands above if you want that to happen." data-toggle="tooltip" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh" style="display: inline-block;margin-bottom: 5px;"></input> Save Mesh
+                        <input class="input-checkbox" type="checkbox" id="bedlevelvisualizer_save_mesh"
+                               title="Save/Load mesh data to/from config.yaml. This does not store your mesh after the collection process to your firmware. Include M500 in your GCODE commands above if you want that to happen."
+                               data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh"
+                               style="display: inline-block;margin-bottom: 5px;"/> Save Mesh
 					</div>
 					<div class="control-group span4">
-						<input class="input-checkbox" type="checkbox" id="show_webcam" title="Show webcam while collecting mesh data." data-toggle="tooltip" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.show_webcam" style="display: inline-block;margin-bottom: 5px;"></input> Webcam while processing
+                        <input class="input-checkbox" type="checkbox" id="show_webcam"
+                               title="Show webcam while collecting mesh data." data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.show_webcam"
+                               style="display: inline-block;margin-bottom: 5px;"/> Webcam while processing
 					</div>
 					<div class="control-group span4">
 						<label for="bedlevelvisualizer_timeout">Processing Timeout</label>
@@ -88,7 +113,11 @@
                         </div>
                     </div>
 					<div class="control-group">
-						<input class="input-checkbox" type="checkbox" id="snap_shot" title="Enable saving snapshot on every rendering of the graph in png format." data-toggle="tooltip" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_snapshots" style="display: inline-block;margin-bottom: 5px;"></input> Download Snapshots of Rendered Graph
+                        <input class="input-checkbox" type="checkbox" id="snap_shot"
+                               title="Enable saving snapshot on every rendering of the graph in png format."
+                               data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_snapshots"
+                               style="display: inline-block;margin-bottom: 5px;"/> Download Snapshots of Rendered Graph
 					</div>
 				</div>
             </div>
@@ -97,10 +126,19 @@
 				<span data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_data(), len: 3}}"></span>
 				<div class="row-fluid" style="padding-top: 10px;">
 					<div class="control-group span4">
-						<input class="input-checkbox" type="checkbox" title="Display mesh with descending y-axis" data-toggle="tooltip" data-bind="checked: $root.descending_y" style="display: inline-block;margin-bottom: 5px;"></input> Descending y-axis
+                        <input class="input-checkbox" type="checkbox" title="Display on plugin main tab screen"
+                               data-toggle="tooltip" data-bind="checked: $root.show_stored_mesh_on_tab"
+                               style="display: inline-block;margin-bottom: 5px;"/> Display on tab screen
 					</div>
 					<div class="control-group span4">
-						<input class="input-checkbox" type="checkbox" title="Display mesh with descending x-axis" data-toggle="tooltip" data-bind="checked: $root.descending_x" style="display: inline-block;margin-bottom: 5px;"></input> Descending x-axis
+                        <input class="input-checkbox" type="checkbox" title="Display mesh with descending y-axis"
+                               data-toggle="tooltip" data-bind="checked: $root.descending_y"
+                               style="display: inline-block;margin-bottom: 5px;"/> Descending y-axis
+					</div>
+					<div class="control-group span4">
+                        <input class="input-checkbox" type="checkbox" title="Display mesh with descending x-axis"
+                               data-toggle="tooltip" data-bind="checked: $root.descending_x"
+                               style="display: inline-block;margin-bottom: 5px;"/> Descending x-axis
 					</div>
 				</div>
 			</div>
@@ -109,15 +147,24 @@
 				<span data-bind="template: {name: 'bedlevelvisualize_meshtable', data: {mesh: $root.mesh_adjustment(), len: 0}}"></span>
 				<div class="row-fluid" style="padding-top: 10px;">
 					<div class="control-group span4">
-						<input class="input-checkbox" type="checkbox" title="Display on plugin main tab screen" data-toggle="tooltip" data-bind="checked: $root.showdegree" style="display: inline-block;margin-bottom: 5px;"></input> Display on tab screen
+                        <input class="input-checkbox" type="checkbox" title="Display on plugin main tab screen"
+                               data-toggle="tooltip" data-bind="checked: $root.showdegree"
+                               style="display: inline-block;margin-bottom: 5px;"/> Display on tab screen
 					</div>
 					<div class="control-group span4">
-						<input class="input-checkbox" type="checkbox" title="Reverse the adjustment screws turning direction logic" data-toggle="tooltip" data-bind="checked: $root.reverse" style="display: inline-block;margin-bottom: 5px;"></input> Reverse turn direction
+                        <input class="input-checkbox" type="checkbox"
+                               title="Reverse the adjustment screws turning direction logic" data-toggle="tooltip"
+                               data-bind="checked: $root.reverse" style="display: inline-block;margin-bottom: 5px;"/> Reverse turn direction
 					</div>
 				</div>
 				<div style="padding-top: 5px;" class="row-fluid">
 					<div class="control-group">
-                        <label class="row-fluid" style="margin-bottom: 0;"><span class="span4">Adjustment Screw Details</span> <span class="span4"><input class="input-checkbox" type="checkbox" title="List imperial sized screws in drop-down instead of millimeters." data-toggle="tooltip" data-bind="checked: $root.imperial, click: function(){$root.screw_hub(25.4/$root.screw_hub()); return true;}" style="display: inline-block;margin-bottom: 5px;"></input> Imperial screws</span></label>
+                        <label class="row-fluid" style="margin-bottom: 0;"><span class="span4">Adjustment Screw Details</span> <span class="span4"><input
+                                class="input-checkbox" type="checkbox"
+                                title="List imperial sized screws in drop-down instead of millimeters."
+                                data-toggle="tooltip"
+                                data-bind="checked: $root.imperial, click: function(){$root.screw_hub(25.4/$root.screw_hub()); return true;}"
+                                style="display: inline-block;margin-bottom: 5px;"/> Imperial screws</span></label>
 						<div class="controls">
                             <div class="input-prepend input-append span5" style="padding: 3px;" title="Adjustment screw details. Use the drop-down to the right to select a standard size screw." data-toggle="tooltip">
                                 <div class="add-on" data-bind="text: $root.imperial()?'turns per inch':'mm per turn'"></div>
@@ -186,7 +233,10 @@
 				<div class="row-fluid">
                     <label class="well">It is extremely important to enable debug logging, restart OctoPrint, and attempt a probing process prior to submitting a bug report. Include the file <code>plugin_bedlevelvisualizer_debug.log</code> from OctoPrint's logging section by downloading it locally and dragging it into your bug report's comment. Check out the <a href="http://github.com/jneilliii/OctoPrint-BedLevelVisualizer/blob/master/wiki/index.md" target="_blank">wiki</a> for explanation of settings and tips.</label>
 					<div class="control-group">
-						<input class="input-checkbox" type="checkbox" id="debug_logging" title="Enable additional debug logging." data-toggle="tooltip" data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.debug_logging" style="display: inline-block;margin-bottom: 5px;"></input> Enable Debug Logging:
+                        <input class="input-checkbox" type="checkbox" id="debug_logging"
+                               title="Enable additional debug logging." data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.debug_logging"
+                               style="display: inline-block;margin-bottom: 5px;"/> Enable Debug Logging:
 					</div>
                     <div class="control-group">
                         <div class="controls">
