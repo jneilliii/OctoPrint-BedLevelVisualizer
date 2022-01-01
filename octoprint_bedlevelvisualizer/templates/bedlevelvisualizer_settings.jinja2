@@ -119,6 +119,13 @@
                                data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_snapshots"
                                style="display: inline-block;margin-bottom: 5px;"/> Download Snapshots of Rendered Graph
 					</div>
+					<div class="control-group">
+                        <input class="input-checkbox" type="checkbox" id="prusa_adjustments"
+                               title="Enable to display the bed leveling adjustment values."
+                               data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.show_prusa_adjustments"
+                               style="display: inline-block;margin-bottom: 5px;"/> Show Prusa Correction Values
+					</div>
 				</div>
             </div>
 

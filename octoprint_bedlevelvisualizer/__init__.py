@@ -105,7 +105,8 @@ class bedlevelvisualizer(
 			save_snapshots=False,
 			camera_position="-1.25,-1.25,0.25",
 			date_locale_format="",
-			graph_height="450px"
+			graph_height="450px",
+			show_prusa_adjustments=False
 		)
 
 	def get_settings_version(self):
