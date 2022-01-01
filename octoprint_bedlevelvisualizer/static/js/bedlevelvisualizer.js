@@ -393,7 +393,8 @@ $(function () {
 
 		self.postPlotHandler = function () {
 				if(self.save_snapshots()){
-					Plotly.downloadImage('bedlevelvisualizergraph',{filename:moment().format('YYYY-MM-DD_HH-mm-ss')});
+					var export_filename = ((self.settingsViewModel.settings.appearance.name().length > 0) ? self.settingsViewModel.settings.appearance.name() : 'OctoPrint') + '_' + moment().format('YYYY-MM-DD_HH-mm-ss');
+					Plotly.downloadImage('bedlevelvisualizergraph',{filename: export_filename});
 				}
 		};
 
