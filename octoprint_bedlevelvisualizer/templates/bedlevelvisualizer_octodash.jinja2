@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Bed Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        body.bedlevelvisualizer {
+            display: flex;
+            align-items: center;
+            align-content: center;
+            background-color: #2f3136;
+            color: #dddddd;
+            width: 100vw;
+            height: 100vh;
+        }
+        body.bedlevelvisualizer > div.container {
+            width: unset;
+            height: unset;
+        }
+    </style>
+    {% if commands %}
+    <script src="{{ url_for("static", filename="js/lib/jquery/jquery.min.js") }}"></script>
+    <script src="{{ url_for("static", filename="js/lib/lodash.min.js") }}"></script>
+    {% assets "js_client" %}<script type="text/javascript" src="{{ ASSET_URL }}"></script>{% endassets %}
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/bootstrap.min.css") }}">
+    <script type="application/javascript">
+        updateMesh = function () {
+			let gcode_commands = {{ commands }};
+			if (gcode_commands.indexOf("@BEDLEVELVISUALIZER") === -1) {
+				gcode_commands = ["@BEDLEVELVISUALIZER"].concat(gcode_commands);
+			}
+			// clean extraneous code
+			gcode_commands = gcode_commands.filter(function(array_val) {
+					return Boolean(array_val) === true;
+				});
+
+			console.log(gcode_commands);
+
+            $.ajax({
+				url: "/api/printer/command",
+				type: "POST",
+				dataType: "json",
+				data: JSON.stringify({commands:gcode_commands, parameters: {}}),
+				contentType: "application/json; charset=UTF-8"
+			}).done(function(response){
+                window.location.reload(true);
+            });
+		};
+    </script>
+    {% endif %}
+</head>
+<body class="bedlevelvisualizer">
+    <div class="container">
+    {% if not error %}
+        {% if mesh %}
+        <script src="{{ url_for("plugin.bedlevelvisualizer.static", filename="js/plotly.min.js") }}"></script>
+        <div id="bedlevelvisualizer_graph"></div>
+        <script type="application/javascript">
+            let None = '';
+            let data = [
+              {
+                z: {{ mesh }},
+                type: 'contour'
+              }
+            ];
+            let layout = {
+                paper_bgcolor: 'transparent',
+                plot_bgcolor: 'transparent',
+                font: {color: 'white'}
+            };
+            let config = {responsive: true};
+
+            Plotly.newPlot('bedlevelvisualizer_graph', data, layout, config);
+        </script>
+        {% endif %}
+        {% if commands %}
+        <div class="bedlevelvisualizer_buttons">
+            <button class="btn btn-primary btn-large" onclick="updateMesh()">Update Mesh</button>
+        </div>
+        {% endif %}
+    {% endif %}
+    {% if error %}
+    <div class="error">
+        Error: {{ error }}
+    </div>
+    {% endif %}
+    </div>
+</body>

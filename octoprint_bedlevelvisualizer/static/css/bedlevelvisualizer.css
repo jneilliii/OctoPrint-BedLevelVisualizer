@@ -61,6 +61,14 @@ div#bedlevelvisualizergraph {
 	height:100%;
 	object-fit:contain;
 }
+/*#tab_plugin_bedlevelvisualizer.fullscreen{
+    z-index: 9999;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+ }*/
 
 .table thead tr.info > th, .table tbody tr td.info, .table tfoot tr.info > th {
     background-color: #d9edf7;
@@ -81,6 +89,14 @@ div#bedlevelvisualizergraph {
 
 .table thead tr.info .lower, .table tbody tr .lower, .table tfoot tr.info .lower, .table tfoot tr td div span.lower {
     color: red;
+}
+
+div.raise > div.turn_circle {
+    background-color: blue;
+}
+
+div.lower > div.turn_circle {
+    background-color: red;
 }
 
 .table thead tr.info .x-axis-label, .table tbody tr .x-axis-label, .table tfoot tr.info .x-axis-label, .table tfoot tr .y-axis-label {

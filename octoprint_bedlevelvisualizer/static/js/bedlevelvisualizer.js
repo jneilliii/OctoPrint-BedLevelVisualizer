@@ -47,6 +47,7 @@ $(function () {
 		self.mesh_unit = ko.observable();
 		self.reverse = ko.observable();
 		self.showdegree = ko.observable();
+		self.show_stored_mesh_on_tab = ko.observable();
 		self.imperial = ko.observable();
 		self.descending_x = ko.observable();
 		self.descending_y = ko.observable();
@@ -70,6 +71,10 @@ $(function () {
 		self.turn = ko.observable(0);
 		self.graph_z_limits = ko.observable();
 
+		self.get_cell_text = function(item) {
+			return (!item.$parentContext.$parent.len?Math.abs(parseFloat(item.$parentContext.$parent.mesh[item.$root.descending_y()?item.$root.mesh_data_y().length-1-item.$parentContext.$index():item.$parentContext.$index()][item.$root.descending_x()?item.$root.mesh_data_x().length-1-item.$index():item.$index()])):parseFloat(item.$parentContext.$parent.mesh[item.$root.descending_y()?item.$root.mesh_data_y().length-1-item.$parentContext.$index():item.$parentContext.$index()][item.$root.descending_x()?item.$root.mesh_data_x().length-1-item.$index():item.$index()])).toFixed(item.$parentContext.$parent.len);
+		};
+
 		self.onBeforeBinding = function() {
 			self.mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh());
 			self.mesh_data_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x());
@@ -81,6 +86,7 @@ $(function () {
 			self.mesh_unit(self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit());
 			self.reverse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse());
 			self.showdegree(self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree());
+			self.show_stored_mesh_on_tab(self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_stored_mesh_on_tab());
 			self.imperial(self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial());
 			self.descending_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x());
 			self.descending_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y());
@@ -105,12 +111,17 @@ $(function () {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_unit(self.mesh_unit());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.reverse(self.reverse());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.showdegree(self.showdegree());
+			self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_stored_mesh_on_tab(self.show_stored_mesh_on_tab());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial(self.imperial());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x(self.descending_x());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y(self.descending_y());
-			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale().length === 0) self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale('[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]');
-			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.rotation().length === 0) self.settingsViewModel.settings.plugins.bedlevelvisualizer.rotation(0);
-			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout().length === 0) self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout(1800);
+			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale().length === 0) { self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale('[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]');}
+			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.rotation().length === 0) {self.settingsViewModel.settings.plugins.bedlevelvisualizer.rotation(0);}
+			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout().length === 0) {self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout(1800);}
+/*			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_prusa_adjustments()) {
+				self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_relative_offsets(true);
+				self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin(true);
+			}*/
 		};
 
 		self.onSettingsHidden = function() {
@@ -185,7 +196,7 @@ $(function () {
 				self.processing(true);
 			}
 			if (mesh_data.timeout_override) {
-				console.log('Resetting timeout to ' + mesh_data.timeout_override + ' seconds.');
+				// console.log('Resetting timeout to ' + mesh_data.timeout_override + ' seconds.');
 				clearTimeout(self.timeout);
 				self.timeout = setTimeout(function() {self.cancelMeshUpdate();new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before processing completed. Processing may still be running or there may be a configuration error. Consider increasing the Processing Timeout value in settings and restart OctoPrint.</div>',type: 'error',hide: false});}, (mesh_data.timeout_override*1000));
 			}
@@ -194,7 +205,7 @@ $(function () {
 
 		self.drawMesh = function (mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height) {
 			// console.log(mesh_data_z+'\n'+store_data+'\n'+mesh_data_x+'\n'+mesh_data_y+'\n'+mesh_data_z_height);
-			console.log(mesh_data_z);
+			// console.log(mesh_data_z);
 			clearTimeout(self.timeout);
 			self.processing(false);
 			if ( self.save_mesh()) {
@@ -302,42 +313,71 @@ $(function () {
 								}
 							}
 						}]};
+
+				// calculate min/max value.
+				let s_min = Math.min(...mesh_data_z.flat());
+				let s_max = Math.max(...mesh_data_z.flat());
+				let s_var = s_max - s_min;
+
+				layout.annotations = [{
+					xref: 'paper',
+					yref: 'paper',
+					x: 1,
+					xanchor: 'right',
+					y: 0,
+					yanchor: 'bottom',
+					text: 'Min: ' + s_min + '<br>Max: ' + s_max + '<br>Var: ' + s_var,
+					showarrow: false,
+					font: {
+						color: foreground_color
+					}
+				}];
+
 				// Prusa Bed Level Correction
-				let back_half = mesh_data_z.slice(0, mesh_data_z.length/2).join().split(',');
-				let front_half = mesh_data_z.slice(mesh_data_z.length/2).join().split(',');
-				let left_half = (back_half.slice(0,back_half.length/2) + front_half.slice(0,front_half.length/2)).split(',');
-				let right_half = (back_half.slice(back_half.length/2) + front_half.slice(front_half.length/2)).split(',');
+				if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_prusa_adjustments()) {
+					let back_half = mesh_data_z.slice(0, mesh_data_z.length/2).join().split(',');
+					let front_half = mesh_data_z.slice(mesh_data_z.length/2).join().split(',');
+					let left_half = (back_half.slice(0,back_half.length/2) + front_half.slice(0,front_half.length/2)).split(',');
+					let right_half = (back_half.slice(back_half.length/2) + front_half.slice(front_half.length/2)).split(',');
 
-				let back_half_total = 0;
-				let front_half_total = 0;
-				let left_half_total = 0;
-				let right_half_total = 0;
+					let back_half_total = 0;
+					let front_half_total = 0;
+					let left_half_total = 0;
+					let right_half_total = 0;
 
-				for(let i=0;i<back_half.length;i++){
-					back_half_total += parseFloat(back_half[i]);
+					for(let i=0;i<back_half.length;i++){
+						back_half_total += parseFloat(back_half[i]);
+					}
+
+					for(let i=0;i<front_half.length;i++){
+						front_half_total += parseFloat(front_half[i]);
+					}
+
+					for(let i=0;i<left_half.length;i++){
+						left_half_total += parseFloat(left_half[i]);
+					}
+
+					for(let i=0;i<right_half.length;i++){
+						right_half_total += parseFloat(right_half[i]);
+					}
+
+					let back_half_um = Math.round((back_half_total/back_half.length)*1000);
+					let front_half_um = Math.round((front_half_total/front_half.length)*1000);
+					let left_half_um = Math.round((left_half_total/left_half.length)*1000);
+					let right_half_um = Math.round((right_half_total/right_half.length)*1000);
+					layout.annotations.push({xref: 'paper',
+						yref: 'paper',
+						x: 1,
+						xanchor: 'right',
+						y: 1,
+						yanchor: 'top',
+						text: 'Back [um]:' + back_half_um + '<br>Front [um]:' + front_half_um + '<br>Left [um]:' + left_half_um + '<br>Right [um]:' + right_half_um,
+						showarrow: false,
+						font: {
+							color: foreground_color
+						}
+					});
 				}
-
-				for(let i=0;i<front_half.length;i++){
-					front_half_total += parseFloat(front_half[i]);
-				}
-
-				for(let i=0;i<left_half.length;i++){
-					left_half_total += parseFloat(left_half[i]);
-				}
-
-				for(let i=0;i<right_half.length;i++){
-					right_half_total += parseFloat(right_half[i]);
-				}
-
-				let back_half_um = Math.round((back_half_total/back_half.length)*1000);
-				let front_half_um = Math.round((front_half_total/front_half.length)*1000);
-				let left_half_um = Math.round((left_half_total/left_half.length)*1000);
-				let right_half_um = Math.round((right_half_total/right_half.length)*1000);
-
-				console.log('Back [um]:' + back_half_um);
-				console.log('Front [um]:' + front_half_um);
-				console.log('Left [um]:' + left_half_um);
-				console.log('Right [um]:' + right_half_um);
 
 				// graph surface
 				Plotly.react('bedlevelvisualizergraph', data, layout, config_options).then(self.postPlotHandler);
@@ -353,7 +393,8 @@ $(function () {
 
 		self.postPlotHandler = function () {
 				if(self.save_snapshots()){
-					Plotly.downloadImage('bedlevelvisualizergraph',{filename:moment().format('YYYY-MM-DD_HH-mm-ss')});
+					var export_filename = ((self.settingsViewModel.settings.appearance.name().length > 0) ? self.settingsViewModel.settings.appearance.name() : 'OctoPrint') + '_' + moment().format('YYYY-MM-DD_HH-mm-ss');
+					Plotly.downloadImage('bedlevelvisualizergraph',{filename: export_filename});
 				}
 		};
 
@@ -381,7 +422,7 @@ $(function () {
 				});
 
 			self.timeout = setTimeout(function() {self.cancelMeshUpdate();new PNotify({title: 'Bed Visualizer Error',text: '<div class="row-fluid">Timeout occured before processing completed. Processing may still be running or there may be a configuration error. Consider increasing the Processing Timeout value in settings and restart OctoPrint.</div>',type: 'error',hide: false});}, (parseInt(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout())*1000));
-			console.log(gcode_cmds);
+			// console.log(gcode_cmds);
 
 			OctoPrint.control.sendGcode(gcode_cmds);
 		};
@@ -453,7 +494,7 @@ $(function () {
 			var text = self.selected_command().command();
 			text += '%(' + data.parameter() + ')s';
 			self.selected_command().command(text);
-			console.log(data);
+			// console.log(data);
 		};
 
 		self.removeParameter = function(data) {
