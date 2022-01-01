@@ -115,9 +115,13 @@ $(function () {
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.imperial(self.imperial());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_x(self.descending_x());
 			self.settingsViewModel.settings.plugins.bedlevelvisualizer.descending_y(self.descending_y());
-			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale().length === 0) self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale('[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]');
-			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.rotation().length === 0) self.settingsViewModel.settings.plugins.bedlevelvisualizer.rotation(0);
-			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout().length === 0) self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout(1800);
+			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale().length === 0) { self.settingsViewModel.settings.plugins.bedlevelvisualizer.colorscale('[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]');}
+			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.rotation().length === 0) {self.settingsViewModel.settings.plugins.bedlevelvisualizer.rotation(0);}
+			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout().length === 0) {self.settingsViewModel.settings.plugins.bedlevelvisualizer.timeout(1800);}
+/*			if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_prusa_adjustments()) {
+				self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_relative_offsets(true);
+				self.settingsViewModel.settings.plugins.bedlevelvisualizer.use_center_origin(true);
+			}*/
 		};
 
 		self.onSettingsHidden = function() {

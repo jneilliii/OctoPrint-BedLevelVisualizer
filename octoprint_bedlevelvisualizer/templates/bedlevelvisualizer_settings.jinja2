@@ -119,13 +119,6 @@
                                data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.save_snapshots"
                                style="display: inline-block;margin-bottom: 5px;"/> Download Snapshots of Rendered Graph
 					</div>
-					<div class="control-group">
-                        <input class="input-checkbox" type="checkbox" id="prusa_adjustments"
-                               title="Enable to display the bed leveling adjustment values."
-                               data-toggle="tooltip"
-                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.show_prusa_adjustments"
-                               style="display: inline-block;margin-bottom: 5px;"/> Show Prusa Correction Values
-					</div>
 				</div>
             </div>
 
@@ -162,6 +155,13 @@
                         <input class="input-checkbox" type="checkbox"
                                title="Reverse the adjustment screws turning direction logic" data-toggle="tooltip"
                                data-bind="checked: $root.reverse" style="display: inline-block;margin-bottom: 5px;"/> Reverse turn direction
+					</div>
+					<div class="control-group span4">
+                        <input class="input-checkbox" type="checkbox" id="prusa_adjustments"
+                               title="Enable to display the bed leveling adjustment values."
+                               data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.show_prusa_adjustments"
+                               style="display: inline-block;margin-bottom: 5px;"/> Show Prusa Correction Values
 					</div>
 				</div>
 				<div style="padding-top: 5px;" class="row-fluid">
