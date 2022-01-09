@@ -33,7 +33,7 @@ On this tab you will find all the settings related to the graphical aspects of t
 
 ![screenshot](settings_tab_visualization.png)
 
-* **Graph Z Limits:** Comma separated list of integers for controlling the z offset of the visualized graph in the format of <z-min>,<z-max>. For example the default value is -2,2. This also affects the color map.
+* **Graph Z Limits:** Comma separated list of integers or real numbers for controlling the z offset of the visualized graph in the format of <z-min>,<z-max>. For example the default value is -2,2. This also affects the color map.
 * **Camera Positions:** For a couple of examples of different camera positions and how they look, please see [here](camera-positions.md)
 * **Colorscale:** Array of percentage/color pairs, ie <code>[[0, "blue"],[1, "red"]]</code> will create a gradient between blue to red. Percentage values are in decimal format and colors can be HTML hex values or color names surrounded by double quotes. You can also use a named color scale from <a href="https://plotly.com/javascript/colorscales/">here</a>. Clear this setting to load the default option and click Save below.
 * **Enable Local Snapshots of Rendered Graphs:** When enabled every time the graph is rendered a png snapshot will be downloaded by the browser.
