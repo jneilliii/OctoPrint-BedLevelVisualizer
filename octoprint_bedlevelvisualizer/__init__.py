@@ -68,11 +68,12 @@ class bedlevelvisualizer(
 		self.regex_unknown_command = re.compile(
 			r"echo:Unknown command: \"@BEDLEVELVISUALIZER\""
 		)
+		self.regex_additional_mesh_data = re.compile(r"^Mesh is.+$|^Storage slot:.+$|echo:.+$")
 
 	# SettingsPlugin
 
 	def get_settings_defaults(self):
-		return {'command': "", 'stored_mesh': [], 'stored_mesh_x': [], 'stored_mesh_y': [], 'stored_mesh_z_height': 2,
+		return {'command': "", 'stored_mesh': [], 'stored_mesh_x': [], 'stored_mesh_y': [], 'stored_mesh_z_height': 2, 'stored_additional_mesh_data': [],
 				'save_mesh': True, 'mesh_timestamp': "", 'flipX': False, 'flipY': False, 'stripFirst': False,
 				'use_center_origin': False, 'use_relative_offsets': False, 'timeout': 1800, 'rotation': 0,
 				'ignore_correction_matrix': False, 'screw_hub': 0.5, 'mesh_unit': 1, 'reverse': False,
@@ -81,7 +82,7 @@ class bedlevelvisualizer(
 				'show_webcam': False, 'graph_z_limits': "-2,2",
 				'colorscale': '[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]',
 				'save_snapshots': False, 'camera_position': "-1.25,-1.25,0.25", 'date_locale_format': "",
-				'graph_height': "450px", 'show_prusa_adjustments': False}
+				'graph_height': "450px", 'show_prusa_adjustments': False, 'show_additional_mesh_data': False, 'show_mesh_statistics': True}
 
 	def get_settings_version(self):
 		return 1
@@ -178,6 +179,7 @@ class bedlevelvisualizer(
 	def enable_mesh_collection(self):
 		self.mesh = []
 		self.box = []
+		self.additional_mesh_data = []
 		self._bedlevelvisualizer_logger.debug("mesh collection started")
 		self.processing = True
 		self._plugin_manager.send_plugin_message(
@@ -267,6 +269,9 @@ class bedlevelvisualizer(
 				if len(self.box) == 4:
 					if self.box[0][1] > self.box[3][1]:
 						self.flip_y = True
+
+			elif self.regex_additional_mesh_data.findall(line.strip()):
+				self.additional_mesh_data.append(line.strip())
 
 			if self.regex_makergear.match(line) is not None:
 				self._bedlevelvisualizer_logger.debug(
@@ -410,7 +415,7 @@ class bedlevelvisualizer(
 			self.print_mesh_debug("Final mesh:", self.mesh)
 
 			self._plugin_manager.send_plugin_message(
-				self._identifier, {'mesh': self.mesh, 'bed': self.bed}
+				self._identifier, {'mesh': self.mesh, 'bed': self.bed, 'additional_mesh_data': self.additional_mesh_data}
 			)
 			self.send_mesh_data_collected_event(self.mesh, self.bed)
 

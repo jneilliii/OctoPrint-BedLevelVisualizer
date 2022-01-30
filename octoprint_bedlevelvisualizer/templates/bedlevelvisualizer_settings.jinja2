@@ -113,6 +113,20 @@
                         </div>
                     </div>
 					<div class="control-group">
+                        <input class="input-checkbox" type="checkbox" id="additional_mesh_statistics"
+                               title="When enabled additional statistic data will be added to mesh graph (Min/Max/Var)."
+                               data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.show_mesh_statistics"
+                               style="display: inline-block;margin-bottom: 5px;"/> Show Additional Mesh Statistics
+					</div>
+					<div class="control-group">
+                        <input class="input-checkbox" type="checkbox" id="additional_mesh_data"
+                               title="When enabled if additional information is provided after mesh data and before ok show it on graph."
+                               data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.show_additional_mesh_data"
+                               style="display: inline-block;margin-bottom: 5px;"/> Show Additional UBL Information on Rendered Graph
+					</div>
+					<div class="control-group">
                         <input class="input-checkbox" type="checkbox" id="snap_shot"
                                title="Enable saving snapshot on every rendering of the graph in png format."
                                data-toggle="tooltip"
