@@ -82,7 +82,8 @@ class bedlevelvisualizer(
 				'show_webcam': False, 'graph_z_limits': "-2,2",
 				'colorscale': '[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]',
 				'save_snapshots': False, 'camera_position': "-1.25,-1.25,0.25", 'date_locale_format': "",
-				'graph_height': "450px", 'show_prusa_adjustments': False, 'show_additional_mesh_data': False, 'show_mesh_statistics': True}
+				'graph_height': "450px", 'show_prusa_adjustments': False, 'show_additional_mesh_data': False, 'show_mesh_statistics': True,
+				'bed_offset_left': 0, 'bed_offset_right': 0, 'bed_offset_front': 0, 'bed_offset_back': 0}
 
 	def get_settings_version(self):
 		return 1
@@ -318,10 +319,10 @@ class bedlevelvisualizer(
 				min_z = custom_box["z_min"]
 				max_z = custom_box["z_max"]
 			else:
-				min_x = 0
-				max_x = volume["width"]
-				min_y = 0
-				max_y = volume["depth"]
+				min_x = 0 + self._settings.get_int(["bed_offset_left"])
+				max_x = volume["width"] + self._settings.get_int(["bed_offset_right"])
+				min_y = 0 + self._settings.get_int(["bed_offset_front"])
+				max_y = volume["depth"] + self._settings.get_int(["bed_offset_back"])
 				min_z = 0
 				max_z = volume["height"]
 			if len(self.box) == 4:
