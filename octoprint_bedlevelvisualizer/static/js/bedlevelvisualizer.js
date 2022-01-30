@@ -315,9 +315,9 @@ $(function () {
 						}]};
 
 				// calculate min/max value.
-				let s_min = Math.min(...mesh_data_z.flat());
-				let s_max = Math.max(...mesh_data_z.flat());
-				let s_var = s_max - s_min;
+				let s_min = Math.min(...mesh_data_z.flat()).toFixed(3);
+				let s_max = Math.max(...mesh_data_z.flat()).toFixed(3);
+				let s_var = (s_max - s_min).toFixed(3);
 
 				layout.annotations = [{
 					xref: 'paper',
