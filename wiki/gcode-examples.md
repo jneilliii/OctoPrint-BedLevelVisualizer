@@ -70,7 +70,7 @@ Use the following command for Klipper (per https://github.com/jneilliii/OctoPrin
 BED_MESH_OUTPUT		; report the bed leveling mesh points.
 ```
 ## ARTILLERY SIDEWINDER X2
-'''
+```
 M104 S200		; set extruder temp for bed leveling
 M140 S60		; set bed temp
 M109 R200		; wait for bed leveling temp
@@ -83,3 +83,4 @@ M140 S0 ; turn off bed
 G1 X0 Y0 F1000 ;        
 M84     ; disable motors
 M106 S0 ; turn off fan
+```
