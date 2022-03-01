@@ -19,6 +19,7 @@ M155 S30 ; reduce temperature reporting rate to reduce output pollution
 G29 T	   ; run bilinear probing
 M155 S3  ; reset temperature reporting
 M140 S0 ; cooling down the bed
+M500 ; store mesh in EEPROM
 M300 S440 P200 ; make calibration completed tones
 M300 S660 P250
 M300 S880 P300
