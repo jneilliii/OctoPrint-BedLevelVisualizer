@@ -10,6 +10,8 @@ See [G29 - Bed Leveling (Bilinear)](https://marlinfw.org/docs/gcode/G029-abl-bil
 M140 S60 ; starting by heating the bed for nominal mesh accuracy
 M117 Homing all axes ; send message to printer display
 G28      ; home all axes
+M420 S0  ; Turning off bed leveling while probing, if firmware is set
+         ; to restore after G28
 M117 Heating the bed ; send message to printer display
 M190 S60 ; waiting until the bed is fully warmed up
 M300 S1000 P500 ; chirp to indicate bed mesh levels is initializing
@@ -31,6 +33,8 @@ See [G29 - Bed Leveling (Unified)](https://marlinfw.org/docs/gcode/G029-ubl.html
 
 ```
 G28       ; home all axes
+M420 S0   ; Turning off bed leveling while probing, if firmware is set
+          ; to restore after G28
 M155 S30  ; reduce temperature reporting rate to reduce output pollution
 M190 S65  ; (optional) wait for the bed to get up to temperature
 G29 P1    ; automatically populate mesh with all reachable points
