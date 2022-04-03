@@ -19,7 +19,7 @@ M300 S1000 P500 ; chirp to indicate bed mesh levels is initializing
 M117 Creating the bed mesh levels ; send message to printer display
 M155 S30 ; reduce temperature reporting rate to reduce output pollution
 @BEDLEVELVISUALIZER	; tell the plugin to watch for reported mesh
-G29	T   ; run bilinear probing
+G29 T  ; run bilinear probing
 M155 S3  ; reset temperature reporting
 M140 S0 ; cooling down the bed
 M300 S440 P200 ; make calibration completed tones
