@@ -5,6 +5,7 @@ import threading
 
 import octoprint.plugin
 from octoprint.events import Events
+from octoprint.util.version import is_octoprint_compatible
 import re
 import logging
 import flask
@@ -167,6 +168,17 @@ class bedlevelvisualizer(
 	# AssetPlugin
 
 	def get_assets(self):
+		css = [
+				"css/fontawesome-iconpicker.css",
+				"css/bedlevelvisualizer.css",
+			]
+		
+		if not is_octoprint_compatible(">=1.5.0"):
+			css += [
+				"css/font-awesome.min.css",
+				"css/font-awesome-v4-shims.min.css",
+			]
+		
 		return dict(
 			js=[
 				"js/jquery-ui.min.js",
@@ -176,12 +188,7 @@ class bedlevelvisualizer(
 				"js/plotly.min.js",
 				"js/bedlevelvisualizer.js",
 			],
-			css=[
-				"css/font-awesome.min.css",
-				"css/font-awesome-v4-shims.min.css",
-				"css/fontawesome-iconpicker.css",
-				"css/bedlevelvisualizer.css",
-			],
+			css=css,
 		)
 
 	# TemplatePlugin
