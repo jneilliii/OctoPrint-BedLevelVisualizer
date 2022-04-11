@@ -12,6 +12,7 @@ import flask
 import json
 from copy import deepcopy
 
+
 class bedlevelvisualizer(
 	octoprint.plugin.StartupPlugin,
 	octoprint.plugin.TemplatePlugin,
@@ -69,46 +70,24 @@ class bedlevelvisualizer(
 		self.regex_unknown_command = re.compile(
 			r"echo:Unknown command: \"@BEDLEVELVISUALIZER\""
 		)
+		self.regex_additional_mesh_data = re.compile(r"^Mesh is.+$|^Storage slot:.+$|echo:.+$")
 
 	# SettingsPlugin
 
 	def get_settings_defaults(self):
-		return dict(
-			command="",
-			stored_mesh=[],
-			stored_mesh_x=[],
-			stored_mesh_y=[],
-			stored_mesh_z_height=2,
-			save_mesh=True,
-			mesh_timestamp="",
-			flipX=False,
-			flipY=False,
-			stripFirst=False,
-			use_center_origin=False,
-			use_relative_offsets=False,
-			timeout=1800,
-			rotation=0,
-			ignore_correction_matrix=False,
-			screw_hub=0.5,
-			mesh_unit=1,
-			reverse=False,
-			showdegree=False,
-			show_stored_mesh_on_tab=False,
-			imperial=False,
-			descending_y=False,
-			descending_x=False,
-			debug_logging=False,
-			commands=[],
-			show_labels=True,
-			show_webcam=False,
-			graph_z_limits="-2,2",
-			colorscale='[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]',
-			save_snapshots=False,
-			camera_position="-1.25,-1.25,0.25",
-			date_locale_format="",
-			graph_height="450px",
-			show_prusa_adjustments=False
-		)
+		return {'command': "", 'stored_mesh': [], 'stored_mesh_x': [], 'stored_mesh_y': [], 'stored_mesh_z_height': 2,
+				'stored_additional_mesh_data': [],
+				'save_mesh': True, 'mesh_timestamp': "", 'flipX': False, 'flipY': False, 'stripFirst': False,
+				'use_center_origin': False, 'use_relative_offsets': False, 'timeout': 1800, 'rotation': 0,
+				'ignore_correction_matrix': False, 'screw_hub': 0.5, 'mesh_unit': 1, 'reverse': False,
+				'showdegree': False, 'show_stored_mesh_on_tab': False, 'imperial': False, 'descending_y': False,
+				'descending_x': False, 'debug_logging': False, 'commands': [], 'show_labels': True,
+				'show_webcam': False, 'graph_z_limits': "-2,2",
+				'colorscale': '[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]',
+				'save_snapshots': False, 'camera_position': "-1.25,-1.25,0.25", 'date_locale_format': "",
+				'graph_height': "450px", 'show_prusa_adjustments': False, 'show_additional_mesh_data': False,
+				'show_mesh_statistics': True,
+				'bed_offset_left': 0, 'bed_offset_right': 0, 'bed_offset_front': 0, 'bed_offset_back': 0}
 
 	def get_settings_version(self):
 		return 1
@@ -169,27 +148,24 @@ class bedlevelvisualizer(
 
 	def get_assets(self):
 		css = [
-				"css/fontawesome-iconpicker.css",
-				"css/bedlevelvisualizer.css",
-			]
-		
+			"css/fontawesome-iconpicker.css",
+			"css/bedlevelvisualizer.css",
+		]
+
 		if not is_octoprint_compatible(">=1.5.0"):
 			css += [
 				"css/font-awesome.min.css",
 				"css/font-awesome-v4-shims.min.css",
 			]
-		
-		return dict(
-			js=[
-				"js/jquery-ui.min.js",
-				"js/knockout-sortable.1.2.0.js",
-				"js/fontawesome-iconpicker.js",
-				"js/ko.iconpicker.js",
-				"js/plotly.min.js",
-				"js/bedlevelvisualizer.js",
-			],
-			css=css,
-		)
+
+		return {'js': [
+			"js/jquery-ui.min.js",
+			"js/knockout-sortable.1.2.0.js",
+			"js/fontawesome-iconpicker.js",
+			"js/ko.iconpicker.js",
+			"js/plotly.min.js",
+			"js/bedlevelvisualizer.js",
+		], 'css': css}
 
 	# TemplatePlugin
 
@@ -214,10 +190,11 @@ class bedlevelvisualizer(
 	def enable_mesh_collection(self):
 		self.mesh = []
 		self.box = []
+		self.additional_mesh_data = []
 		self._bedlevelvisualizer_logger.debug("mesh collection started")
 		self.processing = True
 		self._plugin_manager.send_plugin_message(
-			self._identifier, dict(processing=True)
+			self._identifier, {'processing': True}
 		)
 
 	def flag_mesh_collection(self, comm_instance, phase, command, parameters, tags=None, *args, **kwargs):
@@ -304,6 +281,9 @@ class bedlevelvisualizer(
 					if self.box[0][1] > self.box[3][1]:
 						self.flip_y = True
 
+			elif self.regex_additional_mesh_data.findall(line.strip()):
+				self.additional_mesh_data.append(line.strip())
+
 			if self.regex_makergear.match(line) is not None:
 				self._bedlevelvisualizer_logger.debug(
 					"using makergear format report")
@@ -329,7 +309,7 @@ class bedlevelvisualizer(
 
 			if "Home XYZ first" in line:
 				self._plugin_manager.send_plugin_message(
-					self._identifier, dict(error=line.strip())
+					self._identifier, {'error': line.strip()}
 				)
 				self.processing = False
 
@@ -349,10 +329,10 @@ class bedlevelvisualizer(
 				min_z = custom_box["z_min"]
 				max_z = custom_box["z_max"]
 			else:
-				min_x = 0
-				max_x = volume["width"]
-				min_y = 0
-				max_y = volume["depth"]
+				min_x = 0 + self._settings.get_int(["bed_offset_left"])
+				max_x = volume["width"] + self._settings.get_int(["bed_offset_right"])
+				min_y = 0 + self._settings.get_int(["bed_offset_front"])
+				max_y = volume["depth"] + self._settings.get_int(["bed_offset_back"])
 				min_z = 0
 				max_z = volume["height"]
 			if len(self.box) == 4:
@@ -361,15 +341,8 @@ class bedlevelvisualizer(
 				min_y = min([y for x, y in self.box])
 				max_y = max([y for x, y in self.box])
 
-			self.bed = dict(
-				type=self.bed_type,
-				x_min=min_x,
-				x_max=max_x,
-				y_min=min_y,
-				y_max=max_y,
-				z_min=min_z,
-				z_max=max_z,
-			)
+			self.bed = {'type': self.bed_type, 'x_min': min_x, 'x_max': max_x, 'y_min': min_y, 'y_max': max_y,
+						'z_min': min_z, 'z_max': max_z}
 			self._bedlevelvisualizer_logger.debug(self.bed)
 
 			if self.old_marlin or self.repetier_firmware:
@@ -453,14 +426,15 @@ class bedlevelvisualizer(
 			self.print_mesh_debug("Final mesh:", self.mesh)
 
 			self._plugin_manager.send_plugin_message(
-				self._identifier, dict(mesh=self.mesh, bed=self.bed)
+				self._identifier,
+				{'mesh': self.mesh, 'bed': self.bed, 'additional_mesh_data': self.additional_mesh_data}
 			)
 			self.send_mesh_data_collected_event(self.mesh, self.bed)
 
 		return line
 
 	def create_circular_mask(self, y, x):
-		center = y/2-0.5, x/2-0.5
+		center = y / 2 - 0.5, x / 2 - 0.5
 		radius = min(center[0], center[1], y - center[0], x - center[1])
 		self._bedlevelvisualizer_logger.debug("Center = " + str(center) + ", Radius = " + str(radius))
 
@@ -470,7 +444,7 @@ class bedlevelvisualizer(
 		# creating rough circular mask with wiggle room to surely include all points
 		for i in range(y):
 			for j in range(x):
-				mask[i][j] = abs((i-center[0])**2 + (j-center[1])**2) - radius**2 < 1.5**2
+				mask[i][j] = abs((i - center[0]) ** 2 + (j - center[1]) ** 2) - radius ** 2 < 1.5 ** 2
 
 		self.print_mesh_debug("mask:", mask)
 		return mask
@@ -487,7 +461,7 @@ class bedlevelvisualizer(
 		l = len(mesh)
 		# print mask data
 		for i in range(l):
-			self._bedlevelvisualizer_logger.debug(mesh[l-i-1])
+			self._bedlevelvisualizer_logger.debug(mesh[l - i - 1])
 		# print graphical representation
 		if self.bed_type == "circular":
 			pic = deepcopy(mesh)
@@ -498,13 +472,13 @@ class bedlevelvisualizer(
 					else:
 						pic[i][j] = "Ꚛ"
 			for i in range(l):
-				self._bedlevelvisualizer_logger.debug(pic[l-i-1])
+				self._bedlevelvisualizer_logger.debug(pic[l - i - 1])
 		return
 
 	# SimpleApiPlugin
 
 	def get_api_commands(self):
-		return dict(stopProcessing=[])
+		return {'stopProcessing': []}
 
 	def on_api_get(self, request):
 		if request.args.get("stopProcessing"):
@@ -520,7 +494,7 @@ class bedlevelvisualizer(
 			self.mesh = []
 			self._bedlevelvisualizer_logger.debug("Mesh data after clearing:")
 			self._bedlevelvisualizer_logger.debug(self.mesh)
-			response = dict(stopped=True)
+			response = {'stopped': True}
 			return flask.jsonify(response)
 
 	# Custom Action Hook
@@ -536,7 +510,7 @@ class bedlevelvisualizer(
 
 	def send_mesh_data_collected_event(self, mesh_data, bed_data):
 		event = Events.PLUGIN_BEDLEVELVISUALIZER_MESH_DATA_COLLECTED
-		custom_payload = dict(mesh=mesh_data, bed=bed_data)
+		custom_payload = {'mesh': mesh_data, 'bed': bed_data}
 		self._event_bus.fire(event, payload=custom_payload)
 
 	def register_custom_events(*args, **kwargs):
@@ -569,29 +543,14 @@ class bedlevelvisualizer(
 	# Software Update Hook
 
 	def get_update_information(self):
-		return dict(
-			bedlevelvisualizer=dict(
-				displayName="Bed Visualizer",
-				displayVersion=self._plugin_version,
-				# version check: github repository
-				type="github_release",
-				user="jneilliii",
-				repo="OctoPrint-BedLevelVisualizer",
-				current=self._plugin_version,
-				stable_branch=dict(
-					name="Stable", branch="master", comittish=["master"]
-				),
-				prerelease_branches=[
-					dict(
-						name="Release Candidate",
-						branch="rc",
-						comittish=["rc", "master"],
-					)
-				],
-				# update method: pip
-				pip="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/{target_version}.zip",
-			)
-		)
+		return {'bedlevelvisualizer': {'displayName': "Bed Visualizer", 'displayVersion': self._plugin_version,
+									   'type': "github_release", 'user': "jneilliii",
+									   'repo': "OctoPrint-BedLevelVisualizer", 'current': self._plugin_version,
+									   'stable_branch': {'name': "Stable", 'branch': "master", 'comittish': ["master"]},
+									   'prerelease_branches': [
+										   {'name': "Release Candidate", 'branch': "rc", 'comittish': ["rc", "master"]}
+									   ],
+									   'pip': "https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/archive/{target_version}.zip"}}
 
 
 __plugin_name__ = "Bed Visualizer"

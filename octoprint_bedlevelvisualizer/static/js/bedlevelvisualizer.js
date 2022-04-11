@@ -21,6 +21,7 @@ $(function () {
 		self.mesh_data_x = ko.observableArray([]);
 		self.mesh_data_y = ko.observableArray([]);
 		self.mesh_data_z_height = ko.observable();
+		self.additional_mesh_data = ko.observable();
 		self.save_mesh = ko.observable();
 		self.save_snapshots = ko.observable(false);
 		self.selected_command = ko.observable();
@@ -80,6 +81,7 @@ $(function () {
 			self.mesh_data_x(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x());
 			self.mesh_data_y(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y());
 			self.mesh_data_z_height(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
+			self.additional_mesh_data(self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_additional_mesh_data());
 			self.save_mesh(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_mesh());
 			self.save_snapshots(self.settingsViewModel.settings.plugins.bedlevelvisualizer.save_snapshots());
 			self.screw_hub(self.settingsViewModel.settings.plugins.bedlevelvisualizer.screw_hub());
@@ -174,11 +176,12 @@ $(function () {
 							y_data.push(Math.round(mesh_data.bed.y_min+i/(mesh_data.mesh.length - 1)*(mesh_data.bed.y_max - mesh_data.bed.y_min)));
 						}
 					}
-					self.drawMesh(mesh_data.mesh,true,x_data,y_data,mesh_data.bed.z_max);
+					self.drawMesh(mesh_data.mesh,true,x_data,y_data,mesh_data.bed.z_max,mesh_data.additional_mesh_data);
 					self.mesh_data(mesh_data.mesh);
 					self.mesh_data_x(x_data);
 					self.mesh_data_y(y_data);
 					self.mesh_data_z_height(mesh_data.bed.z_max);
+					self.additional_mesh_data(mesh_data.additional_mesh_data);
 				}
 				return;
 			}
@@ -203,7 +206,7 @@ $(function () {
 			return;
 		};
 
-		self.drawMesh = function (mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height) {
+		self.drawMesh = function (mesh_data_z,store_data,mesh_data_x,mesh_data_y,mesh_data_z_height,additional_mesh_data) {
 			// console.log(mesh_data_z+'\n'+store_data+'\n'+mesh_data_x+'\n'+mesh_data_y+'\n'+mesh_data_z_height);
 			// console.log(mesh_data_z);
 			clearTimeout(self.timeout);
@@ -214,6 +217,7 @@ $(function () {
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x(mesh_data_x);
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y(mesh_data_y);
 					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height(mesh_data_z_height);
+					self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_additional_mesh_data(additional_mesh_data);
 					if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.date_locale_format().length > 0) {
 						self.settingsViewModel.settings.plugins.bedlevelvisualizer.mesh_timestamp(new Date().toLocaleString(self.settingsViewModel.settings.plugins.bedlevelvisualizer.date_locale_format()));
 					} else {
@@ -314,25 +318,19 @@ $(function () {
 							}
 						}]};
 
-				// calculate min/max value.
-				let s_min = Math.min(...mesh_data_z.flat());
-				let s_max = Math.max(...mesh_data_z.flat());
-				let s_var = s_max - s_min;
-
-				layout.annotations = [{
-					xref: 'paper',
-					yref: 'paper',
-					x: 1,
-					xanchor: 'right',
-					y: 0,
-					yanchor: 'bottom',
-					text: 'Min: ' + s_min + '<br>Max: ' + s_max + '<br>Var: ' + s_var,
-					showarrow: false,
-					font: {
-						color: foreground_color
-					}
-				}];
-
+				let s_annotation_text = '';
+				// Mesh Statistics
+				if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_mesh_statistics()) {
+					// calculate min/max/var values
+					let s_min = Math.min(...mesh_data_z.flat()).toFixed(3);
+					let s_max = Math.max(...mesh_data_z.flat()).toFixed(3);
+					let s_var = (s_max - s_min).toFixed(3);
+					s_annotation_text += 'Min: ' + s_min + '<br>Max: ' + s_max + '<br>Var: ' + s_var + '<br>';
+				}
+				// Additional UBL Information
+				if ((additional_mesh_data || []).length > 0 && self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_additional_mesh_data()) {
+					s_annotation_text += additional_mesh_data.join('<br>').replace(/echo:/g, '') + '<br>';
+				}
 				// Prusa Bed Level Correction
 				if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_prusa_adjustments()) {
 					let back_half = mesh_data_z.slice(0, mesh_data_z.length/2).join().split(',');
@@ -365,18 +363,26 @@ $(function () {
 					let front_half_um = Math.round((front_half_total/front_half.length)*1000);
 					let left_half_um = Math.round((left_half_total/left_half.length)*1000);
 					let right_half_um = Math.round((right_half_total/right_half.length)*1000);
-					layout.annotations.push({xref: 'paper',
+					s_annotation_text += '<br>Back [um]:' + back_half_um + '<br>Front [um]:' + front_half_um + '<br>Left [um]:' + left_half_um + '<br>Right [um]:' + right_half_um + '<br>';
+				}
+
+				if(s_annotation_text.length > 0) {
+					layout.annotations = [{
+						xref: 'paper',
 						yref: 'paper',
-						x: 1,
-						xanchor: 'right',
-						y: 1,
-						yanchor: 'top',
-						text: 'Back [um]:' + back_half_um + '<br>Front [um]:' + front_half_um + '<br>Left [um]:' + left_half_um + '<br>Right [um]:' + right_half_um,
+						x: 0,
+						xanchor: 'left',
+						y: 0,
+						yanchor: 'bottom',
+						text: s_annotation_text,
 						showarrow: false,
 						font: {
 							color: foreground_color
-						}
-					});
+						},
+						align: 'left',
+						bgcolor: (background_color == 'rgba(0, 0, 0, 0)') ? 'rgba(255,255,255,1)' : background_color,
+						opacity: 0.8,
+					}];
 				}
 
 				// graph surface
@@ -405,7 +411,7 @@ $(function () {
 						self.updateMesh();
 					}
 				} else if (self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh().length > 0) {
-					self.drawMesh(self.mesh_data(),false,self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height());
+					self.drawMesh(self.mesh_data(),false,self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_x(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_y(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_mesh_z_height(),self.settingsViewModel.settings.plugins.bedlevelvisualizer.stored_additional_mesh_data());
 				}
 			}
 		};
