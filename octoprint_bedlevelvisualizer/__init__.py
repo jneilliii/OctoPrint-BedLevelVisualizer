@@ -5,11 +5,13 @@ import threading
 
 import octoprint.plugin
 from octoprint.events import Events
+from octoprint.util.version import is_octoprint_compatible
 import re
 import logging
 import flask
 import json
 from copy import deepcopy
+
 
 class bedlevelvisualizer(
 	octoprint.plugin.StartupPlugin,
@@ -73,7 +75,8 @@ class bedlevelvisualizer(
 	# SettingsPlugin
 
 	def get_settings_defaults(self):
-		return {'command': "", 'stored_mesh': [], 'stored_mesh_x': [], 'stored_mesh_y': [], 'stored_mesh_z_height': 2, 'stored_additional_mesh_data': [],
+		return {'command': "", 'stored_mesh': [], 'stored_mesh_x': [], 'stored_mesh_y': [], 'stored_mesh_z_height': 2,
+				'stored_additional_mesh_data': [],
 				'save_mesh': True, 'mesh_timestamp': "", 'flipX': False, 'flipY': False, 'stripFirst': False,
 				'use_center_origin': False, 'use_relative_offsets': False, 'timeout': 1800, 'rotation': 0,
 				'ignore_correction_matrix': False, 'screw_hub': 0.5, 'mesh_unit': 1, 'reverse': False,
@@ -82,7 +85,8 @@ class bedlevelvisualizer(
 				'show_webcam': False, 'graph_z_limits': "-2,2",
 				'colorscale': '[[0, "rebeccapurple"],[0.4, "rebeccapurple"],[0.45, "blue"],[0.5, "green"],[0.55, "yellow"],[0.6, "red"],[1, "red"]]',
 				'save_snapshots': False, 'camera_position': "-1.25,-1.25,0.25", 'date_locale_format': "",
-				'graph_height': "450px", 'show_prusa_adjustments': False, 'show_additional_mesh_data': False, 'show_mesh_statistics': True,
+				'graph_height': "450px", 'show_prusa_adjustments': False, 'show_additional_mesh_data': False,
+				'show_mesh_statistics': True,
 				'bed_offset_left': 0, 'bed_offset_right': 0, 'bed_offset_front': 0, 'bed_offset_back': 0}
 
 	def get_settings_version(self):
@@ -143,6 +147,17 @@ class bedlevelvisualizer(
 	# AssetPlugin
 
 	def get_assets(self):
+		css = [
+			"css/fontawesome-iconpicker.css",
+			"css/bedlevelvisualizer.css",
+		]
+
+		if not is_octoprint_compatible(">=1.5.0"):
+			css += [
+				"css/font-awesome.min.css",
+				"css/font-awesome-v4-shims.min.css",
+			]
+
 		return {'js': [
 			"js/jquery-ui.min.js",
 			"js/knockout-sortable.1.2.0.js",
@@ -150,12 +165,7 @@ class bedlevelvisualizer(
 			"js/ko.iconpicker.js",
 			"js/plotly.min.js",
 			"js/bedlevelvisualizer.js",
-		], 'css': [
-			"css/font-awesome.min.css",
-			"css/font-awesome-v4-shims.min.css",
-			"css/fontawesome-iconpicker.css",
-			"css/bedlevelvisualizer.css",
-		]}
+		], 'css': css}
 
 	# TemplatePlugin
 
@@ -416,14 +426,15 @@ class bedlevelvisualizer(
 			self.print_mesh_debug("Final mesh:", self.mesh)
 
 			self._plugin_manager.send_plugin_message(
-				self._identifier, {'mesh': self.mesh, 'bed': self.bed, 'additional_mesh_data': self.additional_mesh_data}
+				self._identifier,
+				{'mesh': self.mesh, 'bed': self.bed, 'additional_mesh_data': self.additional_mesh_data}
 			)
 			self.send_mesh_data_collected_event(self.mesh, self.bed)
 
 		return line
 
 	def create_circular_mask(self, y, x):
-		center = y/2-0.5, x/2-0.5
+		center = y / 2 - 0.5, x / 2 - 0.5
 		radius = min(center[0], center[1], y - center[0], x - center[1])
 		self._bedlevelvisualizer_logger.debug("Center = " + str(center) + ", Radius = " + str(radius))
 
@@ -433,7 +444,7 @@ class bedlevelvisualizer(
 		# creating rough circular mask with wiggle room to surely include all points
 		for i in range(y):
 			for j in range(x):
-				mask[i][j] = abs((i-center[0])**2 + (j-center[1])**2) - radius**2 < 1.5**2
+				mask[i][j] = abs((i - center[0]) ** 2 + (j - center[1]) ** 2) - radius ** 2 < 1.5 ** 2
 
 		self.print_mesh_debug("mask:", mask)
 		return mask
@@ -450,7 +461,7 @@ class bedlevelvisualizer(
 		l = len(mesh)
 		# print mask data
 		for i in range(l):
-			self._bedlevelvisualizer_logger.debug(mesh[l-i-1])
+			self._bedlevelvisualizer_logger.debug(mesh[l - i - 1])
 		# print graphical representation
 		if self.bed_type == "circular":
 			pic = deepcopy(mesh)
@@ -461,7 +472,7 @@ class bedlevelvisualizer(
 					else:
 						pic[i][j] = "Ꚛ"
 			for i in range(l):
-				self._bedlevelvisualizer_logger.debug(pic[l-i-1])
+				self._bedlevelvisualizer_logger.debug(pic[l - i - 1])
 		return
 
 	# SimpleApiPlugin
