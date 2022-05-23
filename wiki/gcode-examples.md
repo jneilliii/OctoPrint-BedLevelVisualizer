@@ -58,14 +58,17 @@ G81			; report mesh bed leveling status.
 ```
 
 ### Prusa Mini
+
 ```
-M104 S170		; set extruder temp for bed leveling
-M140 S60		; set bed temp
-M109 R170		; wait for bed leveling temp
-M190 S60		; wait for bed temp
-G28			; home all without mesh bed level
+M104 S170				; set extruder temp for bed leveling
+M140 S60				; set bed temp
+M109 R170				; wait for bed leveling temp
+M190 S60				; wait for bed temp
+G28						; home all without mesh bed level
 @BEDLEVELVISUALIZER	; instruct plugin to start recording responses from printer.
-G29			; mesh bed leveling 
+G29						; mesh bed leveling
+M104 S0					; cool down head
+M140 S0					; cooling down the bed
 ```
 
 ## Klipper
