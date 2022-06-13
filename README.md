@@ -126,7 +126,6 @@ Check out my other plugins [here](https://plugins.octoprint.org/by_author/#jneil
 - [SimplyPrint](https://simplyprint.dk/)
 - [Andrew Beeman](https://github.com/Kiendeleo)
 - [Calanish](https://github.com/calanish)
-- [Will O](https://github.com/4wrxb)
 - [Lachlan Bell](https://lachy.io/)
 - [Johnny Bergdal](https://github.com/bergdahl)
 - [Leigh Johnson](https://github.com/leigh-johnson)
