@@ -271,6 +271,9 @@ $(function () {
 								x: (camera_position.length === 3) ? camera_position[0] : -1.25,
 								y: (camera_position.length === 3) ? camera_position[1] : -1.25,
 								z: (camera_position.length === 3) ? camera_position[2] : 0.25
+							},
+							projection: {
+								type: (self.settingsViewModel.settings.plugins.bedlevelvisualizer.render_orthographic()) ? 'orthographic' : 'perspective'
 							}
 						},
 						xaxis: {
@@ -364,6 +367,38 @@ $(function () {
 					let left_half_um = Math.round((left_half_total/left_half.length)*1000);
 					let right_half_um = Math.round((right_half_total/right_half.length)*1000);
 					s_annotation_text += '<br>Back [um]:' + back_half_um + '<br>Front [um]:' + front_half_um + '<br>Left [um]:' + left_half_um + '<br>Right [um]:' + right_half_um + '<br>';
+				}
+
+				// reference plane
+				if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_reference_plane()){
+					console.log(mesh_data_z);
+					let back_half = mesh_data_z.slice(0, mesh_data_z.length/2);
+					let front_half = mesh_data_z.slice(mesh_data_z.length/2);
+					let back_left = back_half.slice(0, back_half.length/2).join().split(',');
+					let back_left_z = back_left.reduce((a, b) => (parseFloat(a) + parseFloat(b))) / back_left.length;
+					let back_right = back_half.slice(back_half.length/2).join().split(',');
+					let back_right_z = back_right.reduce((a, b) => (parseFloat(a) + parseFloat(b))) / back_right.length;
+					let front_left = front_half.slice(0, front_half.length/2).join().split(',');
+					let front_left_z = front_left.reduce((a, b) => (parseFloat(a) + parseFloat(b))) / front_left.length;
+					let front_right = front_half.slice(front_half.length/2).join().split(',');
+					let front_right_z = front_right.reduce((a, b) => (parseFloat(a) + parseFloat(b))) / front_right.length;
+
+					let reference_plane = {"x": [0,250],
+						"y": [0,210],
+						"z": [[back_left_z, front_left_z],[back_right_z,front_right_z]],
+						"type": "surface",
+						"showscale": false,
+						"autocolorscale": true,
+						// "colorscale": [[0, "gray"],[1, "gray"]],
+						"opacity": 0.5
+					};
+
+					// if(self.graph_z_limits().split(",")[0] !== 'auto'){
+					// 	reference_plane['cmin'] = self.graph_z_limits().split(",")[0];
+					// 	reference_plane['cmax'] = self.graph_z_limits().split(",")[1];
+					// }
+
+					data.push(reference_plane);
 				}
 
 				if(s_annotation_text.length > 0) {

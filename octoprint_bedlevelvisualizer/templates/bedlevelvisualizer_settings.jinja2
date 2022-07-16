@@ -143,6 +143,13 @@
                         </div>
                     </div>
 					<div class="control-group">
+                        <input class="input-checkbox" type="checkbox" id="snap_shot"
+                               title="When enabled the rendered graph will use orthographic projection, otherwise perspective projection will be used."
+                               data-toggle="tooltip"
+                               data-bind="checked: settingsViewModel.settings.plugins.bedlevelvisualizer.render_orthographic"
+                               style="display: inline-block;margin-bottom: 5px;"/> Orthographic Projection
+					</div>
+					<div class="control-group">
                         <input class="input-checkbox" type="checkbox" id="additional_mesh_statistics"
                                title="When enabled additional statistic data will be added to mesh graph (Min/Max/Var)."
                                data-toggle="tooltip"
