@@ -82,7 +82,7 @@
 									$parentContext.$index()][$root.descending_x()?
 										$root.mesh_data_x().length - 1 - $index():
 										$index()]);},
-							event: { mouseover: function(item){if(!$parentContext.$parent.len){$root.turn(item);} else {$root.turn(0);} $('.meshtable > table > tbody > tr > td:not(:first-child):not(:last-child)').removeClass('info'); $($element).addClass('info');}, mouseout: function(){$root.turn(0); $($element).removeClass('info');}},
+							event: { mouseover: function(item){console.log(item);if(!$parentContext.$parent.len){$root.turn(item);} else {$root.turn(0);} $('.meshtable > table > tbody > tr > td:not(:first-child):not(:last-child)').removeClass('info'); $($element).addClass('info');}, mouseout: function(){$root.turn(0); $($element).removeClass('info');}},
 							css: {
                                 'raise': (Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y() ?
                                             $root.mesh_data_y().length - 1 - $parentContext.$index() : $parentContext.$index()][$root.descending_x() ?
@@ -91,7 +91,8 @@
                                 'lower': (Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y() ?
                                             $root.mesh_data_y().length - 1 - $parentContext.$index() : $parentContext.$index()][$root.descending_x() ?
                                             $root.mesh_data_x().length - 1 - $index() :
-                                            $index()]))) > 0
+                                            $index()]))) > 0,
+                                'info': $root.hovered_point().join() == [$root.descending_x() ? $root.mesh_data_x().length - 1 - $index() : $index(), $root.descending_y() ? $root.mesh_data_y().length - 1 - $parentContext.$index() : $parentContext.$index()].join()
                             }">
 					</td>
 					<input type="hidden" data-bind="value: $parentContext.$index()"/>

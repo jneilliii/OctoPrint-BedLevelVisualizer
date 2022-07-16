@@ -71,6 +71,8 @@ $(function () {
 			self);
 		self.turn = ko.observable(0);
 		self.graph_z_limits = ko.observable();
+		self.hovered_point = ko.observable([]);
+		self.graph_rendered = false;
 
 		self.get_cell_text = function(item) {
 			return (!item.$parentContext.$parent.len?Math.abs(parseFloat(item.$parentContext.$parent.mesh[item.$root.descending_y()?item.$root.mesh_data_y().length-1-item.$parentContext.$index():item.$parentContext.$index()][item.$root.descending_x()?item.$root.mesh_data_x().length-1-item.$index():item.$index()])):parseFloat(item.$parentContext.$parent.mesh[item.$root.descending_y()?item.$root.mesh_data_y().length-1-item.$parentContext.$index():item.$parentContext.$index()][item.$root.descending_x()?item.$root.mesh_data_x().length-1-item.$index():item.$index()])).toFixed(item.$parentContext.$parent.len);
@@ -235,6 +237,7 @@ $(function () {
 						x: mesh_data_x,
 						y: mesh_data_y,
 						type: 'surface',
+						name: 'Probed<br>Points',
 						colorbar: {
 							tickfont: {
 								color: $('#tabs_content').css('color')
@@ -387,6 +390,7 @@ $(function () {
 						"y": [0,210],
 						"z": [[back_left_z, front_left_z],[back_right_z,front_right_z]],
 						"type": "surface",
+						"name": "Reference<br>Plane",
 						"showscale": false,
 						"autocolorscale": true,
 						// "colorscale": [[0, "gray"],[1, "gray"]],
@@ -422,6 +426,17 @@ $(function () {
 
 				// graph surface
 				Plotly.react('bedlevelvisualizergraph', data, layout, config_options).then(self.postPlotHandler);
+				if (!self.graph_rendered){
+					self.graph_rendered = true;
+					document.getElementById('bedlevelvisualizergraph').on('plotly_hover', function(data){
+							self.hovered_point(data.points[0].pointNumber);
+							self.turn(self.mesh_adjustment()[data.points[0].pointNumber[1]][data.points[0].pointNumber[0]]);
+						})
+						 .on('plotly_unhover', function(data){
+							self.hovered_point([]);
+							self.turn(0);
+						});
+				}
 			} catch(err) {
 				new PNotify({
 						title: 'Bed Visualizer Error',
