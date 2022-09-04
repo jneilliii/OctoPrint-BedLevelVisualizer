@@ -82,7 +82,6 @@
 									$parentContext.$index()][$root.descending_x()?
 										$root.mesh_data_x().length - 1 - $index():
 										$index()]);},
-							event: { mouseover: function(item){console.log(item);if(!$parentContext.$parent.len){$root.turn(item);} else {$root.turn(0);} $('.meshtable > table > tbody > tr > td:not(:first-child):not(:last-child)').removeClass('info'); $($element).addClass('info');}, mouseout: function(){$root.turn(0); $($element).removeClass('info');}},
 							css: {
                                 'raise': (Math.sign(parseFloat($parentContext.$parent.mesh[$root.descending_y() ?
                                             $root.mesh_data_y().length - 1 - $parentContext.$index() : $parentContext.$index()][$root.descending_x() ?

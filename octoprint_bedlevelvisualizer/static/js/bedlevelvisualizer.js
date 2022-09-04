@@ -69,6 +69,22 @@ $(function () {
 				return degrees;
 				},
 			self);
+		self.mesh_adjustment_corrections = ko.computed(
+			function() {
+				var adjustments = ko.utils.arrayMap(
+					self.mesh_adjustment(),
+					function (line) {
+						return ko.utils.arrayMap(
+							line,
+							function (item) {
+								var elevation = item < (0 ^ self.reverse()) ? gettext('Raise') : gettext('Lower');
+								var direction = item < (0 ^ self.reverse()) ? '<br>' + gettext('turn right') + ' ↑ ' + (Math.abs(item / 360).toFixed(2) * 100).toString() + '% ↓' : '<br>' + gettext('turn left') + ' ↓ ' + (Math.abs(item / 360).toFixed(2) * 100).toString() + '% ↑';
+								return elevation + direction;
+							});
+					}
+				);
+				return adjustments.map((_, colIndex) => adjustments.map(row => row[colIndex]));
+			}, self);
 		self.turn = ko.observable(0);
 		self.graph_z_limits = ko.observable();
 		self.hovered_point = ko.observable([]);
@@ -236,15 +252,21 @@ $(function () {
 						z: mesh_data_z,
 						x: mesh_data_x,
 						y: mesh_data_y,
+					    text: self.mesh_adjustment(),
+						customdata: self.mesh_adjustment_corrections(),
 						type: 'surface',
-						name: 'Probed<br>Points',
+						name: 'Probed<br>Point',
 						colorbar: {
 							tickfont: {
 								color: $('#tabs_content').css('color')
 							}
 						},
 						autocolorscale: false,
-						colorscale: graphcolorscale
+						colorscale: graphcolorscale,
+						hovertemplate:	'<b>X</b>: %{x}<br>' +
+                        				'<b>Y</b>: %{y}<br>' +
+                        				'<b>Z</b>: %{z}<br>' +
+                        				'<b>Correction</b>: %{customdata}'
 					}
 				];
 
@@ -394,7 +416,12 @@ $(function () {
 						"showscale": false,
 						"autocolorscale": true,
 						// "colorscale": [[0, "gray"],[1, "gray"]],
-						"opacity": 0.5
+						"opacity": 0.5,
+						"hovertemplate": '<b>X</b>: %{x}<br>' +
+                        				 '<b>Y</b>: %{y}<br>' +
+                        				 '<b>Z</b>: %{z}<br>' +
+                        				 '<b>Correction: %{text}</b>',
+						"text": [[back_left_z,back_right_z],[front_left_z,front_right_z]]
 					};
 
 					// if(self.graph_z_limits().split(",")[0] !== 'auto'){
@@ -429,12 +456,16 @@ $(function () {
 				if (!self.graph_rendered){
 					self.graph_rendered = true;
 					document.getElementById('bedlevelvisualizergraph').on('plotly_hover', function(data){
-							self.hovered_point(data.points[0].pointNumber);
-							self.turn(self.mesh_adjustment()[data.points[0].pointNumber[1]][data.points[0].pointNumber[0]]);
+							if (data.points[0].curveNumber === 0) {
+								self.hovered_point(data.points[0].pointNumber);
+								self.turn(self.mesh_adjustment()[data.points[0].pointNumber[1]][data.points[0].pointNumber[0]]);
+							}
 						})
 						 .on('plotly_unhover', function(data){
-							self.hovered_point([]);
-							self.turn(0);
+							if (data.points[0].curveNumber === 0) {
+								self.hovered_point([]);
+								self.turn(0);
+							}
 						});
 				}
 			} catch(err) {
