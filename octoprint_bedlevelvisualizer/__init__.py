@@ -48,7 +48,7 @@ class bedlevelvisualizer(
 		)
 		self.regex_mesh_data = re.compile(
 			r"^((G33.+)|(Bed.+)|(Llit.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?-?\d+?\.\d+\]?\s*,?)|(\s?\.\s*)|(NAN,"
-			r"?)|(nan\s?,?)|(=======\s?,?))+(\s+\],?)?$"
+			r"?)|(nan\s?,?)|(=======\s?,?)|(;-?\+?\d?.?\d+))+(\s+\],?)?$"
 		)
 		self.regex_bed_level_correction = re.compile(
 			r"^(Mesh )?Bed Level (Correction Matrix|data):.*$"
