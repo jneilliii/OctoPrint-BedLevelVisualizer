@@ -66,7 +66,7 @@ G29 P1    ; automatically populate mesh with all reachable points
 G29 P3    ; infer the rest of the mesh values
 G29 P3    ; infer the rest of the mesh values again
 @BEDLEVELVISUALIZER	; tell the plugin to watch for reported mesh
-M420 S1 V ; enabled leveling and report the new mesh
+M420 S1 V1 ; enabled leveling and report the new mesh
 G29 S0    ; Save UBL mesh points to slot 0 (EEPROM).
 G29 F 10.0 ; Set Fade Height for correction at 10.0 mm.
 G29 A     ; Activate the UBL System.
