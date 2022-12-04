@@ -122,6 +122,12 @@
 						</div>
 					</div>
 					<div class="control-group span3">
+						<label for="bedlevelvisualizer_graph_type">Graph Type</label>
+						<div class="controls">
+							<input type="text" id="bedlevelvisualizer_graph_type" title="The plotly.js graph type to render. Not all types may work very well with three dimensional data." data-toggle="tooltip" class="input-small" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.graph_type">
+						</div>
+					</div>
+					<div class="control-group span3">
 						<label for="bedlevelvisualizer_camera_position">Camera Position</label>
 						<div class="controls">
 							<input type="text" id="bedlevelvisualizer_camera_position" title="Comma separated list of integers or real numbers for controlling the position of the camera in the format of <x>,<y>,<z>. For example the default value is -1.25,-1.25,0.25." data-toggle="tooltip" class="input-small" data-bind="value: settingsViewModel.settings.plugins.bedlevelvisualizer.camera_position">

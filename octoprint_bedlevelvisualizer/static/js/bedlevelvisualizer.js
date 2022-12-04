@@ -254,7 +254,7 @@ $(function () {
 						y: mesh_data_y,
 					    text: self.mesh_adjustment(),
 						customdata: self.mesh_adjustment_corrections(),
-						type: 'surface',
+						type: self.settingsViewModel.settings.plugins.bedlevelvisualizer.graph_type(),
 						name: 'Probed<br>Point',
 						colorbar: {
 							tickfont: {

@@ -88,7 +88,7 @@ class bedlevelvisualizer(
 				'graph_height': "450px", 'show_prusa_adjustments': False, 'show_additional_mesh_data': False,
 				'show_mesh_statistics': True,
 				'bed_offset_left': 0, 'bed_offset_right': 0, 'bed_offset_front': 0, 'bed_offset_back': 0,
-				'show_reference_plane': False, 'render_orthographic': False}
+				'show_reference_plane': False, 'render_orthographic': False, 'graph_type': 'surface'}
 
 	def get_settings_version(self):
 		return 1
