@@ -451,6 +451,10 @@ $(function () {
 					}];
 				}
 
+				// merge advanced overrides into data and layout
+				$.extend(data[0], JSON.parse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.advanced.data()));
+				$.extend(layout, JSON.parse(self.settingsViewModel.settings.plugins.bedlevelvisualizer.advanced.layout()));
+
 				// graph surface
 				Plotly.react('bedlevelvisualizergraph', data, layout, config_options).then(self.postPlotHandler);
 				if (!self.graph_rendered){
