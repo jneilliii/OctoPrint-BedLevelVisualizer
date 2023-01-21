@@ -56,6 +56,7 @@ G80			; run mesh bed leveling routine.
 @BEDLEVELVISUALIZER	; instruct plugin to start recording responses from printer.
 G81			; report mesh bed leveling status.
 ```
+Note the i3 MK3S requires the Y-axis to be flipped.
 
 ### Prusa Mini
 
