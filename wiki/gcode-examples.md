@@ -10,11 +10,10 @@ For both methods, if your firmware has `AUTO_REPORT_TEMPERATURES` enabled, set t
 See [G29 - Bed Leveling (Linear)](https://marlinfw.org/docs/gcode/G029-abl-linear.html)
 
 ```
-M140 S60 ; starting by heating the bed for nominal mesh accuracy
-M117 Homing all axes ; send message to printer display
-G28      ; home all axes
 M117 Heating the bed ; send message to printer display
 M190 S60 ; waiting until the bed is fully warmed up
+M117 Homing all axes ; send message to printer display
+G28      ; home all axes
 M300 S1000 P500 ; chirp to indicate bed mesh levels is initializing
 M117 Creating the bed mesh levels ; send message to printer display
 M155 S30 ; reduce temperature reporting rate to reduce output pollution
@@ -32,13 +31,12 @@ M117 Bed mesh levels completed ; send message to printer display
 See [G29 - Bed Leveling (Bilinear)](https://marlinfw.org/docs/gcode/G029-abl-bilinear.html)
 
 ```
-M140 S60 ; starting by heating the bed for nominal mesh accuracy
+M117 Heating the bed ; send message to printer display
+M190 S60 ; waiting until the bed is fully warmed up
 M117 Homing all axes ; send message to printer display
 G28      ; home all axes
 M420 S0  ; Turning off bed leveling while probing, if firmware is set
          ; to restore after G28
-M117 Heating the bed ; send message to printer display
-M190 S60 ; waiting until the bed is fully warmed up
 M300 S1000 P500 ; chirp to indicate bed mesh levels is initializing
 M117 Creating the bed mesh levels ; send message to printer display
 M155 S30 ; reduce temperature reporting rate to reduce output pollution
