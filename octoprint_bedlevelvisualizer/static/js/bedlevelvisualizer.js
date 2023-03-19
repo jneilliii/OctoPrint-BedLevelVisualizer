@@ -15,6 +15,7 @@ $(function () {
 		self.settingsViewModel = parameters[0];
 		self.controlViewModel = parameters[1];
 		self.loginStateViewModel = parameters[2];
+		self.printerProfilesViewModel = parameters[3];
 
 		self.processing = ko.observable(false);
 		self.mesh_data = ko.observableArray([]);
@@ -396,7 +397,6 @@ $(function () {
 
 				// reference plane
 				if(self.settingsViewModel.settings.plugins.bedlevelvisualizer.show_reference_plane()){
-					console.log(mesh_data_z);
 					let back_half = mesh_data_z.slice(0, mesh_data_z.length/2);
 					let front_half = mesh_data_z.slice(mesh_data_z.length/2);
 					let back_left = back_half.slice(0, back_half.length/2).join().split(',');
@@ -408,8 +408,8 @@ $(function () {
 					let front_right = front_half.slice(front_half.length/2).join().split(',');
 					let front_right_z = front_right.reduce((a, b) => (parseFloat(a) + parseFloat(b))) / front_right.length;
 
-					let reference_plane = {"x": [0,250],
-						"y": [0,210],
+					let reference_plane = {"x": [0,self.printerProfilesViewModel.currentProfileData().volume.width()],
+						"y": [0,self.printerProfilesViewModel.currentProfileData().volume.depth()],
 						"z": [[back_left_z, front_left_z],[back_right_z,front_right_z]],
 						"type": "surface",
 						"name": "Reference<br>Plane",
@@ -630,7 +630,7 @@ $(function () {
 
 	OCTOPRINT_VIEWMODELS.push({
 		construct: bedlevelvisualizerViewModel,
-		dependencies: ["settingsViewModel", "controlViewModel", "loginStateViewModel"],
+		dependencies: ["settingsViewModel", "controlViewModel", "loginStateViewModel", "printerProfilesViewModel"],
 		elements: ["#settings_plugin_bedlevelvisualizer", "#tab_plugin_bedlevelvisualizer", "#wizard_plugin_bedlevelvisualizer"]
 	});
 });
