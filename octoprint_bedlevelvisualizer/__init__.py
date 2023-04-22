@@ -11,6 +11,7 @@ import logging
 import flask
 import json
 from copy import deepcopy
+from octoprint.access.permissions import Permissions
 
 
 class bedlevelvisualizer(
@@ -480,7 +481,7 @@ class bedlevelvisualizer(
 	# SimpleApiPlugin
 
 	def get_api_commands(self):
-		return {'stopProcessing': []}
+		return {'stopProcessing': [], 'startProcessing': []}
 
 	def on_api_get(self, request):
 		if request.args.get("stopProcessing"):
@@ -497,6 +498,15 @@ class bedlevelvisualizer(
 			self._bedlevelvisualizer_logger.debug("Mesh data after clearing:")
 			self._bedlevelvisualizer_logger.debug(self.mesh)
 			response = {'stopped': True}
+			return flask.jsonify(response)
+
+	def on_api_command(self, command, data):
+		if not Permissions.CONTROL.can():
+			return flask.make_response("Insufficient rights", 403)
+
+		if command == "startProcessing":
+			self._printer.commands(self._settings.get(["command"]).split("\n"))
+			response = {'started': True}
 			return flask.jsonify(response)
 
 	# Custom Action Hook
