@@ -122,7 +122,6 @@ Check out my other plugins [here](https://plugins.octoprint.org/by_author/#jneil
 - [@Mearman](https://github.com/Mearman)
 - [@TheTuxKeeper](https://github.com/thetuxkeeper)
 - [@tideline3d](https://github.com/tideline3d/)
-- [OctoFarm](https://octofarm.net/)
 - [SimplyPrint](https://simplyprint.dk/)
 - [Andrew Beeman](https://github.com/Kiendeleo)
 - [Calanish](https://github.com/calanish)
