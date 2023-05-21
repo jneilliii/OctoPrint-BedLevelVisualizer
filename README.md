@@ -132,6 +132,7 @@ Check out my other plugins [here](https://plugins.octoprint.org/by_author/#jneil
 - [Guyot François](https://github.com/iFrostizz)
 - [Steve Dougherty](https://github.com/Thynix)
 - [Flying Buffalo Aerial Photography](http://flyingbuffalo.info/)
+- Sam Fingard
 ## Support My Efforts
 I, jneilliii, programmed this plugin for fun and do my best effort to support those that have issues with it, please return the favor and leave me a tip or become a Patron if you find this plugin helpful and want me to continue future development.
 
