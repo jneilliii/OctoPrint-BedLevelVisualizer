@@ -94,6 +94,8 @@ G29			; mesh bed leveling
 ## Klipper
 Use the following command for Klipper (per https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/92):
 ```
+G28
+BED_MESH_CALIBRATE
 @BEDLEVELVISUALIZER	; instruct plugin to start recording responses from printer.
 BED_MESH_OUTPUT		; report the bed leveling mesh points.
 ```
