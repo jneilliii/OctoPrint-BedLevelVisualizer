@@ -119,19 +119,15 @@ Check out my other plugins [here](https://plugins.octoprint.org/by_author/#jneil
 
 ## Sponsors
 - Andreas Lindermayr
-- [@Mearman](https://github.com/Mearman)
 - [@TheTuxKeeper](https://github.com/thetuxkeeper)
 - [@tideline3d](https://github.com/tideline3d/)
-- [SimplyPrint](https://simplyprint.dk/)
 - [Andrew Beeman](https://github.com/Kiendeleo)
 - [Calanish](https://github.com/calanish)
 - [Lachlan Bell](https://lachy.io/)
 - [Johnny Bergdal](https://github.com/bergdahl)
 - [Leigh Johnson](https://github.com/leigh-johnson)
 - [Stephen Berry](https://github.com/berrystephenw)
-- [Guyot François](https://github.com/iFrostizz)
 - [Steve Dougherty](https://github.com/Thynix)
-- [Flying Buffalo Aerial Photography](http://flyingbuffalo.info/)
 ## Support My Efforts
 I, jneilliii, programmed this plugin for fun and do my best effort to support those that have issues with it, please return the favor and leave me a tip or become a Patron if you find this plugin helpful and want me to continue future development.
 
