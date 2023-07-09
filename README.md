@@ -121,6 +121,7 @@ Check out my other plugins [here](https://plugins.octoprint.org/by_author/#jneil
 - Andreas Lindermayr
 - [@TheTuxKeeper](https://github.com/thetuxkeeper)
 - [@tideline3d](https://github.com/tideline3d/)
+- [SimplyPrint](https://simplyprint.io/)
 - [Andrew Beeman](https://github.com/Kiendeleo)
 - [Calanish](https://github.com/calanish)
 - [Lachlan Bell](https://lachy.io/)
