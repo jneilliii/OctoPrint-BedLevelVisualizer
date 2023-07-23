@@ -15,7 +15,6 @@ $(function () {
 		self.settingsViewModel = parameters[0];
 		self.controlViewModel = parameters[1];
 		self.loginStateViewModel = parameters[2];
-		self.printerProfilesViewModel = parameters[3];
 
 		self.processing = ko.observable(false);
 		self.mesh_data = ko.observableArray([]);
@@ -408,8 +407,8 @@ $(function () {
 					let front_right = front_half.slice(front_half.length/2).join().split(',');
 					let front_right_z = front_right.reduce((a, b) => (parseFloat(a) + parseFloat(b))) / front_right.length;
 
-					let reference_plane = {"x": [0,self.printerProfilesViewModel.currentProfileData().volume.width()],
-						"y": [0,self.printerProfilesViewModel.currentProfileData().volume.depth()],
+					let reference_plane = {"x": [Math.min(...mesh_data_x),Math.max(...mesh_data_x)],
+						"y": [Math.min(...mesh_data_y),Math.max(...mesh_data_y)],
 						"z": [[back_left_z, front_left_z],[back_right_z,front_right_z]],
 						"type": "surface",
 						"name": "Reference<br>Plane",
@@ -630,7 +629,7 @@ $(function () {
 
 	OCTOPRINT_VIEWMODELS.push({
 		construct: bedlevelvisualizerViewModel,
-		dependencies: ["settingsViewModel", "controlViewModel", "loginStateViewModel", "printerProfilesViewModel"],
+		dependencies: ["settingsViewModel", "controlViewModel", "loginStateViewModel"],
 		elements: ["#settings_plugin_bedlevelvisualizer", "#tab_plugin_bedlevelvisualizer", "#wizard_plugin_bedlevelvisualizer"]
 	});
 });
