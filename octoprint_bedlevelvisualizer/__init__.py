@@ -541,7 +541,8 @@ class bedlevelvisualizer(
 				self._bedlevelvisualizer_logger.debug("using stored mesh for octodash view: {}".format(mesh))
 			bed = self.bed_type
 			commands = self._settings.get(["command"]).split("\n")
-			render_kwargs = {"mesh": mesh, "bed": bed, "commands": commands}
+			apikey = self._settings.global_get(["api", "key"])
+			render_kwargs = {"mesh": mesh, "bed": bed, "commands": commands, "apikey": apikey}
 		except Exception as e:
 			self._logger.debug("Bed Visualizer error: {}".format(e))
 			render_kwargs = {"error": "{}".format(e)}

@@ -44,7 +44,10 @@
 				type: "POST",
 				dataType: "json",
 				data: JSON.stringify({commands:gcode_commands, parameters: {}}),
-				contentType: "application/json; charset=UTF-8"
+				contentType: "application/json; charset=UTF-8",
+				headers: {
+					"X-Api-Key": "{{ apikey }}",
+				},
 			}).done(function(response){
                 window.location.reload(true);
             });
