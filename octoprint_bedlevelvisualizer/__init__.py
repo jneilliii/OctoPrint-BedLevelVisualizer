@@ -49,7 +49,7 @@ class bedlevelvisualizer(
 			"octoprint.plugins.bedlevelvisualizer.debug"
 		)
 		self.regex_mesh_data = re.compile(
-			r"^((G33.+)|(Bed.+)|(Llit.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?-?\d+?\.\d+\]?\s*,?)|(\s?\.\s*)|(NAN,?)|(nan\s?,?)|(=======\s?,?)|(;-?\+?\d?.?\d+)|(?:\d\(\d+\.\d+,\d+\.\d+,(-?\d+\.\d+)\)\s?)+)+(\s+\],?)?$"
+			r"^((G33.+)|(Bed.+)|(Llit.+)|(\d+\s)|(\|\s*)|(\s*\[\s+)|(\[?\s?\+?-?\d+?\.\d+\]?\s*,?)|(\s?\.\s*)|(NAN,?)|(nan\s?,?)|(=======\s?,?)|(;-?\+?\d?.?\d+)|(?:\d+\(\d+\.\d+,\d+\.\d+,(-?\d+\.\d+)\)\s*)+)+(\s+\],?)?$"
 		)
 		self.regex_bed_level_correction = re.compile(
 			r"^(Mesh )?Bed Level (Correction Matrix|data):.*$"
@@ -61,7 +61,7 @@ class bedlevelvisualizer(
 		self.regex_makergear = re.compile(
 			r"^(\s=\s\[)(\s*,?\s*\[(\s?-?\d+.\d+,?)+\])+\];?$"
 		)
-		self.regex_lerdge_extraction = re.compile(r"\d\(\d+\.\d+,\d+\.\d+,(-?\d+\.\d+)\)\s?")
+		self.regex_lerdge_extraction = re.compile(r"\d+\(\d+\.\d+,\d+\.\d+,(-?\d+\.\d+)\)\s?")
 		self.regex_repetier = re.compile(r"^G33 X.+$")
 		self.regex_nan = re.compile(r"(nan)")
 		self.regex_catmull = re.compile(
@@ -290,6 +290,7 @@ class bedlevelvisualizer(
 						self.flip_y = True
 
 			elif "The system starts to level automatically, please wait for finishing the leveling" in line.strip():
+				self._bedlevelvisualizer_logger.debug("lerdge firmware detected")
 				self.lerdge_firmware = True
 
 			elif self.regex_additional_mesh_data.findall(line.strip()):
