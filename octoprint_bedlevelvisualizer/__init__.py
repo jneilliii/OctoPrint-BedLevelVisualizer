@@ -289,7 +289,7 @@ class bedlevelvisualizer(
 					if self.box[0][1] > self.box[3][1]:
 						self.flip_y = True
 
-			elif line.strip() == "echo: The system starts to level automatically, please wait for finishing the leveling":
+			elif "The system starts to level automatically, please wait for finishing the leveling" in line.strip():
 				self.lerdge_firmware = True
 
 			elif self.regex_additional_mesh_data.findall(line.strip()):
