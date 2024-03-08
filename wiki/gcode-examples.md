@@ -58,8 +58,8 @@ G81			; report mesh bed leveling status.
 ```
 Note the i3 MK3S requires the Y-axis to be flipped.
 
-### Prusa Mini
-
+### Prusa Mini (Pre 5.x firmware)
+This may or may not work for you on 5.x firmware. Some users have [reported](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/643) [issues](https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/652) with this gcode. There is some updated gcode below which is reported to be working on 5.1.2 firmware.
 ```
 M104 S170		; set extruder temp for bed leveling
 M140 S60		; set bed temp
@@ -71,6 +71,25 @@ G29			; mesh bed leveling
 M104 S0			; cool down head
 M140 S0			; cooling down the bed
 ```
+
+### Prusa Mini (5.1.2+ firmware)
+This updated gcode should solve any issues on 5.1.2 firmware 
+
+```
+M104 S170		; set extruder temp for bed leveling
+M140 S60		; set bed temp
+M109 R170		; wait for bed leveling temp
+M190 S60		; wait for bed temp
+G28			; home all without mesh bed level
+M155 S30
+G29
+@BEDLEVELVISUALIZER	; instruct plugin to start recording responses from printer.
+G29 T			; mesh bed leveling
+M155 S3
+M104 S0			; cool down head
+M140 S0			; cooling down the bed
+```
+
 
 ## Klipper
 Use the following command for Klipper (per https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/92):
