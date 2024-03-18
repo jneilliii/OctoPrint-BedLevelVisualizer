@@ -90,6 +90,54 @@ M104 S0			; cool down head
 M140 S0			; cooling down the bed
 ```
 
+### Prusa XL5T (5.1.2+ firmware)
+```
+M104 T1 S0 
+M104 T2 S0 
+M104 T3 S0 
+M104 T4 S0
+
+M140 S60 ; set bed temp
+M109 T0 S175 ; wait for temp
+
+; Home XY
+G28 XY
+; try picking tools used in print
+G1 F24000
+
+; select tool that will be used to home & MBL
+T0 S1 L0 D0
+; home Z with MBL tool
+M84 E ; turn off E motor
+G28 Z
+G0 Z5 ; add Z clearance
+M190 S60 ; wait for bed temp
+G29 G ; absorb heat
+; move to the nozzle cleanup area
+G1 X32.0999 Y-6.90006 Z5 F24000
+M302 S160 ; lower cold extrusion limit to 160C
+G1 E-2 F2400 ; retraction for nozzle cleanup
+; nozzle cleanup
+M84 E ; turn off E motor
+G29 P9 X260 Y-6.90006 W32 H7
+G0 Z5 F480 ; move away in Z
+M107 ; turn off the fan
+; MBL
+M84 E ; turn off E motor
+G29 P1 ; invalidate mbl & probe print area
+G29 P1 X30 Y0 W50 H20 C ; probe near purge place
+G29 P3.2 ; interpolate mbl probes
+G29 P3.13 ; extrapolate mbl outside probe area
+G29 A ; activate mbl
+@BEDLEVELVISUALIZER
+G29 T
+G1 Z10 F720 ; move away in Z
+G1 F24000
+P0 S1 L1 D0; park the tool
+; set extruder temp
+M104 T0 S0
+M140 S0
+```
 
 ## Klipper
 Use the following command for Klipper (per https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/issues/92):
