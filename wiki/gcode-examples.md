@@ -50,7 +50,7 @@ M155 S3   ; reset temperature reporting
 M140 S0   ; cooling down the bed
 ```
 
-## Prusa Firmware
+## Prusa Firmware (older MK3 and below)
 ```
 G80			; run mesh bed leveling routine.
 @BEDLEVELVISUALIZER	; instruct plugin to start recording responses from printer.
@@ -70,6 +70,45 @@ G28			; home all without mesh bed level
 G29			; mesh bed leveling
 M104 S0			; cool down head
 M140 S0			; cooling down the bed
+```
+
+### Prusa MK3.9/4
+```
+;
+; MBL Prep
+;
+G0 X0 Y-4 Z15 F4800 ; move away from printbed
+M140 S60 ; set bed temp
+M104 S170 ; set extruder temp for bed leveling
+M109 R170 ; wait for temp
+M84 E ; turn off E motor
+M302 S160 ; lower cold extrusion limit to 160C
+G1 E-2 F2400 ; retraction
+M84 E ; turn off E motor
+G28 ; home all without mesh bed level
+M106 S100
+G0 Z40 F10000
+M190 S60 ; wait for bed temp
+M107
+;
+; MBL
+;
+M84 E ; turn off E motor
+G29 P1 ; invalidate mbl & probe print area
+G29 P3.2 ; interpolate mbl probes
+G29 P3.13 ; extrapolate mbl outside probe area
+;
+; MBL Update Mesh 
+;
+@ BEDLEVELVISUALIZER
+G29 T ; print bed topography report
+;
+; Cleanup
+;
+M104 S0 ; turn off temperature
+M140 S0 ; turn off heatbed
+M107 ; turn off fan
+G0 X0 Y-4 Z15 F4800 ; move away from printbed
 ```
 
 ### Prusa Mini (5.1.2+ firmware)
