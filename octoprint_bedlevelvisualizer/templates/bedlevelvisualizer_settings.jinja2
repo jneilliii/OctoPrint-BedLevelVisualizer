@@ -287,7 +287,7 @@
 				<div data-bind="sortable: { data: settingsViewModel.settings.plugins.bedlevelvisualizer.commands, options: { cancel: '.unsortable', handle: '.move_command'} }" class="row-fluid">
 					<div class="btn-group" style="margin: 5px;">
 						<button type="button" class="btn iconpicker-component" data-bind="click: $root.showEditor, attr: {title: (tooltip() ? tooltip : command)}"><i class="fa-lg" data-bind="css: icon"></i> <span data-bind="text: label"></span></button>
-						<button type="button" class="icp icp-dd btn dropdown-toggle" data-selected="fa-car" data-toggle="dropdown" aria-expanded="false" data-bind="iconpicker: icon,iconpickerOptions: {searchInFooter: true, hideOnSelect: true, collision: true}">
+						<button type="button" class="icp icp-dd btn dropdown-toggle" data-selected="fa-car" data-toggle="dropdown" aria-expanded="false" data-bind="iconpicker: icon,iconpickerOptions: {container: '#bedlevelvisualizer_custom_commands', hideOnSelect: true, collision: true, templates: {popover: '<div class=&quot;iconpicker-popover popover&quot;><div class=&quot;popover-title&quot;></div><div class=&quot;popover-content&quot;></div></div>'}}">
 							<span class="caret"></span>
 							<span class="sr-only">Toggle Dropdown</span>
 						</button>

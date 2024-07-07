@@ -14,7 +14,7 @@ plugin_package = "octoprint_bedlevelvisualizer"
 plugin_name = "Bed Visualizer"
 
 # The plugin's version. Can be overwritten within OctoPrint's internal data via __plugin_version__ in the plugin module
-plugin_version = "1.1.2rc10"
+plugin_version = "1.1.2rc11"
 
 # The plugin's description. Can be overwritten within OctoPrint's internal data via __plugin_description__ in the plugin
 # module
