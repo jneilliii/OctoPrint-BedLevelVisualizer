@@ -187,7 +187,7 @@ $(function () {
 				self.processing(false);
 				new PNotify({
 					title: 'Bed Visualizer Error',
-					text: '<div class="row-fluid"><p>Looks like your settings are not correct or there was an error.</p><p>Please see the <a href="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/#tips" target="_blank">Readme</a> for configuration tips.</p></div><p><pre style="padding-top: 5px;">'+mesh_data.error+'</pre></p>',
+					text: '<div class="row-fluid"><p>Looks like your settings are not correct or there was an error.</p><p>Please see the <a href="https://github.com/jneilliii/OctoPrint-BedLevelVisualizer/#tips" target="_blank">Readme</a> for configuration tips.</p></div><p><pre style="padding-top: 5px;">'+_.escape(mesh_data.error)+'</pre></p>',
 					hide: true
 				});
 				return;
@@ -384,7 +384,7 @@ $(function () {
 			} catch(err) {
 				new PNotify({
 						title: 'Bed Visualizer Error',
-						text: '<div class="row-fluid">Errors while attempting render of mesh data.</div><div class="row-fluid">Error:</div><div class="row-fluid"><pre style="padding-top: 5px;">'+err+'</pre></div><div class="row-fluid">Received Data:</div><div class="row-fluid"><pre style="padding-top: 5px;">'+data+'</pre></div>',
+						text: '<div class="row-fluid">Errors while attempting render of mesh data.</div><div class="row-fluid">Error:</div><div class="row-fluid"><pre style="padding-top: 5px;">'+_.escape(err)+'</pre></div><div class="row-fluid">Received Data:</div><div class="row-fluid"><pre style="padding-top: 5px;">'+_.escape(data)+'</pre></div>',
 						type: 'error',
 						hide: false
 						});
