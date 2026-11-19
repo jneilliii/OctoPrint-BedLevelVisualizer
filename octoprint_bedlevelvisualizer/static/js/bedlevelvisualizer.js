@@ -105,7 +105,6 @@ $(function () {
 					self.settings_active(false);
 				}
 			});
-            console.log(self.loginStateViewModel);
 		};
 
 		self.onSettingsBeforeSave = function() {
