@@ -400,7 +400,7 @@ $(function () {
 		};
 
 		self.onAfterTabChange = function (current, previous) {
-			if (current === "#tab_plugin_bedlevelvisualizer" && self.loginStateViewModel.isUser() && !self.processing()) {
+			if (current === "#tab_plugin_bedlevelvisualizer" && self.loginStateViewModel.hasPermissionKo(self.accessViewModel.permissions.CONTROL)() && !self.processing()) {
 				if (!self.save_mesh()) {
 					if (self.controlViewModel.isOperational() && !self.controlViewModel.isPrinting()) {
 						self.updateMesh();
