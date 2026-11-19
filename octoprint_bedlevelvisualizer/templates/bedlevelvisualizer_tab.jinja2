@@ -12,21 +12,21 @@
 		<i class="icon-spinner icon-spin icon-3"></i> <b>Please wait, retrieving current mesh.</b>
 	</div>
 </div>
-<div class="row-fluid" id="bedlevelvisualizerwarning" style="text-align: center;font-size: 25px;vertical-align: middle;" data-bind="visible: !loginStateViewModel.isUser()"><i class="icon-warning-sign icon-3" style="color:red"></i> <b>You must be logged in.</b></div>
+<div class="row-fluid" id="bedlevelvisualizerwarning" style="text-align: center;font-size: 25px;vertical-align: middle;" data-bind="visible: !loginStateViewModel.hasPermissionKo(accessViewModel.permissions.CONTROL)()"><i class="icon-warning-sign icon-3" style="color:red"></i> <b>You must be logged in.</b></div>
 <div class="row_fluid" id="bedlevelvisualizercommandmissing" data-bind="visible: settingsViewModel.settings.plugins.bedlevelvisualizer.command() == ''">
 	<div class="row_fluid">
 		<p>In order for this plugin to work properly, you must configure the GCODE commands necessary to send back a Bed Topography Report in <a href="#" data-bind="click: function(){ settingsViewModel.show('#settings_plugin_bedlevelvisualizer'); }">Settings</a>.</p>
 	</div>
 </div>
-<div class="row-fluid" data-bind="visible: loginStateViewModel.isUser() && settingsViewModel.settings.plugins.bedlevelvisualizer.command() !== ''">
+<div class="row-fluid" data-bind="visible: loginStateViewModel.hasPermissionKo(accessViewModel.permissions.CONTROL)() && settingsViewModel.settings.plugins.bedlevelvisualizer.command() !== ''">
 	<div class="row-fluid" id="bedlevelvisualizergraph" data-bind="visible: !processing(), style: {'min-height': settingsViewModel.settings.plugins.bedlevelvisualizer.graph_height()}"></div>
-	<div class="row-fluid" style="text-align: center;padding-top: 20px;" data-bind="visible: loginStateViewModel.isUser() && !processing() && settingsViewModel.settings.plugins.bedlevelvisualizer.command() !== ''"><small data-bind="text: mesh_status"></small></div>
-    <div class="row-fluid" id="bedlevelvisualizerbutton" style="text-align: center;"><button class="btn" data-bind="click: !processing() ? updateMesh : cancelMeshUpdate, enable: controlViewModel.isOperational() && !controlViewModel.isPrinting() && loginStateViewModel.isUser() && settingsViewModel.settings.plugins.bedlevelvisualizer.command() !== '', css: !processing() ? 'btn-primary' : 'btn-danger',attr: {'title': !processing() ? 'Run Mesh Update Process' : 'Cancel Mesh Update Process'}"><i class="icon-2 icon-info-sign" data-bind="attr: {'title': mesh_status}" data-toggle="tooltip"></i> <span data-bind="text: !processing() ? 'Update Mesh Now' : 'Cancel'"></span></button><button class="btn btn-mini pull-right" data-bind="click: function(){ settingsViewModel.show('#settings_plugin_bedlevelvisualizer'); }, visible: loginStateViewModel.isAdmin()"><i class="fa fa-gear"></i></button></div>
+	<div class="row-fluid" style="text-align: center;padding-top: 20px;" data-bind="visible: loginStateViewModel.hasPermissionKo(accessViewModel.permissions.CONTROL)() && !processing() && settingsViewModel.settings.plugins.bedlevelvisualizer.command() !== ''"><small data-bind="text: mesh_status"></small></div>
+    <div class="row-fluid" id="bedlevelvisualizerbutton" style="text-align: center;"><button class="btn" data-bind="click: !processing() ? updateMesh : cancelMeshUpdate, enable: controlViewModel.isOperational() && !controlViewModel.isPrinting() && loginStateViewModel.hasPermissionKo(accessViewModel.permissions.CONTROL)() && settingsViewModel.settings.plugins.bedlevelvisualizer.command() !== '', css: !processing() ? 'btn-primary' : 'btn-danger',attr: {'title': !processing() ? 'Run Mesh Update Process' : 'Cancel Mesh Update Process'}"><i class="icon-2 icon-info-sign" data-bind="attr: {'title': mesh_status}" data-toggle="tooltip"></i> <span data-bind="text: !processing() ? 'Update Mesh Now' : 'Cancel'"></span></button><button class="btn btn-mini pull-right" data-bind="click: function(){ settingsViewModel.show('#settings_plugin_bedlevelvisualizer'); }, visible: loginStateViewModel.isAdmin()"><i class="fa fa-gear"></i></button></div>
 </div>
 
 
 <!-- Container for custom controls -->
-<div id="control-bedlevelvisualizer-custom" style="clear: both; display: none; padding-top: 10px; padding-bottom: 10px;" data-bind="visible: loginStateViewModel.isUser && settingsViewModel.settings.plugins.bedlevelvisualizer.commands().length > 0, template: { name: 'customBedLevelVisulizerControls_controlTemplate', foreach: settingsViewModel.settings.plugins.bedlevelvisualizer.commands }"></div>
+<div id="control-bedlevelvisualizer-custom" style="clear: both; display: none; padding-top: 10px; padding-bottom: 10px;" data-bind="visible: loginStateViewModel.hasPermissionKo(accessViewModel.permissions.CONTROL) && settingsViewModel.settings.plugins.bedlevelvisualizer.commands().length > 0, template: { name: 'customBedLevelVisulizerControls_controlTemplate', foreach: settingsViewModel.settings.plugins.bedlevelvisualizer.commands }"></div>
 
 <!-- Container for mesh degrees -->
 <div data-bind="if: $root.showdegree() && $root.mesh_data().length" class="row-fluid" align="center">

@@ -15,6 +15,7 @@ $(function () {
 		self.settingsViewModel = parameters[0];
 		self.controlViewModel = parameters[1];
 		self.loginStateViewModel = parameters[2];
+        self.accessViewModel = parameters[3];
 
 		self.processing = ko.observable(false);
 		self.mesh_data = ko.observableArray([]);
@@ -104,6 +105,7 @@ $(function () {
 					self.settings_active(false);
 				}
 			});
+            console.log(self.loginStateViewModel);
 		};
 
 		self.onSettingsBeforeSave = function() {
@@ -539,7 +541,7 @@ $(function () {
 
 	OCTOPRINT_VIEWMODELS.push({
 		construct: bedlevelvisualizerViewModel,
-		dependencies: ["settingsViewModel", "controlViewModel", "loginStateViewModel"],
+		dependencies: ["settingsViewModel", "controlViewModel", "loginStateViewModel", "accessViewModel"],
 		elements: ["#settings_plugin_bedlevelvisualizer", "#tab_plugin_bedlevelvisualizer", "#wizard_plugin_bedlevelvisualizer"]
 	});
 });
