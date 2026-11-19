@@ -1,1 +1,4 @@
 include README.md
+recursive-include octoprint_bedlevelvisualizer/templates *
+recursive-include octoprint_bedlevelvisualizer/translations *
+recursive-include octoprint_bedlevelvisualizer/static *
